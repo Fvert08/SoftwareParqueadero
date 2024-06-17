@@ -2,13 +2,11 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
-
-
 class MiVentana(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-
+#Configuración de la pantalla
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
         self.setStyleSheet("background-color: #151419;")
@@ -19,55 +17,66 @@ class MiVentana(QWidget):
         self.pagina_Tickets()
         self.pagina_Casilleros()
         self.pagina_Reportes()
+    #Panel principal (Menú vertical izquierdo)
     def Pagina_principal(self):
-        self.line_frame1 = QFrame(self)
-        self.line_frame1.setFrameShape(QFrame.VLine)
-        self.line_frame1.setLineWidth(2)
-        self.line_frame1.setStyleSheet("color: #222126;")
-        self.line_frame1.setGeometry(1080 // 6, 0, 2, 720)
+        main_layout = QHBoxLayout(self)
+
+        # Creando el menú de la izquierda
+        menuizquierdo = QWidget()
+        layout_menu = QVBoxLayout(menuizquierdo)
+
+        self.menu_label = QLabel('MENÚ', self)
+        self.menu_label.setStyleSheet("color: #888888; font-size: 20px; font-weight: bold;")
+        layout_menu.addWidget(self.menu_label, alignment=Qt.AlignCenter)
 
         self.line_frame2 = QFrame(self)
         self.line_frame2.setFrameShape(QFrame.HLine)
         self.line_frame2.setLineWidth(2)
         self.line_frame2.setStyleSheet("color: #222126;")
-        self.line_frame2.setGeometry(15, 720 // 11, 150, 2)
-
-        self.menu_label = QLabel('MENÚ', self)
-        self.menu_label.setStyleSheet("color: #888888; font-size: 20px; font-weight: bold;")
-        self.menu_label.setGeometry(25, 75, 60, 25)  # Establece la posición y tamaño de la etiqueta
+        layout_menu.addWidget(self.line_frame2, alignment=Qt.AlignTop)
 
         self.botonRegistros = QPushButton('Registro de ingresos', self)
-        self.botonRegistros.setGeometry(8, 120, 165, 50)
-        self.botonRegistros.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;")
+        self.botonRegistros.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         self.botonRegistros.setIcon(QIcon('registrosSel.png'))
+        self.botonRegistros.setCheckable(True)
         self.botonRegistros.setChecked(True)
         self.botonRegistros.pressed.connect(self.cambiar_color)
         self.botonRegistros.clicked.connect(self.pagina_registros)
+        layout_menu.addWidget(self.botonRegistros, alignment=Qt.AlignCenter)
 
         self.botontickets = QPushButton('Generar Tickets', self)
-        self.botontickets.setGeometry(8, 180, 160, 50)
-        self.botontickets.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;")
+        self.botontickets.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         self.botontickets.setIcon(QIcon('ticketMotos.png'))
+        self.botontickets.setCheckable(True)
         self.botontickets.pressed.connect(self.cambiar_color)
         self.botontickets.clicked.connect(self.pagina_Tickets)
+        layout_menu.addWidget(self.botontickets, alignment=Qt.AlignCenter)
 
         self.botonGestionarCasilleros = QPushButton('Gestionar casilleros', self)
-        self.botonGestionarCasilleros.setGeometry(8, 240, 160, 50)
-        self.botonGestionarCasilleros.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;")
+        self.botonGestionarCasilleros.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         self.botonGestionarCasilleros.setIcon(QIcon('gestionCasilleros.png'))
+        self.botonGestionarCasilleros.setCheckable(True)
         self.botonGestionarCasilleros.pressed.connect(self.cambiar_color)
         self.botonGestionarCasilleros.clicked.connect(self.pagina_Casilleros)
+        layout_menu.addWidget(self.botonGestionarCasilleros, alignment=Qt.AlignCenter)
 
         self.botonReportes = QPushButton('Gestión de reportes', self)
-        self.botonReportes.setGeometry(8, 300, 160, 50)
-        self.botonReportes.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;")
+        self.botonReportes.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         self.botonReportes.setIcon(QIcon('reportes.png'))
+        self.botonReportes.setCheckable(True)
         self.botonReportes.pressed.connect(self.cambiar_color)
-        self.ultimo_boton_seleccionado = self.botonRegistros
-        self.ultimo_boton_seleccionado.clicked.connect(self.pagina_Reportes)
+        self.botonReportes.clicked.connect(self.pagina_Reportes)
+        layout_menu.addWidget(self.botonReportes, alignment=Qt.AlignCenter)
+        layout_menu.setAlignment(Qt.AlignTop)
         self.stacked_widget = QStackedWidget(self)
-        self.stacked_widget.setGeometry(181, 0, 1100, 720)
+        main_layout.addWidget(menuizquierdo)
+        main_layout.addWidget(self.stacked_widget)
 
+        self.ultimo_boton_seleccionado = self.botonRegistros
+        self.setLayout(main_layout)
+
+
+    #Tabla de registros
     def pagina_registros(self):
         # Crear el widget de la página de registros
         page_registros = QWidget()
@@ -167,6 +176,8 @@ class MiVentana(QWidget):
 
         # Agregar la página al QStackedWidget
         self.stacked_widget.addWidget(page_registros)
+
+    #Registrar ingresos y generar ticket
     def pagina_Tickets(self):
         # Crear el widget de la página de Tickets
         page_tickets = QWidget()
@@ -341,6 +352,7 @@ class MiVentana(QWidget):
         # Agregar la página al QStackedWidget
         self.stacked_widget.addWidget(page_tickets)
 
+    #Configuración de casilleros
     def pagina_Casilleros(self):
         # Crear el widget de la página de registros
         page_casilleros = QWidget()
@@ -354,6 +366,7 @@ class MiVentana(QWidget):
         layout_tickets.addWidget(titulo_tickets, alignment=Qt.AlignCenter)
         self.stacked_widget.addWidget(page_casilleros)
 
+    #Menú para generar reportes
     def pagina_Reportes(self):
         # Crear el widget de la página de registros
         page_reportes = QWidget()
@@ -367,15 +380,16 @@ class MiVentana(QWidget):
         layout_reportes.addWidget(titulo_tickets, alignment=Qt.AlignCenter)
         self.stacked_widget.addWidget(page_reportes)
 
+    #Cambiar color de los botones
     def cambiar_color(self):
         sender = self.sender()
-        sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;")
+        sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         boton_actual = self.sender()
 
         if boton_actual != self.ultimo_boton_seleccionado:
             if self.ultimo_boton_seleccionado:
                 self.ultimo_boton_seleccionado.setChecked(False)
-                self.ultimo_boton_seleccionado.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;")
+                self.ultimo_boton_seleccionado.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
             self.stacked_widget.setCurrentIndex(0)
@@ -386,6 +400,7 @@ class MiVentana(QWidget):
         elif sender.text() == "Gestión de reportes":
             self.stacked_widget.setCurrentIndex(3)
 
+#Iniciar la aplicación
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ventana = MiVentana()
