@@ -12,7 +12,6 @@ class MiVentana(QWidget):
         self.setStyleSheet("background-color: #151419;")
         self.setWindowState(Qt.WindowMaximized)
         self.stacked_widget = QStackedWidget(self)  # Mover la creación aquí
-        #self.setMinimumSize(1300, 720)
         self.Pagina_principal()
         self.pagina_registros()
         self.pagina_Tickets()
@@ -183,6 +182,70 @@ class MiVentana(QWidget):
         # Crear el widget de la página de Tickets
         page_tickets = QWidget()
 
+        #---- Menu lateral
+        page_registrosMenu = QWidget()
+        layout_ticketsmenu = QGridLayout(page_registrosMenu)
+
+        # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
+        linea_vertical = QFrame(page_tickets)
+        linea_vertical.setFrameShape(QFrame.VLine)
+        linea_vertical.setLineWidth(1)
+        linea_vertical.setStyleSheet("color: #FFFFFF;")
+        layout_ticketsmenu.addWidget(linea_vertical, 0, 0, 8, 1)
+        # Crear la sección derecha con el título "Menú"
+        titulo_menu = QLabel('Menú', page_tickets)
+        titulo_menu.setStyleSheet("color: #888888;font-size: 60px; font-weight: bold;")
+        layout_ticketsmenu.addWidget(titulo_menu, 0, 1, 1, 2,
+                                 alignment=Qt.AlignTop | Qt.AlignCenter)  # Span 1 fila y 1 columna
+        linea_horizontal2 = QFrame(page_tickets)
+        linea_horizontal2.setFrameShape(QFrame.HLine)
+        linea_horizontal2.setLineWidth(1)
+        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
+        layout_ticketsmenu.addWidget(linea_horizontal2, 0, 1, 1, 2,
+                                 alignment=Qt.AlignBottom)
+        layout_ticketsmenu.setRowStretch(0, 1)
+        layout_ticketsmenu.setRowStretch(1, 1)
+        layout_ticketsmenu.setRowStretch(2, 1)
+        layout_ticketsmenu.setRowStretch(3, 1)
+        layout_ticketsmenu.setRowStretch(4, 1)
+        layout_ticketsmenu.setRowStretch(5, 1)
+        layout_ticketsmenu.setRowStretch(6, 1)
+        # Crea un boton para ingresar a generar ticket ingresar moto
+        boton_IngresarM = QPushButton('', page_tickets)
+        boton_IngresarM.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_IngresarM.setIcon(QIcon('IngresoMoto.png'))  # Establecer el icono
+        boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
+        layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1,
+                                 alignment=Qt.AlignTop | Qt.AlignRight| Qt.AlignCenter)
+
+        # Crea un boton para ingresar a generar ticket sacar moto
+        boton_SacarM = QPushButton('', page_tickets)
+        boton_SacarM.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_SacarM.setIcon(QIcon('SalidaMoto.png'))  # Establecer el icono
+        boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
+        layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1,
+                                 alignment=Qt.AlignTop | Qt.AlignLeft| Qt.AlignCenter)
+        # Crea un boton para ingresar a generar ticket ingresar Fijo
+        boton_IngresarF = QPushButton('', page_tickets)
+        boton_IngresarF.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_IngresarF.setIcon(QIcon('IngresoFijo.png'))  # Establecer el icono
+        boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
+        layout_ticketsmenu.addWidget(boton_IngresarF, 2, 1, 5, 1,
+                                 alignment=Qt.AlignTop | Qt.AlignRight| Qt.AlignCenter)
+        # Crea un boton para ingresar a generar ticket sacar Fijo
+        boton_SacarF = QPushButton('', page_tickets)
+        boton_SacarF.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_SacarF.setIcon(QIcon('SalidaFijo.png'))  # Establecer el icono
+        boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
+        layout_ticketsmenu.addWidget(boton_SacarF , 2, 2, 5, 1,
+                                 alignment=Qt.AlignTop | Qt.AlignLeft| Qt.AlignCenter)
+        page_registrosMenu.setLayout(layout_ticketsmenu)
+
+        #----- Ingreso de motos
         # Crear un layout de cuadrícula para organizar la página en dos secciones
         layout_tickets = QGridLayout(page_tickets)
 
@@ -286,68 +349,7 @@ class MiVentana(QWidget):
         layout_tickets.setRowStretch(4, 1)
         layout_tickets.setRowStretch(5, 1)
         layout_tickets.setRowStretch(6, 1)
-        #---- Menu lateral
-        page_registrosMenu = QWidget()
-        layout_ticketsmenu = QGridLayout(page_registrosMenu)
-
-        # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
-        linea_vertical = QFrame(page_tickets)
-        linea_vertical.setFrameShape(QFrame.VLine)
-        linea_vertical.setLineWidth(1)
-        linea_vertical.setStyleSheet("color: #FFFFFF;")
-        layout_ticketsmenu.addWidget(linea_vertical, 0, 0, 8, 1)
-        # Crear la sección derecha con el título "Menú"
-        titulo_menu = QLabel('Menú', page_tickets)
-        titulo_menu.setStyleSheet("color: #888888;font-size: 60px; font-weight: bold;")
-        layout_ticketsmenu.addWidget(titulo_menu, 0, 1, 1, 2,
-                                 alignment=Qt.AlignTop | Qt.AlignCenter)  # Span 1 fila y 1 columna
-        linea_horizontal2 = QFrame(page_tickets)
-        linea_horizontal2.setFrameShape(QFrame.HLine)
-        linea_horizontal2.setLineWidth(1)
-        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
-        layout_ticketsmenu.addWidget(linea_horizontal2, 0, 1, 1, 2,
-                                 alignment=Qt.AlignBottom)
-        layout_ticketsmenu.setRowStretch(0, 1)
-        layout_ticketsmenu.setRowStretch(1, 1)
-        layout_ticketsmenu.setRowStretch(2, 1)
-        layout_ticketsmenu.setRowStretch(3, 1)
-        layout_ticketsmenu.setRowStretch(4, 1)
-        layout_ticketsmenu.setRowStretch(5, 1)
-        layout_ticketsmenu.setRowStretch(6, 1)
-        # Crea un boton para ingresar a generar ticket ingresar moto
-        boton_IngresarM = QPushButton('', page_tickets)
-        boton_IngresarM.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
-        boton_IngresarM.setIcon(QIcon('IngresoMoto.png'))  # Establecer el icono
-        boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1,
-                                 alignment=Qt.AlignTop | Qt.AlignRight| Qt.AlignCenter)
-
-        # Crea un boton para ingresar a generar ticket sacar moto
-        boton_SacarM = QPushButton('', page_tickets)
-        boton_SacarM.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
-        boton_SacarM.setIcon(QIcon('SalidaMoto.png'))  # Establecer el icono
-        boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1,
-                                 alignment=Qt.AlignTop | Qt.AlignLeft| Qt.AlignCenter)
-        # Crea un boton para ingresar a generar ticket ingresar Fijo
-        boton_IngresarF = QPushButton('', page_tickets)
-        boton_IngresarF.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
-        boton_IngresarF.setIcon(QIcon('IngresoFijo.png'))  # Establecer el icono
-        boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_IngresarF, 2, 1, 5, 1,
-                                 alignment=Qt.AlignTop | Qt.AlignRight| Qt.AlignCenter)
-        # Crea un boton para ingresar a generar ticket sacar Fijo
-        boton_SacarF = QPushButton('', page_tickets)
-        boton_SacarF.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
-        boton_SacarF.setIcon(QIcon('SalidaFijo.png'))  # Establecer el icono
-        boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_SacarF , 2, 2, 5, 1,
-                                 alignment=Qt.AlignTop | Qt.AlignLeft| Qt.AlignCenter)
-        page_registrosMenu.setLayout(layout_ticketsmenu)
+        
         layout_tickets.addWidget(page_registrosMenu,0,8,8,2)
 
         # Establecer el alineamiento vertical de la cuadrícula
