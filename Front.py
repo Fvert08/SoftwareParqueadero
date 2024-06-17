@@ -41,7 +41,6 @@ class MiVentana(QWidget):
         self.botonRegistros.setCheckable(True)
         self.botonRegistros.setChecked(True)
         self.botonRegistros.pressed.connect(self.cambiar_color)
-        self.botonRegistros.clicked.connect(self.pagina_registros)
         layout_menu.addWidget(self.botonRegistros, alignment=Qt.AlignCenter)
 
         self.botontickets = QPushButton('Generar Tickets', self)
@@ -49,7 +48,6 @@ class MiVentana(QWidget):
         self.botontickets.setIcon(QIcon('ticketMotos.png'))
         self.botontickets.setCheckable(True)
         self.botontickets.pressed.connect(self.cambiar_color)
-        self.botontickets.clicked.connect(self.pagina_Tickets)
         layout_menu.addWidget(self.botontickets, alignment=Qt.AlignCenter)
 
         self.botonGestionarCasilleros = QPushButton('Gestionar casilleros', self)
@@ -57,7 +55,6 @@ class MiVentana(QWidget):
         self.botonGestionarCasilleros.setIcon(QIcon('gestionCasilleros.png'))
         self.botonGestionarCasilleros.setCheckable(True)
         self.botonGestionarCasilleros.pressed.connect(self.cambiar_color)
-        self.botonGestionarCasilleros.clicked.connect(self.pagina_Casilleros)
         layout_menu.addWidget(self.botonGestionarCasilleros, alignment=Qt.AlignCenter)
 
         self.botonReportes = QPushButton('Gestión de reportes', self)
@@ -65,13 +62,11 @@ class MiVentana(QWidget):
         self.botonReportes.setIcon(QIcon('reportes.png'))
         self.botonReportes.setCheckable(True)
         self.botonReportes.pressed.connect(self.cambiar_color)
-        self.botonReportes.clicked.connect(self.pagina_Reportes)
         layout_menu.addWidget(self.botonReportes, alignment=Qt.AlignCenter)
         layout_menu.setAlignment(Qt.AlignTop)
         self.stacked_widget = QStackedWidget(self)
         main_layout.addWidget(menuizquierdo)
         main_layout.addWidget(self.stacked_widget)
-
         self.ultimo_boton_seleccionado = self.botonRegistros
         self.setLayout(main_layout)
 
@@ -194,7 +189,7 @@ class MiVentana(QWidget):
         layout_ticketsmenu.addWidget(linea_vertical, 0, 0, 8, 1)
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('Menú', page_tickets)
-        titulo_menu.setStyleSheet("color: #888888;font-size: 60px; font-weight: bold;")
+        titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_ticketsmenu.addWidget(titulo_menu, 0, 1, 1, 2,
                                  alignment=Qt.AlignTop | Qt.AlignCenter)  # Span 1 fila y 1 columna
         linea_horizontal2 = QFrame(page_tickets)
@@ -203,7 +198,7 @@ class MiVentana(QWidget):
         linea_horizontal2.setStyleSheet("color: #FFFFFF;")
         layout_ticketsmenu.addWidget(linea_horizontal2, 0, 1, 1, 2,
                                  alignment=Qt.AlignBottom)
-        layout_ticketsmenu.setRowStretch(0, 1)
+        layout_ticketsmenu.setRowStretch(0, 0)
         layout_ticketsmenu.setRowStretch(1, 1)
         layout_ticketsmenu.setRowStretch(2, 1)
         layout_ticketsmenu.setRowStretch(3, 1)
@@ -251,7 +246,7 @@ class MiVentana(QWidget):
 
         # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
         titulo_tickets = QLabel('Generar Tickets', page_tickets)
-        titulo_tickets.setStyleSheet("color: #888888;font-size: 60px; font-weight: bold;")
+        titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_tickets.addWidget(titulo_tickets, 0, 0, 1, 7,
                                  alignment=Qt.AlignTop | Qt.AlignCenter)  # Span 1 fila y 3 columnas
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
@@ -342,7 +337,7 @@ class MiVentana(QWidget):
                                  alignment=Qt.AlignTop | Qt.AlignLeft)
         
         # Establecer las proporciones de las filas en la cuadricula
-        layout_tickets.setRowStretch(0, 1)
+        layout_tickets.setRowStretch(0, 0)
         layout_tickets.setRowStretch(1, 1)
         layout_tickets.setRowStretch(2, 1)
         layout_tickets.setRowStretch(3, 1)
