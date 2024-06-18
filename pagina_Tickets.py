@@ -13,7 +13,7 @@ class PaginaTickets(QWidget):
         page_registrosMenu = QWidget()
         #Pagina principal
         page_principalTickets = QWidget()
-        
+
         # -----Stack para agregar todas las pantallas de tickets
         self.stacked_widgetTickets = QStackedWidget()
         
@@ -55,6 +55,8 @@ class PaginaTickets(QWidget):
         boton_IngresarM.setIcon(QIcon('IngresoMoto.png'))  # Establecer el icono
         boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
+        boton_IngresarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(0))
+
 
         # Crea un boton para ingresar a generar ticket sacar moto
         boton_SacarM = QPushButton()
@@ -62,6 +64,8 @@ class PaginaTickets(QWidget):
         boton_SacarM.setIcon(QIcon('SalidaMoto.png'))  # Establecer el icono
         boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
+        boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(1))
+
 
         # Crea un boton para ingresar a generar ticket ingresar Fijo
         boton_IngresarF = QPushButton()
@@ -91,10 +95,10 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.setCurrentIndex(0)
         #se agrega toda la pagina al stack principal de la app
         self.stacked_widget.addWidget(page_principalTickets)
-        
     def pantallaIngresoMotos (self):
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
+        page_prueba = QWidget()
         #layout de el registro de los tickets
         layout_ticketsIngresoMotos = QGridLayout()
         #------------------------Ingreso de motos------------------------------------
@@ -199,3 +203,5 @@ class PaginaTickets(QWidget):
         page_tickets.setLayout(layout_ticketsIngresoMotos)
         #se agrega la pagina al stack
         self.stacked_widgetTickets.addWidget(page_tickets)
+        self.stacked_widgetTickets.addWidget(page_prueba)
+        
