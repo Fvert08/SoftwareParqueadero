@@ -89,21 +89,22 @@ class PaginaTickets(QWidget):
         main_layoutRegistros.addWidget(page_registrosMenu)
         #se agrega el layout principal a la pagina principal
         page_principalTickets.setLayout(main_layoutRegistros)
-        #Se llama la pantalla para cargarla en el stack
+        #Se llaman las pantallas para cargarlas en el stack
         self.pantallaIngresoMotos()
+        self.pantallaSacarMoto()
         #se llama la primera posición del stack
         self.stacked_widgetTickets.setCurrentIndex(0)
         #se agrega toda la pagina al stack principal de la app
         self.stacked_widget.addWidget(page_principalTickets)
+
     def pantallaIngresoMotos (self):
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
-        page_prueba = QWidget()
         #layout de el registro de los tickets
         layout_ticketsIngresoMotos = QGridLayout()
         #------------------------Ingreso de motos------------------------------------
         # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
-        titulo_tickets = QLabel('Generar Tickets')
+        titulo_tickets = QLabel('REGISTRAR INGRESO MOTO')
         titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_ticketsIngresoMotos.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
 
@@ -203,5 +204,26 @@ class PaginaTickets(QWidget):
         page_tickets.setLayout(layout_ticketsIngresoMotos)
         #se agrega la pagina al stack
         self.stacked_widgetTickets.addWidget(page_tickets)
-        self.stacked_widgetTickets.addWidget(page_prueba)
         
+
+    def pantallaSacarMoto (self):
+        # Pagina de ticketes salida moto
+        page_ticketsSalidaMoto = QWidget()
+        #layout de el registro de los tickets
+        layout_ticketsSalidaMotos = QGridLayout()
+        #------------------------Ingreso de motos------------------------------------
+        # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
+        titulo_tickets = QLabel('REGISTRAR SALIDA MOTO')
+        titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_ticketsSalidaMotos.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
+
+        # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
+        linea_horizontal1 = QFrame()
+        linea_horizontal1.setFrameShape(QFrame.HLine)
+        linea_horizontal1.setLineWidth(1)
+        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        layout_ticketsSalidaMotos.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+
+        #Se agrega el layout a la pagina
+        page_ticketsSalidaMoto.setLayout(layout_ticketsSalidaMotos)
+        self.stacked_widgetTickets.addWidget(page_ticketsSalidaMoto)
