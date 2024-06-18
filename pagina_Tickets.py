@@ -9,21 +9,18 @@ class PaginaTickets(QWidget):
 
     def initUI(self):
         #----Paginas
-        # Pagina de ticketes ingreso
-        page_tickets = QWidget()
         #Pagina del menú
         page_registrosMenu = QWidget()
         #Pagina principal
         page_principalTickets = QWidget()
 
         # -----Stack para agregar todas las pantallas de tickets
-        stacked_widgetTickets = QStackedWidget()
+        self.stacked_widgetTickets = QStackedWidget()
         
         #--------#layouts (Izquierdo, derecho y principal)
         #layout Menu derecho donde se agregan todos los botones
         layout_ticketsmenu = QGridLayout()
-        #layout de el registro de los tickets
-        layout_ticketsIngresoMotos = QGridLayout()
+        
         #layout principal box horizontal
         main_layoutRegistros = QHBoxLayout()
 
@@ -58,6 +55,8 @@ class PaginaTickets(QWidget):
         boton_IngresarM.setIcon(QIcon('IngresoMoto.png'))  # Establecer el icono
         boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
+        boton_IngresarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(0))
+
 
         # Crea un boton para ingresar a generar ticket sacar moto
         boton_SacarM = QPushButton()
@@ -65,6 +64,8 @@ class PaginaTickets(QWidget):
         boton_SacarM.setIcon(QIcon('SalidaMoto.png'))  # Establecer el icono
         boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
+        boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(1))
+
 
         # Crea un boton para ingresar a generar ticket ingresar Fijo
         boton_IngresarF = QPushButton()
@@ -79,10 +80,27 @@ class PaginaTickets(QWidget):
         boton_SacarF.setIcon(QIcon('SalidaFijo.png'))  # Establecer el icono
         boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarF, 2, 2, 5, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
-
+        
         #Se agrega el layout del menú a la página del menú
         page_registrosMenu.setLayout(layout_ticketsmenu)
-
+        #Se agrega el stack al layout principal
+        main_layoutRegistros.addWidget(self.stacked_widgetTickets)
+        #se agrega el menú al layout principal
+        main_layoutRegistros.addWidget(page_registrosMenu)
+        #se agrega el layout principal a la pagina principal
+        page_principalTickets.setLayout(main_layoutRegistros)
+        #Se llama la pantalla para cargarla en el stack
+        self.pantallaIngresoMotos()
+        #se llama la primera posición del stack
+        self.stacked_widgetTickets.setCurrentIndex(0)
+        #se agrega toda la pagina al stack principal de la app
+        self.stacked_widget.addWidget(page_principalTickets)
+    def pantallaIngresoMotos (self):
+        # Pagina de ticketes ingreso
+        page_tickets = QWidget()
+        page_prueba = QWidget()
+        #layout de el registro de los tickets
+        layout_ticketsIngresoMotos = QGridLayout()
         #------------------------Ingreso de motos------------------------------------
         # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
         titulo_tickets = QLabel('Generar Tickets')
@@ -128,7 +146,7 @@ class PaginaTickets(QWidget):
         combobox_Tiempo.setFixedWidth(120)
         layout_ticketsIngresoMotos.addWidget(combobox_Tiempo, 3, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
 
-         # Crea una checkbox para confirmar que se eligio dia o mes  en "combobox_Tiempo"
+        # Crea una checkbox para confirmar que se eligio dia o mes  en "combobox_Tiempo"
         checkbox_opcion = QCheckBox('Confirmar', page_tickets)
         checkbox_opcion.setStyleSheet("color: #FFFFFF; font-size: 20px;")
         checkbox_opcion.setChecked(False)  # Opcional: Puedes establecer si la casilla está marcada por defecto o no
@@ -181,22 +199,9 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.setRowStretch(4, 1)
         layout_ticketsIngresoMotos.setRowStretch(5, 1)
         layout_ticketsIngresoMotos.setRowStretch(6, 1)
-
- 
-
-        #Se agrega el layout del menú a la página del menú
+        #Se agrega el layout a la pagina
         page_tickets.setLayout(layout_ticketsIngresoMotos)
-
-        #--------Botones para cambiar las páginas del stack de tickets--------
-        boton_IngresarM.clicked.connect(lambda: stacked_widgetTickets.setCurrentWidget(page_tickets))
-        boton_SacarM.clicked.connect(lambda: stacked_widgetTickets.setCurrentWidget(page_tickets))  # Aquí deberías cambiar por la página correspondiente
-        boton_IngresarF.clicked.connect(lambda: stacked_widgetTickets.setCurrentWidget(page_tickets))  # Aquí deberías cambiar por la página correspondiente
-        boton_SacarF.clicked.connect(lambda: stacked_widgetTickets.setCurrentWidget(page_tickets))  # Aquí deberías cambiar por la página correspondiente
-
-        #-----Layouts de las paginas al stackedWidget
-        stacked_widgetTickets.addWidget(page_tickets)
-        main_layoutRegistros.addWidget(stacked_widgetTickets)
-        main_layoutRegistros.addWidget(page_registrosMenu)
-        page_principalTickets.setLayout(main_layoutRegistros)
-        self.stacked_widget.addWidget(page_principalTickets)
-
+        #se agrega la pagina al stack
+        self.stacked_widgetTickets.addWidget(page_tickets)
+        self.stacked_widgetTickets.addWidget(page_prueba)
+        
