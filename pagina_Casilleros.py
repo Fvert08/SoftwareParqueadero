@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLa
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 class PaginaCasilleros(QWidget):
-    def __init__(self):
+    def __init__(self, stacked_widget):
         super().__init__()
+        self.stacked_widget = stacked_widget
         self.initUI()
 
     def initUI(self):
@@ -17,3 +18,4 @@ class PaginaCasilleros(QWidget):
         titulo_tickets = QLabel('Gestionar Casilleros', page_casilleros)
         titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_tickets.addWidget(titulo_tickets, alignment=Qt.AlignCenter)
+        self.stacked_widget.addWidget(page_casilleros)

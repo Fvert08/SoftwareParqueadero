@@ -73,16 +73,16 @@ class MiVentana(QWidget):
         # se setea el layout principal 
         self.setLayout(main_layout)
         # Crear instancias de las páginas y agregarlas al QStackedWidget
-        self.pagina_registros = PaginaRegistros(self)
+        self.pagina_registros = PaginaRegistros(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_registros)
 
-        self.pagina_tickets = PaginaTickets(self)
+        self.pagina_tickets = PaginaTickets(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_tickets)
 
-        self.pagina_casilleros = PaginaCasilleros(self)
+        self.pagina_casilleros = PaginaCasilleros(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_casilleros)
 
-        self.pagina_reportes = PaginaReportes(self)
+        self.pagina_reportes = PaginaReportes(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_reportes)
         
 

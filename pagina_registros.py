@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLa
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 class PaginaRegistros(QWidget):
-    def __init__(self):
+    def __init__(self, stacked_widget):
         super().__init__()
+        self.stacked_widget = stacked_widget
         self.initUI()
 
     def initUI(self):
@@ -102,3 +103,6 @@ class PaginaRegistros(QWidget):
 
         # Establecer el layout principal para la página
         page_registros.setLayout(layout_registros)
+
+        # Agregar la página al QStackedWidget}
+        self.stacked_widget.addWidget(page_registros)

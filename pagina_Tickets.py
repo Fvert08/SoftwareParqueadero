@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLa
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 class PaginaTickets(QWidget):
-    def __init__(self):
+    def __init__(self, stacked_widget):
         super().__init__()
+        self.stacked_widget = stacked_widget
         self.initUI()
 
     def initUI(self):
@@ -197,4 +198,5 @@ class PaginaTickets(QWidget):
         main_layoutRegistros.addWidget(stacked_widgetTickets)
         main_layoutRegistros.addWidget(page_registrosMenu)
         page_principalTickets.setLayout(main_layoutRegistros)
+        self.stacked_widget.addWidget(page_principalTickets)
 
