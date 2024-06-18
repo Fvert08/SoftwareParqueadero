@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon , QPixmap
 from PyQt5.QtCore import Qt,QSize
 import sys
 from pagina_registros import PaginaRegistros
@@ -19,11 +19,27 @@ class MiVentana(QWidget):
         self.Pagina_principal()
 
     def Pagina_principal(self):
+         # Crear un QLabel para mostrar la imagen
+        label_Logo = QLabel(self)
+        
+        # Crear un QPixmap con la ruta de la imagen
+        pixmapLogo = QPixmap('LogoJDEV.png')
+        
+        # Escalar el QPixmap al tamaño deseado (30x30 píxeles) manteniendo la proporción
+        scaled_pixmapLogo = pixmapLogo.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        
+        # Establecer el QPixmap escalado en el QLabel
+        label_Logo.setPixmap(scaled_pixmapLogo)
+        
+        # Ajustar el tamaño del QLabel al tamaño de la imagen escalada
+        label_Logo.setFixedSize(100, 100)
+
         main_layout = QHBoxLayout(self)
+
         # Creando el menú de la izquierda
         menuizquierdo = QWidget()
         layout_menu = QVBoxLayout(menuizquierdo)
-
+        layout_menu.addWidget (label_Logo,alignment=Qt.AlignCenter)
         self.menu_label = QLabel('MENÚ', self)
         self.menu_label.setStyleSheet("color: #888888; font-size: 20px; font-weight: bold;")
         layout_menu.addWidget(self.menu_label, alignment=Qt.AlignCenter)
