@@ -380,7 +380,7 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoFijo = QGridLayout()
         #------------------------Ingreso de motos------------------------------------
         # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
-        titulo_tickets = QLabel('REGISTRAR Ingreso Fijo')
+        titulo_tickets = QLabel('REGISTRAR INGRESO FIJO')
         titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_ticketsIngresoFijo.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
 
@@ -390,8 +390,65 @@ class PaginaTickets(QWidget):
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_ticketsIngresoFijo.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+    #---Fila 1
+        # Crear el label "Codigo" y la textbox
+        label_codigo = QLabel('Codigo')
+        label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsIngresoFijo.addWidget(label_codigo, 1, 2, 1, 1, alignment=Qt.AlignCenter)
+        # Text box Codigo
+        textbox_codigo = QLineEdit()
+        textbox_codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_codigo.setFixedWidth(240)
+        textbox_codigo.setReadOnly(True)
+        layout_ticketsIngresoFijo.addWidget(textbox_codigo, 1, 3, 1, 1, alignment=Qt.AlignCenter)
+    #---Fila 2
+        # Crear el label "Tipo" y la textbox
+        label_tipo = QLabel('Tipo')
+        label_tipo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsIngresoFijo.addWidget(label_tipo, 2, 2, 1, 1, alignment=Qt.AlignCenter)
+        # combobox box Tipo
+        combobox_Tipo = QComboBox()
+        combobox_Tipo.addItems(['Puesto', 'Carretilla', 'Otro'])
+        combobox_Tipo.setFixedWidth(240)
+        combobox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
+        layout_ticketsIngresoFijo.addWidget(combobox_Tipo, 2, 3, 1, 1, alignment=Qt.AlignCenter)
+    #---Fila 3
+        # Crear el label "Nota" y la textbox
+        label_Nota = QLabel('Nota')
+        label_Nota.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsIngresoFijo.addWidget(label_Nota, 3, 2, 1, 1, alignment=Qt.AlignCenter)
+        # Text box Codigo
+        textbox_Nota = QLineEdit()
+        textbox_Nota.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Nota.setFixedWidth(240)
+        layout_ticketsIngresoFijo.addWidget(textbox_Nota, 3, 3, 1, 1, alignment=Qt.AlignCenter)
+    #---Fila 4
+        # Crear el label "Valor" y la textbox
+        label_Valor = QLabel('Valor')
+        label_Valor.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsIngresoFijo.addWidget(label_Valor, 4, 2, 1, 1, alignment=Qt.AlignCenter)
+        # Text box Codigo
+        textbox_Valor = QLineEdit()
+        textbox_Valor.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Valor.setFixedWidth(240)
+        layout_ticketsIngresoFijo.addWidget(textbox_Valor, 4, 3, 1, 1, alignment=Qt.AlignCenter)
+    #---Fila 5
+        # Boton para imprimir
+        boton_Imprimir = QPushButton('Imprimir')
+        boton_Imprimir.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 5, 3, 1, 1,
+                                alignment=Qt.AlignTop| Qt.AlignLeft)
+
+        layout_ticketsIngresoFijo.setRowStretch(0, 0)
+        layout_ticketsIngresoFijo.setRowStretch(1, 1)
+        layout_ticketsIngresoFijo.setRowStretch(2, 1)
+        layout_ticketsIngresoFijo.setRowStretch(3, 1)
+        layout_ticketsIngresoFijo.setRowStretch(4, 1)
+        layout_ticketsIngresoFijo.setRowStretch(5, 1)
 
         #Se agrega el layout a la pagina
         page_ticketsIngresoFijo.setLayout(layout_ticketsIngresoFijo)
         #Se agrega al stack
         self.stacked_widgetTickets.addWidget(page_ticketsIngresoFijo)
+
