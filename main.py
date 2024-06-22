@@ -17,7 +17,7 @@ class MiVentana(QWidget):
         self.setStyleSheet("background-color: #151419;")
         self.setWindowState(Qt.WindowMaximized)
         self.Pagina_principal()
-        self.setWindowIcon(QIcon('LogoJDEV.png'))
+
     def Pagina_principal(self):
          # Crear un QLabel para mostrar la imagen
         label_Logo = QLabel(self)
