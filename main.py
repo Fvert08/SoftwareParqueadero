@@ -6,7 +6,7 @@ from pagina_registros import PaginaRegistros
 from pagina_Tickets import PaginaTickets
 from pagina_Casilleros import PaginaCasilleros
 from pagina_Reportes import PaginaReportes
-
+from PyQt5.QtGui import QScreen
 class MiVentana(QWidget):
     def __init__(self):
         super().__init__()
@@ -15,7 +15,13 @@ class MiVentana(QWidget):
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
         self.setStyleSheet("background-color: #151419;")
+        # Obtener el tamaño de la pantalla del usuario
+        screen = QApplication.primaryScreen()
+        screen_size = screen.size()
+        self.width = screen_size.width()
+        self.height = screen_size.height()
         self.setWindowState(Qt.WindowMaximized)
+        self.setMaximumSize(self.width, self.height)  # tamaño máximo igual al tamaño de la pantalla
         self.Pagina_principal()
 
     def Pagina_principal(self):
@@ -114,8 +120,10 @@ class MiVentana(QWidget):
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
             self.stacked_widget.setCurrentIndex(0)
+            self.setMinimumSize(int(self.width-(self.width/4)), int(self.height-(self.height/2)))  # tamaño mínimo
         elif sender.text() == "Generar Tickets":
             self.stacked_widget.setCurrentIndex(2)
+            self.setMinimumSize(int(self.width-(self.width/7)), int(self.height-(self.height/2)))  # tamaño mínimo
         elif sender.text() == "Gestionar casilleros":
             self.stacked_widget.setCurrentIndex(4)
         elif sender.text() == "Gestión de reportes":
