@@ -73,6 +73,7 @@ class PaginaTickets(QWidget):
         boton_IngresarF.setIcon(QIcon('IngresoFijo.png'))  # Establecer el icono
         boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarF, 2, 1, 5, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
+        boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(2))
 
         # Crea un boton para ingresar a generar ticket sacar Fijo
         boton_SacarF = QPushButton()
@@ -80,6 +81,7 @@ class PaginaTickets(QWidget):
         boton_SacarF.setIcon(QIcon('SalidaFijo.png'))  # Establecer el icono
         boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarF, 2, 2, 5, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
+        boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(3))
         
         #Se agrega el layout del menú a la página del menú
         page_registrosMenu.setLayout(layout_ticketsmenu)
@@ -366,7 +368,8 @@ class PaginaTickets(QWidget):
         layout_ticketsSalidaMotos.setRowStretch(9, 1)
         layout_ticketsSalidaMotos.setRowStretch(10, 1)  
     
-
         #Se agrega el layout a la pagina
         page_ticketsSalidaMoto.setLayout(layout_ticketsSalidaMotos)
         self.stacked_widgetTickets.addWidget(page_ticketsSalidaMoto)
+
+        

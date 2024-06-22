@@ -53,15 +53,6 @@ class PaginaRegistros(QWidget):
                         background-color: #151419; /* Color de fondo al seleccionar */
                     }
                 """)
-        # Calcular el ancho de cada columna
-        ancho_total = 1000  # Ancho total de la tabla
-        num_columnas = 9
-        ancho_columna = ancho_total / num_columnas
-
-        # Establecer el ancho de cada columna
-        for i in range(num_columnas):
-            tabla_registros.setColumnWidth(i, int(ancho_columna))
-
         # Añadir la tabla a la disposición
         layout_registros.addWidget(tabla_registros)
 
