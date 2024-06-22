@@ -27,6 +27,7 @@ class PaginaTickets(QWidget):
         self.pantallaIngresoMotos()
         self.pantallaSacarMoto()
         self.pantallaIngresarFijo()
+        self.pantallaSacarFijo()
         #------------------------Menu lateral---------------------------
         # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
         linea_vertical = QFrame()
@@ -105,7 +106,7 @@ class PaginaTickets(QWidget):
         #layout de el registro de los tickets
         layout_ticketsIngresoMotos = QGridLayout()
         #------------------------Ingreso de motos------------------------------------
-        # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
+        # Crear el título y añadirlo a la sección izquierda
         titulo_tickets = QLabel('REGISTRAR INGRESO MOTO')
         titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_ticketsIngresoMotos.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
@@ -213,8 +214,8 @@ class PaginaTickets(QWidget):
         page_ticketsSalidaMoto = QWidget()
         #layout de el registro de los tickets
         layout_ticketsSalidaMotos = QGridLayout()
-        #------------------------Ingreso de motos------------------------------------
-        # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
+        #------------------------Salida de motos------------------------------------
+        # Crear el título y añadirlo a la sección izquierda
         titulo_tickets = QLabel('REGISTRAR SALIDA MOTO')
         titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_ticketsSalidaMotos.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
@@ -378,8 +379,8 @@ class PaginaTickets(QWidget):
         page_ticketsIngresoFijo = QWidget()
         #layout de el registro de los tickets
         layout_ticketsIngresoFijo = QGridLayout()
-        #------------------------Ingreso de motos------------------------------------
-        # Crear el título "Generar Tickets" y añadirlo a la sección izquierda
+        #------------------------Ingreso fijos------------------------------------
+        # Crear el título  y añadirlo a la sección izquierda
         titulo_tickets = QLabel('REGISTRAR INGRESO FIJO')
         titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
         layout_ticketsIngresoFijo.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
@@ -451,4 +452,145 @@ class PaginaTickets(QWidget):
         page_ticketsIngresoFijo.setLayout(layout_ticketsIngresoFijo)
         #Se agrega al stack
         self.stacked_widgetTickets.addWidget(page_ticketsIngresoFijo)
+
+    def pantallaSacarFijo(self):
+        # Pagina de ticketes salida moto
+        page_ticketsSacarFijo = QWidget()
+        #layout de el registro de los tickets
+        layout_ticketsSacarFijo = QGridLayout()
+        #------------------------Salida de fijos------------------------------------
+        # Crear el título y añadirlo a la sección izquierda
+        titulo_tickets = QLabel('REGISTRAR SALIDA FIJO')
+        titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_ticketsSacarFijo.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
+
+        # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
+        linea_horizontal1 = QFrame()
+        linea_horizontal1.setFrameShape(QFrame.HLine)
+        linea_horizontal1.setLineWidth(1)
+        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        layout_ticketsSacarFijo.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+    #---Buscar
+        # Crear el label "Codigo" y la textbox
+        label_codigo = QLabel('Codigo')
+        label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_codigo, 1, 2, 1, 1, alignment=Qt.AlignCenter)
+        # Text box Codigo
+        textbox_codigo = QLineEdit()
+        textbox_codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_codigo.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_codigo, 1, 3, 1, 1, alignment=Qt.AlignCenter)
+        # Boton para buscar
+        boton_Buscar = QPushButton('Buscar')
+        boton_Buscar.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        layout_ticketsSacarFijo.addWidget(boton_Buscar, 1, 4, 1, 1,
+                                alignment=Qt.AlignCenter)
+    #---Mostrar
+    #---Fila 1
+        # Crear el label "Tipo" y la textbox
+        label_Tipo = QLabel('Tipo')
+        label_Tipo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_Tipo, 3, 1, 1, 1, alignment=Qt.AlignTop)
+        # Text box tipo
+        textbox_Tipo = QLineEdit()
+        textbox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Tipo.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_Tipo, 4, 1, 1, 1, alignment=Qt.AlignTop)
+        textbox_Tipo.setReadOnly(True)
+        # Crear el label "Nota" y la textbox
+        label_Nota = QLabel('Nota')
+        label_Nota.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_Nota, 3, 3, 1, 1, alignment=Qt.AlignTop)
+        # Text box Cascos
+        textbox_Nota = QLineEdit()
+        textbox_Nota.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Nota.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_Nota, 4, 3, 1, 1, alignment= Qt.AlignTop)
+        textbox_Nota.setReadOnly(True)
+     #---Fila 2
+        # Crear el label "Fecha ingreso" y la textbox
+        label_FIngreso = QLabel('Fecha ingreso')
+        label_FIngreso.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_FIngreso, 5, 1, 1, 1, alignment=Qt.AlignTop)
+        # Text box casillero
+        textbox_FIngreso = QLineEdit()
+        textbox_FIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_FIngreso.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_FIngreso, 6, 1, 1, 1, alignment=Qt.AlignTop)
+        textbox_FIngreso.setReadOnly(True)
+        # Crear el label "Hora ingreso" y la textbox
+        label_HIngreso = QLabel('Hora ingreso')
+        label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_HIngreso, 5, 3, 1, 1, alignment=Qt.AlignTop)
+        # Text box Cascos
+        textbox_HIngreso = QLineEdit()
+        textbox_HIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_HIngreso.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_HIngreso, 6, 3, 1, 1, alignment= Qt.AlignTop)
+        textbox_HIngreso.setReadOnly(True)
+    #---Fila 3
+        # Crear el label "Fecha salida" y la textbox
+        label_FSalida= QLabel('Fecha salida')
+        label_FSalida.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_FSalida, 7, 1, 1, 1, alignment=Qt.AlignTop)
+        # Text box casillero
+        textbox_FSalida = QLineEdit()
+        textbox_FSalida.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_FSalida.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_FSalida, 8, 1, 1, 1, alignment=Qt.AlignTop)
+        textbox_FSalida.setReadOnly(True)
+        # Crear el label "Hora salida" y la textbox
+        label_HSalida = QLabel('Hora salida')
+        label_HSalida.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_HSalida, 7, 3, 1, 1, alignment=Qt.AlignTop)
+        # Text box Cascos
+        textbox_HSalida = QLineEdit()
+        textbox_HSalida.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_HSalida.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_HSalida, 8, 3, 1, 1, alignment= Qt.AlignTop)
+        textbox_HSalida.setReadOnly(True)
+    #---Fila 4
+        # Crear el label "Tiempo total" y la textbox
+        label_TiempoTotal = QLabel('Tiempo total')
+        label_TiempoTotal.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_TiempoTotal, 9, 1, 1, 1, alignment=Qt.AlignTop)
+        # Text box tiempo total
+        textbox_TiempoTotal = QLineEdit()
+        textbox_TiempoTotal.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_TiempoTotal.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_TiempoTotal, 10, 1, 1, 1, alignment= Qt.AlignTop)
+        textbox_TiempoTotal.setReadOnly(True)
+        # Crear el label "Total a pagar" y la textbox
+        label_TotalApagar= QLabel('Total a pagar')
+        label_TotalApagar.setStyleSheet("color: #FFFFFF;font-size: 40px;")
+        layout_ticketsSacarFijo.addWidget(label_TotalApagar, 5, 5, 1, 1, alignment=Qt.AlignTop)
+        # Text box total a pagar
+        textbox_TotalApagar = QLineEdit()
+        textbox_TotalApagar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_TotalApagar.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(textbox_TotalApagar, 6, 5, 1, 1, alignment=Qt.AlignTop)
+        textbox_TotalApagar.setReadOnly(True)
+        # Crea un boton para facturar
+        boton_facturar = QPushButton('Facturar')
+        boton_facturar.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        layout_ticketsSacarFijo.addWidget(boton_facturar, 7, 5, 1, 1,
+                                alignment=Qt.AlignTop| Qt.AlignLeft)
+        # Establecer las proporciones de las filas en la cuadricula
+        layout_ticketsSacarFijo.setRowStretch(0, 0)
+        layout_ticketsSacarFijo.setRowStretch(1, 1)
+        layout_ticketsSacarFijo.setRowStretch(2, 1)
+        layout_ticketsSacarFijo.setRowStretch(3, 1)
+        layout_ticketsSacarFijo.setRowStretch(4, 1)
+        layout_ticketsSacarFijo.setRowStretch(5, 1)
+        layout_ticketsSacarFijo.setRowStretch(6, 1)
+        layout_ticketsSacarFijo.setRowStretch(7, 1)  
+        layout_ticketsSacarFijo.setRowStretch(8, 1)
+        layout_ticketsSacarFijo.setRowStretch(9, 1)
+        layout_ticketsSacarFijo.setRowStretch(10, 1)  
+        #Se agrega el layout a la pagina
+        page_ticketsSacarFijo.setLayout(layout_ticketsSacarFijo)
+        #Se agrega al stack
+        self.stacked_widgetTickets.addWidget(page_ticketsSacarFijo)
 
