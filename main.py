@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLa
 from PyQt5.QtGui import QIcon , QPixmap
 from PyQt5.QtCore import Qt,QSize
 import sys
+from PyQt5.QtGui import QScreen
 from pagina_registros import PaginaRegistros
 from pagina_Tickets import PaginaTickets
 from pagina_Casilleros import PaginaCasilleros
@@ -18,6 +19,16 @@ class MiVentana(QWidget):
         self.setWindowState(Qt.WindowMaximized)
         self.Pagina_principal()
         self.setWindowIcon(QIcon('LogoJDEV.png'))
+        #----Condiguración de pantalla
+        #---Se capturan los datos de la pantalla
+        screen = QApplication.primaryScreen()
+        screen_size = screen.size()
+        self.width = screen_size.width()
+        self.height = screen_size.height()
+        #---Se establecen las dimensiones macimas y minimas
+        self.setMaximumSize(self.width, self.height)#tamaño maximo
+        self.setMinimumSize(int (self.width-(self.width/3)), int (self.height-(self.height/3)))  # tamaño mínimo
+
     def Pagina_principal(self):
          # Crear un QLabel para mostrar la imagen
         label_Logo = QLabel(self)
@@ -100,7 +111,6 @@ class MiVentana(QWidget):
 
         self.pagina_reportes = PaginaReportes(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_reportes)
-        
 
     def cambiar_color(self):
         sender = self.sender()
@@ -113,8 +123,14 @@ class MiVentana(QWidget):
                 self.ultimo_boton_seleccionado.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
+            #---Se configura el tamaño minimo
+            self.setMinimumSize(int (self.width-(self.width/3)), int (self.height-(self.height/3)))
+            #--Sellama el stack
             self.stacked_widget.setCurrentIndex(0)
         elif sender.text() == "Generar Tickets":
+            #---Se configura el tamaño minimo
+            self.setMinimumSize(int (self.width-(self.width/7)), int (self.height-(self.height/3)))
+            #--Sellama el stack
             self.stacked_widget.setCurrentIndex(2)
         elif sender.text() == "Gestionar casilleros":
             self.stacked_widget.setCurrentIndex(4)
