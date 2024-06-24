@@ -101,7 +101,7 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(boton_bloquear, 2, 3, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
 
-        titulo_tablaOrdenDeLlegada = QLabel('ORDEN DE LLEGADA')
+        titulo_tablaOrdenDeLlegada = QLabel('ORDEN DE LLENADO')
         titulo_tablaOrdenDeLlegada.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
         layout_tickets.addWidget(titulo_tablaOrdenDeLlegada, 1, 4, 1, 3, alignment= Qt.AlignCenter |Qt.AlignTop)
 
