@@ -6,6 +6,8 @@ from pagina_registros import PaginaRegistros
 from pagina_Tickets import PaginaTickets
 from pagina_Casilleros import PaginaCasilleros
 from pagina_Reportes import PaginaReportes
+from pagina_configuracion import PaginaConfiguracion
+from pagina_creditos import PaginaCreditos
 from PyQt5.QtGui import QScreen
 class MiVentana(QWidget):
     def __init__(self):
@@ -84,6 +86,21 @@ class MiVentana(QWidget):
         self.botonReportes.setCheckable(True)
         self.botonReportes.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonReportes, alignment=Qt.AlignCenter)
+
+        self.botonConfiguracion = QPushButton('Configuracion', self)
+        self.botonConfiguracion.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonConfiguracion.setIcon(QIcon('Configuracion.png'))
+        self.botonConfiguracion.setCheckable(True)
+        self.botonConfiguracion.pressed.connect(self.cambiar_color)
+        layout_menu.addWidget(self.botonConfiguracion, alignment=Qt.AlignCenter)
+
+        self.botonConCreditos = QPushButton('Creditos', self)
+        self.botonConCreditos.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonConCreditos.setIcon(QIcon('LogoJDev.png'))
+        self.botonConCreditos.setCheckable(True)
+        self.botonConCreditos.pressed.connect(self.cambiar_color)
+        layout_menu.addWidget(self.botonConCreditos, alignment=Qt.AlignCenter)
+
         layout_menu.setAlignment(Qt.AlignTop)
         #Se crea el stacked widget
         self.stacked_widget = QStackedWidget(self)
@@ -106,6 +123,13 @@ class MiVentana(QWidget):
 
         self.pagina_reportes = PaginaReportes(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_reportes)
+
+        self.pagina_configuracion = PaginaConfiguracion(self.stacked_widget)
+        self.stacked_widget.addWidget(self.pagina_configuracion)
+
+        self.pagina_creditos = PaginaCreditos(self.stacked_widget)
+        self.stacked_widget.addWidget(self.pagina_creditos)
+
         
 
     def cambiar_color(self):
@@ -128,6 +152,10 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(4)
         elif sender.text() == "Gestión de reportes":
             self.stacked_widget.setCurrentIndex(6)
+        elif sender.text() == "Configuracion":
+            self.stacked_widget.setCurrentIndex(8)
+        elif sender.text() == "Creditos":
+            self.stacked_widget.setCurrentIndex(10)
 
 # Iniciar la aplicación
 if __name__ == '__main__':
