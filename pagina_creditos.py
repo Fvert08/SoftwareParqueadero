@@ -28,8 +28,9 @@ class PaginaCreditos(QWidget):
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_creditos.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
-
+        
         #Se agrega el layout a la pagina
         page_creditos.setLayout(layout_creditos)
         #Se agrega al stack
+
         self.stacked_widget.addWidget(page_creditos)
