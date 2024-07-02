@@ -182,12 +182,12 @@ class PaginaCasilleros(QWidget):
 
         boton_subir = QPushButton('SUBIR')
         boton_subir.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_subir, 2, 9, 1, 1,
+        layout_tickets.addWidget(boton_subir, 2, 9, 2, 1,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         boton_bajar = QPushButton('BAJAR')
         boton_bajar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_bajar, 2, 9, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        layout_tickets.addWidget(boton_bajar, 2, 9, 2, 1,
+                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
         
         boton_guardar = QPushButton('GUARDAR')
         boton_guardar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
