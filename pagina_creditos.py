@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon,QPixmap
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtCore import QDate, Qt
 import sys
@@ -29,7 +29,64 @@ class PaginaCreditos(QWidget):
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_creditos.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
 
+        titulo_principal = QLabel('SOFTWARE DESAROLLADO POR')
+        titulo_principal.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_principal, 1, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
+
+        titulo_nombre1 = QLabel('JAVIER PARRA')
+        titulo_nombre1 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_nombre1 , 2, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
+        
+        titulo_nombre2 = QLabel('JUAN LOAIZA')
+        titulo_nombre2 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_nombre2 , 3, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
+
+        titulo_carrera = QLabel('ESTUDIANTES DE INGENIERIA EN SISTEMAS')
+        titulo_carrera .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_carrera, 4, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignTop)
+
+        titulo_universidad = QLabel('UTP')
+        titulo_universidad.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_universidad, 4, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
+
+        titulo_contacto = QLabel('CONTACTO Y SOPORTE')
+        titulo_contacto .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_contacto , 5, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
+
+        titulo_numero1 = QLabel('3192742428')
+        titulo_numero1 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_numero1 , 6, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
+        
+        titulo_numero2 = QLabel('3246844088')
+        titulo_numero2 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        layout_creditos.addWidget(titulo_numero2 , 7, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
+
+        #Crear un QLabel para mostrar la imagen
+        label_Logo = QLabel(self)
+        
+        # Crear un QPixmap con la ruta de la imagen
+        pixmapLogo = QPixmap('LogoJDEV.png')
+        
+        # Escalar el QPixmap al tamaño deseado (30x30 píxeles) manteniendo la proporción
+        scaled_pixmapLogo = pixmapLogo.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        
+        # Establecer el QPixmap escalado en el QLabel
+        label_Logo.setPixmap(scaled_pixmapLogo)
+        # Ajustar el tamaño del QLabel al tamaño de la imagen escalada
+        label_Logo.setFixedSize(200, 200)
+        layout_creditos.addWidget(label_Logo , 7, 0, 2, 7, alignment= Qt.AlignRight |Qt.AlignBottom)
+
+        layout_creditos.setRowStretch(0, 0)
+        layout_creditos.setRowStretch(1, 1)
+        layout_creditos.setRowStretch(2, 1)
+        layout_creditos.setRowStretch(3, 1)
+        layout_creditos.setRowStretch(4, 1)
+        layout_creditos.setRowStretch(5, 1)
+        layout_creditos.setRowStretch(6, 1)
+        layout_creditos.setRowStretch(7, 1)
+        layout_creditos.setRowStretch(8, 1)
         #Se agrega el layout a la pagina
         page_creditos.setLayout(layout_creditos)
         #Se agrega al stack
+
         self.stacked_widget.addWidget(page_creditos)
