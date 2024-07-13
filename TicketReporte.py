@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
 def generarTicketSalidaMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado):
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
-    width, height = 430, 550  # Aumentar el tamaño para mejorar la calidad de impresión
+    width, height = 430, 450  # Aumentar el tamaño para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -33,28 +33,23 @@ def generarTicketSalidaMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barras
     # Datos del Ticket
     font = ImageFont.truetype("arial.ttf", 30)
     d.text((20, 160), f"-------------------------------------------------", font=font_bold, fill='black')
-    d.text((90, 184), f"TICKET DE SALIDA", font=font_bold, fill='black')
+    d.text((90, 184), f"TICKET DE REPORTE", font=font_bold, fill='black')
     d.text((20, 200), f"------------------------------------------------", font=font_bold, fill='black')
     font = ImageFont.truetype("arial.ttf", 24)
-    d.text((160, 220), f"INGRESO", font=font_bold, fill='black')
-    d.text((20, 260), f"Fecha: {Fecha}", font=font_bold, fill='black')
-    d.text((20, 280), f"Hora: {Hora}", font=font_bold, fill='black')
-    d.text((20, 300), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((160,320), f"SALIDA", font=font_bold, fill='black')
-    d.text((20, 360), f"Fecha: {Fecha}", font=font_bold, fill='black')
-    d.text((20, 380), f"Hora: {Hora}", font=font_bold, fill='black')
-    d.text((20, 400), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((80,420), f"Tiempo total: {Hora}", font=font_bold, fill='black')
-    d.text((20, 440), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((80,460), f"Total a pagar: $1.000", font=font_bold, fill='black')
-    d.text((20, 480), f"------------------------------------------------", font=font_bold, fill='black')
-    # Información restante
-    font = ImageFont.truetype("arial.ttf", 17)
-    d.text((20, 500), f"Placa: ABC12C    |", font=font, fill='black')
-    d.text((180, 500), f"Casillero: 2", font=font, fill='black')
+    d.text((20, 220), f"Numero de reporte: 1", font=font_bold, fill='black')
+    d.text((20, 240), f"Fecha de generación: {Fecha}", font=font_bold, fill='black')
+    d.text((20, 260), f"Hora de generación: {Hora}", font=font_bold, fill='black')
+    d.text((20, 280), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((20, 300), f"Reportar: Todo", font=font_bold, fill='black')
+    d.text((20, 320), f"Fecha inicio: {Fecha}", font=font_bold, fill='black')
+    d.text((20, 340), f"Fecha fin: {Fecha}", font=font_bold, fill='black')
+    d.text((20, 360), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((20,380), f"Total de registros: 100", font=font_bold, fill='black')
+    d.text((20,400), f"Dinero total: $100.000", font=font_bold, fill='black')
+    d.text((20, 420), f"------------------------------------------------", font=font_bold, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
-    print(f"Recibo de salida generado")
+    print(f"Ticket de reporte generado")
 
 # Ejemplo de uso
 Placa = "ABC12C"
@@ -64,6 +59,6 @@ Fecha = "13-07-2024"
 Hora = "10:17:00"
 codigo_barras = "0001"
 ruta_logo = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\Logo.png"
-ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketSalidaMoto.png"
+ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketReporte.png"
 
 generarTicketSalidaMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado)

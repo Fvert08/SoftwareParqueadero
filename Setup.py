@@ -1,6 +1,5 @@
 import subprocess
 import mysql.connector
-
 # Instalar las librerías necesarias
 subprocess.run(["pip", "install", "PyQt5"])
 subprocess.run(["pip", "install", "mysql-connector-python"])
