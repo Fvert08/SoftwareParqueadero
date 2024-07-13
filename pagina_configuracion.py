@@ -34,6 +34,7 @@ class PaginaConfiguracion(QWidget):
         self.pantallaUsuarios()
         self.pantallaConexion()
         self.pantallaPC()
+        self.pantallaSuscripcion()
         #------------------------Menu lateral---------------------------
         # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
         linea_vertical = QFrame()
@@ -76,6 +77,12 @@ class PaginaConfiguracion(QWidget):
         boton_PC.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_configuracion.addWidget(boton_PC, 3, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
         boton_PC.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(2))  
+
+         # Crea un boton para cambiar a la suscripcion del PC
+        boton_Suscripcion = QPushButton("SUSCRIPCIÓN")
+        boton_Suscripcion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        layout_configuracion.addWidget(boton_Suscripcion, 4, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
+        boton_Suscripcion.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(3))  
         
         #Se agrega el layout a la pagina
         page_configuracionMenu.setLayout(layout_configuracion)
@@ -258,7 +265,7 @@ class PaginaConfiguracion(QWidget):
         boton_OcultarContraseña.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
         boton_OcultarContraseña.setIcon(QIcon('OcultarContraseña.png'))  # Establecer el icono
         boton_OcultarContraseña.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
-        layout_Conexion.addWidget(boton_OcultarContraseña, 3, 4, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignBottom)
+        layout_Conexion.addWidget(boton_OcultarContraseña, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignBottom)
         #Falta Integrar Ocultar
         boton_OcultarContraseña.clicked.connect(lambda: print("Ocultar"))#Se comprueba que funciona el boton
         #Boton Validar
@@ -298,9 +305,9 @@ class PaginaConfiguracion(QWidget):
         self.stacked_widgetConfiguracion.addWidget(page_Conexion)
 
     def pantallaPC(self):
-        #Pagina de Usuarios
+        #Pagina de pc
         page_PC = QWidget()
-        #Layout de la Pagina de Usuarios
+        #Layout de la Pagina de pc
         layout_PC = QGridLayout()
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
@@ -420,3 +427,65 @@ class PaginaConfiguracion(QWidget):
         page_PC.setLayout(layout_PC)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_PC)
+    
+    def pantallaSuscripcion(self):
+         #Pagina de Suscripcion
+        page_Suscripcion = QWidget()
+        #Layout de la Pagina de Suscripcion
+        layout_Suscripcion = QGridLayout()
+        #------------------------------------------------------------
+        # Crear el título y añadirlo a la sección izquierda
+        titulo_Suscripcion= QLabel('SUSCRIPCIÓN')
+        titulo_Suscripcion.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_Suscripcion.addWidget(titulo_Suscripcion, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
+        # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
+        linea_horizontal1 = QFrame()
+        linea_horizontal1.setFrameShape(QFrame.HLine)
+        linea_horizontal1.setLineWidth(1)
+        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        layout_Suscripcion.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        #Titulo
+        titulo_Codigo = QLabel('CÓDIGO')
+        titulo_Codigo .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Suscripcion.addWidget(titulo_Codigo  , 1, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
+        
+        textbox_Codigo = QLineEdit()
+        textbox_Codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Codigo.setFixedWidth(250)
+        layout_Suscripcion.addWidget(textbox_Codigo, 1, 0, 2, 7, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        #Boton Validar
+        boton_validar = QPushButton('VALIDAR')
+        boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
+        layout_Suscripcion.addWidget(boton_validar,2, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignBottom)
+
+        titulo_EstadoActual= QLabel('ESTADO ACTUAL')
+        titulo_EstadoActual .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Suscripcion.addWidget(titulo_EstadoActual  , 4, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignRight)
+
+        textbox_EstadoActual = QLineEdit()
+        textbox_EstadoActual.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
+        textbox_EstadoActual.setFixedWidth(180)
+        layout_Suscripcion.addWidget(textbox_EstadoActual, 4, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
+
+
+        titulo_DiasRestantes = QLabel('DIAS RESTANTES')
+        titulo_DiasRestantes .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Suscripcion.addWidget(titulo_DiasRestantes  , 5, 0, 1, 4, alignment= Qt.AlignTop |Qt.AlignRight)
+
+        textbox_DiasRestantes = QLineEdit()
+        textbox_DiasRestantes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_DiasRestantes.setFixedWidth(180)
+        layout_Suscripcion.addWidget(textbox_DiasRestantes, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
+        #Fila-Tamaño
+        layout_Suscripcion.setRowStretch(0, 0)
+        layout_Suscripcion.setRowStretch(1, 1)
+        layout_Suscripcion.setRowStretch(2, 1)
+        layout_Suscripcion.setRowStretch(3, 1)
+        layout_Suscripcion.setRowStretch(4, 1)
+        layout_Suscripcion.setRowStretch(5, 1)
+        layout_Suscripcion.setRowStretch(6, 1)
+
+        #Se agrega el layout a la pagina
+        page_Suscripcion.setLayout(layout_Suscripcion)
+        #se agrega la pagina al stack
+        self.stacked_widgetConfiguracion.addWidget(page_Suscripcion)
