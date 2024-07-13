@@ -37,7 +37,7 @@ def generarTicketIngresoMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barra
     font = ImageFont.truetype("arial.ttf", 30)
     d.text((20, 160), f"-------------------------------------------------", font=font_bold, fill='black')
     d.text((90, 184), f"TICKET DE ENTRADA", font=font_bold, fill='black')
-    d.text((20, 200), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((20, 200), f"-------------------------------------------------", font=font_bold, fill='black')
     
     font = ImageFont.truetype("arial.ttf", 24)
     d.text((20, 220), f"Placa: {Placa}", font=font_bold, fill='black')

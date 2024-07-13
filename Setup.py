@@ -16,7 +16,7 @@ try:
     cursor = connection.cursor()
 
     # Crear base de datos
-    cursor.execute("CREATE DATABASE IF NOT EXISTS nombre_base_de_datos")0
+    cursor.execute("CREATE DATABASE IF NOT EXISTS nombre_base_de_datos")
 
     # Seleccionar la base de datos recién creada
     cursor.execute("USE nombre_base_de_datos")
