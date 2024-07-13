@@ -144,10 +144,8 @@ class MiVentana(QWidget):
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
             self.stacked_widget.setCurrentIndex(0)
-            self.setMinimumSize(int(self.width-(self.width/4)), int(self.height-(self.height/2)))  # tamaño mínimo
         elif sender.text() == "Generar Tickets":
             self.stacked_widget.setCurrentIndex(2)
-            self.setMinimumSize(int(self.width-(self.width/7)), int(self.height-(self.height/2)))  # tamaño mínimo
         elif sender.text() == "Gestionar casilleros":
             self.stacked_widget.setCurrentIndex(4)
         elif sender.text() == "Gestión de reportes":
