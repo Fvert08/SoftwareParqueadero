@@ -1,6 +1,5 @@
 import subprocess
 import mysql.connector
-
 # Instalar las librerías necesarias
 subprocess.run(["pip", "install", "PyQt5"])
 subprocess.run(["pip", "install", "mysql-connector-python"])
@@ -16,7 +15,7 @@ try:
     cursor = connection.cursor()
 
     # Crear base de datos
-    cursor.execute("CREATE DATABASE IF NOT EXISTS nombre_base_de_datos")0
+    cursor.execute("CREATE DATABASE IF NOT EXISTS nombre_base_de_datos")
 
     # Seleccionar la base de datos recién creada
     cursor.execute("USE nombre_base_de_datos")
