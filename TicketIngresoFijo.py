@@ -5,7 +5,7 @@ from barcode.writer import ImageWriter
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
 def generarTicketIngresoFijo(Fecha, Hora,Tipo,Nota,Valor, codigo_barras, ruta_logo, ruta_guardado):
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
-    width, height = 1720, 2480  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
+    width, height = 1720, 2220  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 

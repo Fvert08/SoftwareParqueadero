@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
 def generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fecha, Hora, ruta_logo, ruta_guardado):
     # Dimensiones típicas de un recibo POS, cuadruplicadas para mejorar calidad
-    width, height = 1720, 1800  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+    width, height = 1720, 1760  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 

@@ -1,8 +1,8 @@
 from PIL import Image, ImageDraw, ImageFont
 
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar,Placa,Casillero, ruta_logo, ruta_guardado):
-    width, height = 1720, 2080  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+def generarTicketSalidaFijo(Tipo, Nota,FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar, ruta_logo, ruta_guardado):
+    width, height = 1720, 2320  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -48,18 +48,16 @@ def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,Tiem
     d.text((80, 1760), f"------------------------------------------------", font=font_bold, fill='black')
     d.text((320, 1840), f"Total a pagar: {TotalAPagar}", font=font_bold, fill='black')
     d.text((80, 1920), f"------------------------------------------------", font=font_bold, fill='black')
-    # Información restante
-    font = ImageFont.truetype("arial.ttf", 68)
-    d.text((80, 2000), f"Placa: {Placa}    |", font=font, fill='black')
-    d.text((720, 2000), f"Casillero: {Casillero}", font=font, fill='black')
+    d.text((80, 2000), f"Tipo: {Tipo}", font=font_bold, fill='black')
+    d.text((80, 2160), f"Nota: {Nota}", font=font_bold, fill='black')
+    d.text((80, 2240), f"------------------------------------------------", font=font_bold, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
     print(f"Recibo de salida generado")
 
 # Ejemplo de uso
-Placa = "ABC12C"
-Cascos = "2"
-Casillero = "4"
+Tipo = "Puesto"
+Nota = "Puesto Dulces"
 FechaIngreso = "13-07-2024"
 FechaSalida = "13-07-2024"
 HoraIngreso = "10:10:00"
@@ -67,6 +65,6 @@ HoraSalida= "10:17:00"
 TiempoTotal = "00:07:00"
 TotalAPagar = "$1.000"
 ruta_logo = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\Logo.png"
-ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketSalidaMoto.png"
+ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketSalidaFijo.png"
 
-generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar,Placa,Casillero, ruta_logo, ruta_guardado)
+generarTicketSalidaFijo(Tipo, Nota,FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar, ruta_logo, ruta_guardado)
