@@ -3,9 +3,9 @@ import barcode
 from barcode.writer import ImageWriter
 
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketIngresoMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado):
+def generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado):
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
-    width, height = 1720, 2460  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
+    width, height = 1720, 2540  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -45,7 +45,7 @@ def generarTicketIngresoMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barra
     d.text((80, 1040), f"Casillero: {Casillero}", font=font_bold, fill='black')
     d.text((80, 1120), f"Fecha: {Fecha}", font=font_bold, fill='black')
     d.text((80, 1200), f"Hora: {Hora}", font=font_bold, fill='black')
-    
+    d.text((80, 1280), f"Tipo: {Tipo}", font=font_bold, fill='black')
     # Generar código de barras
     cod_barra = barcode.get_barcode_class('code128')
     codigo = cod_barra(codigo_barras, writer=ImageWriter())
@@ -55,20 +55,21 @@ def generarTicketIngresoMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barra
     # Cargar y colocar el código de barras en la imagen
     codigo_barra = Image.open('codigo_barras.png')
     codigo_barra = codigo_barra.resize((1600, 800), Image.LANCZOS)
-    img.paste(codigo_barra, (40, 1360))
+    img.paste(codigo_barra, (40, 1440))
     # Información restante
     font = ImageFont.truetype("arial.ttf", 56)
-    d.text((480, 2060), f"Valor hora o fracción: $1.000", font=font, fill='black')
-    d.text((380, 2140), f"Lunes a sabado: De 6 a.m. a 10 p.m.", font=font, fill='black')
-    d.text((360, 2220), f"Domingos y festivos: de 7 a.m. a 6 p.m.", font=font, fill='black')
-    d.text((160, 2300), f"SI PIERDE ESTE TICKET TENDRA QUE PRESENTAR ", font=font, fill='black')
-    d.text((160, 2380), f"LA TARJETA DE PROPIEDAD DE SU MOTO", font=font, fill='black')
+    d.text((480, 2140), f"Valor hora o fracción: $1.000", font=font, fill='black')
+    d.text((380, 2220), f"Lunes a sabado: De 6 a.m. a 10 p.m.", font=font, fill='black')
+    d.text((360, 2300), f"Domingos y festivos: de 7 a.m. a 6 p.m.", font=font, fill='black')
+    d.text((160, 2380), f"SI PIERDE ESTE TICKET TENDRA QUE PRESENTAR ", font=font, fill='black')
+    d.text((160, 2460), f"LA TARJETA DE PROPIEDAD DE SU MOTO", font=font, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
 
     print(f"Recibo generado y guardado en: {ruta_guardado}")
 
 # Ejemplo de uso
+Tipo = "Hora"
 Placa = "ABC12C"
 Cascos = "2"
 Casillero = "4"
@@ -78,4 +79,4 @@ codigo_barras = "0001"
 ruta_logo = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\Logo.png"
 ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketIngresoMoto.png"
 
-generarTicketIngresoMoto(Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado)
+generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado)
