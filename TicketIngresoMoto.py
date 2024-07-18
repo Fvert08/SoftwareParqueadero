@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import barcode
 from barcode.writer import ImageWriter
+import os
 
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
 def generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado):
@@ -76,7 +77,10 @@ Casillero = "4"
 Fecha = "13-07-2024"
 Hora = "10:17:00"
 codigo_barras = "0001"
-ruta_logo = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\Logo.png"
-ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketIngresoMoto.png"
+# Obtener la ruta del directorio actual
+directorio_actual = os.path.dirname(os.path.abspath(__file__))
+
+ruta_logo = os.path.join(directorio_actual, "Logo.png")
+ruta_guardado = os.path.join(directorio_actual, "TicketIngresoMoto.png")
 
 generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado)

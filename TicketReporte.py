@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+import os
 
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
 def generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fecha, Hora, ruta_logo, ruta_guardado):
@@ -60,7 +61,11 @@ Registros = "100"
 DineroTotal = "$100.000"
 Fecha = "13-07-2024"
 Hora = "10:17:00"
-ruta_logo = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\Logo.png"
-ruta_guardado = r"C:\Users\Impor\OneDrive\Escritorio\Parqueadero\SoftwareParqueadero\TicketReporte.png"
+
+# Obtener la ruta del directorio actual
+directorio_actual = os.path.dirname(os.path.abspath(__file__))
+
+ruta_logo = os.path.join(directorio_actual, "Logo.png")
+ruta_guardado = os.path.join(directorio_actual, "TicketReporte.png")
 
 generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fecha, Hora, ruta_logo, ruta_guardado)
