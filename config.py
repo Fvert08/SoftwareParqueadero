@@ -1,6 +1,7 @@
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'tu_usuario',
-    'password': 'tu_contraseña',
-    'database': 'tu_base_de_datos'
+    'host': 'roundhouse.proxy.rlwy.net',
+    'user': 'root',
+    'password': 'JTssMNiaJwOnqplfhDLMKmoijNfnSOGy',
+    'database': 'railway',
+    'port': 10859  # Asegurarnos de que es un entero
 }

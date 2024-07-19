@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
+from DatabaseConnection import DatabaseConnection
+from config import DB_CONFIG
 class PaginaTickets(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -101,6 +103,12 @@ class PaginaTickets(QWidget):
         self.stacked_widget.addWidget(page_principalTickets)
 
     def pantallaIngresoMotos (self):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+
+        # Abre la conexión a la base de datos
+        db_connection.open()
+
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
         #layout de el registro de los tickets
@@ -166,6 +174,7 @@ class PaginaTickets(QWidget):
         textbox_casillero.setReadOnly(True)
         textbox_casillero.setFixedWidth(100)  # Establecer el ancho fijo
         textbox_casillero.setFixedHeight(50)
+        textbox_casillero.setText ("1")
         layout_ticketsIngresoMotos.addWidget(textbox_casillero, 4, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         
@@ -194,7 +203,13 @@ class PaginaTickets(QWidget):
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_ticketsIngresoMotos.addWidget(boton_imprimir, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop | Qt.AlignLeft)
-        
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_imprimir.clicked.connect(lambda: db_connection.registrarMoto(
+            textbox_placa.text(),
+            combobox_cascos.currentText(),
+            combobox_Tiempo.currentText(),
+            textbox_casillero.text()
+        ))
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
         layout_ticketsIngresoMotos.setRowStretch(1, 1)
@@ -207,7 +222,7 @@ class PaginaTickets(QWidget):
         page_tickets.setLayout(layout_ticketsIngresoMotos)
         #se agrega la pagina al stack
         self.stacked_widgetTickets.addWidget(page_tickets)
-        
+    
 
     def pantallaSacarMoto (self):
         # Pagina de ticketes salida moto
