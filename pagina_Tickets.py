@@ -229,7 +229,7 @@ class PaginaTickets(QWidget):
         page_tickets.setLayout(layout_ticketsIngresoMotos)
         #se agrega la pagina al stack
         self.stacked_widgetTickets.addWidget(page_tickets)
-    
+        
 
     def pantallaSacarMoto (self):
         # Pagina de ticketes salida moto
