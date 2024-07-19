@@ -2,7 +2,7 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
-
+from TicketIngresoMoto import generarTicketIngresoMoto
 class DatabaseConnection:
     def __init__(self, config):
         self.config = config
@@ -45,12 +45,10 @@ class DatabaseConnection:
     def registrarMoto(self, placa, cascos, tiempo, casillero):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
         hora_ingreso = datetime.now().strftime('%H:%M:%S')
-
         query = """
         INSERT INTO registrosMoto (Casillero, Placa, Cascos, Tipo, fechaIngreso, horaIngreso)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
-
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
-
         self.execute_query(query, params)
+        generarTicketIngresoMoto(tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)

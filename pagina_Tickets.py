@@ -214,7 +214,8 @@ class PaginaTickets(QWidget):
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
-        textbox_casillero.clear()
+        textbox_casillero.clear(),
+        db_connection.close()
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
