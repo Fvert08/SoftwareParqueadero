@@ -4,16 +4,12 @@ from barcode.writer import ImageWriter
 import os
 
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora):
+def generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado):
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
     width, height = 1720, 2540  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
-    #Se cguardan las rutas 
-    directorio_actual = os.path.dirname(os.path.abspath(__file__))
-    ruta_logo = os.path.join(directorio_actual, "Logo.png")
-    ruta_guardado = os.path.join(directorio_actual, "TicketIngresoMoto.png")
-    codigo_barras = "0001"
+
     # Cargar y redimensionar el logo
     logo = Image.open(ruta_logo)
     logo = logo.resize((560, 560), Image.LANCZOS)
@@ -70,6 +66,21 @@ def generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora):
     d.text((160, 2460), f"LA TARJETA DE PROPIEDAD DE SU MOTO", font=font, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
-    print(f"Ticket generado y guardado en:")
 
+    print(f"Recibo generado y guardado en: {ruta_guardado}")
 
+# Ejemplo de uso
+Tipo = "Hora"
+Placa = "ABC12C"
+Cascos = "2"
+Casillero = "4"
+Fecha = "13-07-2024"
+Hora = "10:17:00"
+codigo_barras = "0001"
+# Obtener la ruta del directorio actual
+directorio_actual = os.path.dirname(os.path.abspath(__file__))
+
+ruta_logo = os.path.join(directorio_actual, "Logo.png")
+ruta_guardado = os.path.join(directorio_actual, "TicketIngresoMoto.png")
+
+generarTicketIngresoMoto(Tipo,Placa, Cascos, Casillero, Fecha, Hora, codigo_barras, ruta_logo, ruta_guardado)
