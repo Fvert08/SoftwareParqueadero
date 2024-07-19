@@ -204,12 +204,18 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(boton_imprimir, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop | Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
-        boton_imprimir.clicked.connect(lambda: db_connection.registrarMoto(
+        boton_imprimir.clicked.connect(lambda: [
+            db_connection.registrarMoto(
             textbox_placa.text(),
             combobox_cascos.currentText(),
             combobox_Tiempo.currentText(),
             textbox_casillero.text()
-        ))
+        ),
+        textbox_placa.clear(),
+        combobox_cascos.setCurrentIndex(0),
+        combobox_Tiempo.setCurrentIndex(0),
+        textbox_casillero.clear()
+    ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
         layout_ticketsIngresoMotos.setRowStretch(1, 1)
