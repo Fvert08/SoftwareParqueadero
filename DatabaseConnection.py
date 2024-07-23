@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
 from TicketIngresoMoto import generarTicketIngresoMoto
+from TicketIngresoFijo import generarTicketIngresoFijo
 class DatabaseConnection:
     def __init__(self, config):
         self.config = config
@@ -52,3 +53,14 @@ class DatabaseConnection:
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
         generarTicketIngresoMoto(tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+    
+    def registrarFijo(self, Tipo, Nota, Valor):
+            fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
+            hora_ingreso = datetime.now().strftime('%H:%M:%S')
+            query = """
+            INSERT INTO Fijos (Tipo, Nota, Valor, fechaIngreso, horaIngreso)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            params = (Tipo, Nota, Valor, fecha_ingreso, hora_ingreso)
+            self.execute_query(query, params)
+            generarTicketIngresoFijo(fecha_ingreso, hora_ingreso,Tipo, Nota, Valor)

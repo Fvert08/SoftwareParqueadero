@@ -397,6 +397,11 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.addWidget(page_ticketsSalidaMoto)
 
     def pantallaIngresarFijo(self):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+
+        # Abre la conexión a la base de datos
+        db_connection.open()
         # Pagina de ticketes salida moto
         page_ticketsIngresoFijo = QWidget()
         #layout de el registro de los tickets
@@ -462,7 +467,18 @@ class PaginaTickets(QWidget):
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 5, 3, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
-
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_Imprimir.clicked.connect(lambda: [
+            db_connection.registrarFijo(
+            combobox_Tipo.currentText(),
+            textbox_Nota.text(),
+            textbox_Valor.text(),
+        ),
+        combobox_Tipo.setCurrentIndex(0),
+        textbox_Nota.clear(),
+        textbox_Valor.clear(),
+        db_connection.close()
+    ])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)
         layout_ticketsIngresoFijo.setRowStretch(2, 1)

@@ -2,9 +2,18 @@ from PIL import Image, ImageDraw, ImageFont
 import barcode
 from barcode.writer import ImageWriter
 import os
-
+import win32print
+import win32ui
+from PIL import ImageWin
+def mm_to_pixels(mm, dpi):
+    return int((mm / 25.4) * dpi)
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketIngresoFijo(Fecha, Hora,Tipo,Nota,Valor, codigo_barras, ruta_logo, ruta_guardado):
+def generarTicketIngresoFijo(Fecha, Hora,Tipo,Nota,Valor):
+    # Obtener la ruta del directorio actual
+    directorio_actual = os.path.dirname(os.path.abspath(__file__))
+    ruta_logo = os.path.join(directorio_actual, "Logo.png")
+    ruta_guardado = os.path.join(directorio_actual, "TicketIngresoFijo.png")
+    codigo_barras = "0001"
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
     width, height = 1720, 2220  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
@@ -64,18 +73,49 @@ def generarTicketIngresoFijo(Fecha, Hora,Tipo,Nota,Valor, codigo_barras, ruta_lo
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
     print(f"Recibo Fijo generado y guardado en: {ruta_guardado}")
+    imprimirTicket(ruta_guardado)
 
-# Ejemplo de uso
-Tipo= "Puesto"
-Nota = "Puesto Dulces"
-Valor= "$5.000"
-Fecha = "13-07-2024"
-Hora = "10:17:00"
-codigo_barras = "0001"
-# Obtener la ruta del directorio actual
-directorio_actual = os.path.dirname(os.path.abspath(__file__))
+# Función para imprimir el recibo
+def imprimirTicket(ruta_archivo):
+    try:
+        # Obtener el nombre de la impresora predeterminada
+        impresora_predeterminada = win32print.GetDefaultPrinter()
+        print(f"Impresora predeterminada: {impresora_predeterminada}")
 
-ruta_logo = os.path.join(directorio_actual, "Logo.png")
-ruta_guardado = os.path.join(directorio_actual, "TicketIngresoFijo.png")
+        # Supongamos una resolución de impresora de 203 DPI
+        dpi = 203
+        paper_width_mm = 70  # Ajustar a 70mm para hacer la imagen más pequeña
+        paper_width_px = mm_to_pixels(paper_width_mm, dpi)
 
-generarTicketIngresoFijo(Fecha, Hora,Tipo,Nota,Valor, codigo_barras, ruta_logo, ruta_guardado)
+        # Abrir la impresora
+        hPrinter = win32print.OpenPrinter(impresora_predeterminada)
+        try:
+            # Crear un trabajo de impresión
+            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketIngresoFijo", None, "RAW"))
+            try:
+                win32print.StartPagePrinter(hPrinter)
+                
+                # Cargar la imagen
+                bmp = Image.open(ruta_archivo)
+                bmp = bmp.resize((paper_width_px, int(bmp.height * (paper_width_px / bmp.width))), Image.LANCZOS)
+                dib = ImageWin.Dib(bmp)
+                
+                # Obtener el contexto de dispositivo
+                hDC = win32ui.CreateDC()
+                hDC.CreatePrinterDC(impresora_predeterminada)
+                
+                # Ajustar el tamaño de la imagen al tamaño del papel
+                hDC.StartDoc("TicketIngresoFijo")
+                hDC.StartPage()
+                dib.draw(hDC.GetHandleOutput(), (0, 0, bmp.size[0], bmp.size[1]))
+                hDC.EndPage()
+                hDC.EndDoc()
+                
+                win32print.EndPagePrinter(hPrinter)
+            finally:
+                win32print.EndDocPrinter(hPrinter)
+        finally:
+            win32print.ClosePrinter(hPrinter)
+        print("Impresión enviada correctamente.")
+    except Exception as e:
+        print(f"Error al intentar imprimir: {e}")
