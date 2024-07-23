@@ -153,7 +153,7 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(label_Tiempo, 3, 2, 1, 1, alignment=Qt.AlignCenter | Qt.AlignRight)
 
         combobox_Tiempo = QComboBox()
-        combobox_Tiempo.addItems(['Hora', 'Dia', 'Mes'])
+        combobox_Tiempo.addItems(['Hora', 'Dia'])
         combobox_Tiempo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
         combobox_Tiempo.setFixedWidth(120)
         layout_ticketsIngresoMotos.addWidget(combobox_Tiempo, 3, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
