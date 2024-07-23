@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 # base de datos
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
@@ -9,7 +10,29 @@ class PaginaCasilleros(QWidget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+    def actualizarTablaCasillero(self,tabla_registros):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+        # Abre la conexión a la base de datos
+        db_connection.open()
+        datosTablaCasillero= db_connection.cargarTableCasillero()
+        self.tabla_registrosCasillero.setRowCount(len(datosTablaCasillero))
+        for row_idx, registro in enumerate(datosTablaCasillero):
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 0, item_id)
 
+            item_casillero = QTableWidgetItem(str(registro['Pc']))
+            item_casillero.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 1, item_casillero)
+
+            item_pisicion = QTableWidgetItem(str(registro['Posicion']))
+            item_pisicion.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 2, item_pisicion)
+
+            item_estado = QTableWidgetItem(str(registro['Estado']))
+            item_estado.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 3, item_estado)
     def initUI(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
@@ -73,7 +96,6 @@ class PaginaCasilleros(QWidget):
         boton_agregar = QPushButton('AGREGAR')
         boton_agregar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_agregar,8, 2, 1, 2, alignment=Qt.AlignLeft)
-        #----
         boton_agregar.clicked.connect(lambda: [
             db_connection.registrarCasillero(    
             combobox_pc.currentText(),
@@ -83,14 +105,15 @@ class PaginaCasilleros(QWidget):
         combobox_pc.setCurrentIndex(0),
         combobox_Estado.setCurrentIndex(0),
         textbox_numero.clear(),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
         db_connection.close()
     ])
-        #---
-        tabla_registros = QTableWidget(self)
-        tabla_registros.setColumnCount(4)  # Definir el número de columnas
-        tabla_registros.setHorizontalHeaderLabels(
-            ['NUMERO', 'ESTADO', 'PLACA', 'PC'])
-        tabla_registros.setStyleSheet("""
+        self.tabla_registrosCasillero = QTableWidget(self)
+        self.tabla_registrosCasillero.setColumnCount(5)  # Definir el número de columnas
+        self.tabla_registrosCasillero.verticalHeader().setVisible(False)
+        self.tabla_registrosCasillero.setHorizontalHeaderLabels(
+            ['NUMERO', 'PC', 'Posicion', 'Estado','Placa'])
+        self.tabla_registrosCasillero.setStyleSheet("""
                     QTableWidget {
                         background-color: #222126;
                         color: white;
@@ -118,10 +141,13 @@ class PaginaCasilleros(QWidget):
                         background-color: #151419; /* Color de fondo al seleccionar */
                     }
                 """)
-        header = tabla_registros.horizontalHeader()
+        header = self.tabla_registrosCasillero.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_tickets.addWidget(tabla_registros, 2, 0, 5, 4)
+        #---- aqui se carga la tabla
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+        db_connection.close
+        layout_tickets.addWidget(self.tabla_registrosCasillero, 2, 0, 5, 4)
 
         boton_desocupar = QPushButton('DESOCUPAR')
         boton_desocupar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -225,3 +251,4 @@ class PaginaCasilleros(QWidget):
         layout_tickets.setRowStretch(7, 1)
         layout_tickets.setRowStretch(8, 1)
         self.stacked_widget.addWidget(page_casilleros)
+    
