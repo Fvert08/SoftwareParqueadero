@@ -146,8 +146,6 @@ class PaginaRegistros(QWidget):
         header = tabla_registros.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-
-        #--
         datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         tabla_registros.setRowCount(len(datosTablaRegistroMotos))
         # Rellenar la tabla con los datos obtenidos

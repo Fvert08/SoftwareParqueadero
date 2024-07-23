@@ -88,3 +88,6 @@ class DatabaseConnection:
     def cargarTableRegistrosMotos(self):
         query = "SELECT * FROM registrosMoto;"
         return self.executeQueryReturnAll(query)
+    def cargarTableCasillero(self):
+        query = "SELECT * FROM Casillero;"
+        return self.executeQueryReturnAll(query)
