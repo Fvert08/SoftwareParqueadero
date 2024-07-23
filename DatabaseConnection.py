@@ -49,7 +49,7 @@ class DatabaseConnection:
         query = """
         INSERT INTO registrosMoto (Casillero, Placa, Cascos, Tipo, fechaIngreso, horaIngreso)
         VALUES (%s, %s, %s, %s, %s, %s)
-        """
+        """                                                                                                      
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
         generarTicketIngresoMoto(tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
@@ -64,3 +64,10 @@ class DatabaseConnection:
             params = (Tipo, Nota, Valor, fecha_ingreso, hora_ingreso)
             self.execute_query(query, params)
             generarTicketIngresoFijo(fecha_ingreso, hora_ingreso,Tipo, Nota, Valor)
+    def registrarCasillero(self, Pc, Posicion, Estado):
+            query = """
+            INSERT INTO Casillero (Pc, Posicion, Estado)
+            VALUES (%s, %s, %s)
+            """
+            params = (Pc, Posicion, Estado)
+            self.execute_query(query, params)

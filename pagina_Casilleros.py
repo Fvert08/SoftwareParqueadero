@@ -1,6 +1,9 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
+# base de datos
+from DatabaseConnection import DatabaseConnection
+from config import DB_CONFIG
 class PaginaCasilleros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -8,6 +11,11 @@ class PaginaCasilleros(QWidget):
         self.initUI()
 
     def initUI(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+
+        # Abre la conexión a la base de datos
+        db_connection.open()
         # Crear el widget de la página de registros
         page_casilleros = QWidget()
 
@@ -65,8 +73,19 @@ class PaginaCasilleros(QWidget):
         boton_agregar = QPushButton('AGREGAR')
         boton_agregar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_agregar,8, 2, 1, 2, alignment=Qt.AlignLeft)
-        
-        
+        #----
+        boton_agregar.clicked.connect(lambda: [
+            db_connection.registrarCasillero(    
+            combobox_pc.currentText(),
+            textbox_numero.text(),
+            combobox_Estado.currentText()
+        ),
+        combobox_pc.setCurrentIndex(0),
+        combobox_Estado.setCurrentIndex(0),
+        textbox_numero.clear(),
+        db_connection.close()
+    ])
+        #---
         tabla_registros = QTableWidget(self)
         tabla_registros.setColumnCount(4)  # Definir el número de columnas
         tabla_registros.setHorizontalHeaderLabels(
