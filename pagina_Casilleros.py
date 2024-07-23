@@ -88,7 +88,7 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(titulo_estado , 8, 0, 1, 1, alignment= Qt.AlignCenter )
 
         combobox_Estado = QComboBox()
-        combobox_Estado.addItems(['OCUPADO', 'DISPONIBLE'])
+        combobox_Estado.addItems(['DISPONIBLE','OCUPADO'])
         combobox_Estado.setFixedWidth(130)
         combobox_Estado.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
         layout_tickets.addWidget(combobox_Estado,8, 1, 1, 1, alignment=Qt.AlignCenter )
