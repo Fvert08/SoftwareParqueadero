@@ -71,3 +71,20 @@ class DatabaseConnection:
             """
             params = (Pc, Posicion, Estado)
             self.execute_query(query, params)
+
+    def executeQueryReturnAll(self, query, params=None):
+        cursor = self.connection.cursor(dictionary=True)
+        try:
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            result = cursor.fetchall()
+            return result
+        except Error as e:
+            print(f"Error al ejecutar la consulta: {e}")
+            return None
+        
+    def cargarTableRegistrosMotos(self):
+        query = "SELECT * FROM registrosMoto;"
+        return self.executeQueryReturnAll(query)
