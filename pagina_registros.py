@@ -115,35 +115,33 @@ class PaginaRegistros(QWidget):
         tabla_registros.setHorizontalHeaderLabels(
             ['ID', 'CASILLERO', 'PLACA', 'CASCOS', 'TIPO', 'F.INGRESO', 'H.INGRESO', 'F.SALIDA','H.SALIDA', 'TOTAL'])
         tabla_registros.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
+                    QTableWidget {
+                        background-color: #222126;
+                        color: white;
+                        border: 1px solid #222126;
+                        alternate-background-color: #131216; /* Color de fila alternativa */
+                    }
 
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border-color: #222126; /* Color del borde de las celdas */
-                /* text-align: center; No funciona en algunos casos */
-            }
+                    QTableWidget::item {
+                        background-color: #151419; /* Color de fondo de las celdas */
+                        border-color: #222126; /* Color del borde de las celdas */
+                    }
 
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
+                    QHeaderView::section {
+                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                        color: white; /* Color del texto de las cabeceras de las columnas */
+                        border: none; /* Sin borde */
+                        padding: 4px; /* Ajuste del relleno */
+                    }
 
-            QHeaderView::section:hover {
-                background-color: #151419; /* Color de fondo al pasar el mouse */
-            }
+                    QHeaderView::section:hover {
+                        background-color: #151419; /* Color de fondo al pasar el mouse */
+                    }
 
-            QHeaderView::section:selected {
-                background-color: #151419; /* Color de fondo al seleccionar */
-            }
-        """)
-
+                    QHeaderView::section:selected {
+                        background-color: #151419; /* Color de fondo al seleccionar */
+                    }
+                """)
        
         header = tabla_registros.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
