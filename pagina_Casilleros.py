@@ -165,17 +165,28 @@ class PaginaCasilleros(QWidget):
         boton_desocupar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_desocupar, 2, 4, 2, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
-        
-        boton_bloquear = QPushButton('BLOQUEAR')
-        boton_bloquear.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_bloquear, 2, 4, 2, 2,
-                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_desocupar.clicked.connect(lambda: [
+            db_connection.cambiarEstadoCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+    ])
+
         
         boton_eliminar = QPushButton('ELIMINAR')
         boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_eliminar, 2, 4, 2, 2,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
-        
+        #---
+        boton_eliminar.clicked.connect(lambda: [
+            db_connection.eliminarCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+    ])
+        #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')
         titulo_cambiarPc .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
         layout_tickets.addWidget(titulo_cambiarPc, 4, 4, 1, 2,
