@@ -1,11 +1,103 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
+from datetime import datetime, date
+from DatabaseConnection import DatabaseConnection
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from config import DB_CONFIG
 class PaginaRegistros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+    def actualizarTablaRegistroMotos(self,tabla_registros):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+        # Abre la conexión a la base de datos
+        datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
+        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
+
+        for row_idx, registro in enumerate(datosTablaRegistroMotos):
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 0, item_id)
+
+            item_casillero = QTableWidgetItem(str(registro['Casillero']))
+            item_casillero.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 1, item_casillero)
+
+            item_placa = QTableWidgetItem(registro['Placa'])
+            item_placa.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 2, item_placa)
+
+            item_cascos = QTableWidgetItem(str(registro['Cascos']))
+            item_cascos.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 3, item_cascos)
+
+            item_tipo = QTableWidgetItem(registro['Tipo'])
+            item_tipo.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 4, item_tipo)
+
+            item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
+            item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 5, item_fecha_ingreso)
+
+            item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso', '')))
+            item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 6, item_hora_ingreso)
+
+            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            item_fecha_salida.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 7, item_fecha_salida)
+
+            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            item_hora_salida.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 8, item_hora_salida)
+
+            item_total = QTableWidgetItem(str(registro.get('Total', '')))
+            item_total.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 9, item_total)
+
+    def actualizarTablaFijos(self,tabla_registros):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+        # Abre la conexión a la base de datos
+        datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
+        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroFijos))
+
+        for row_idx, registro in enumerate(datosTablaRegistroFijos):
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 0, item_id)
+
+            item_casillero = QTableWidgetItem(str(registro['Tipo']))
+            item_casillero.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 1, item_casillero)
+
+            item_placa = QTableWidgetItem(registro['Nota'])
+            item_placa.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 2, item_placa)
+
+            item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
+            item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 3, item_fecha_ingreso)
+
+            item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso', '')))
+            item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 4, item_hora_ingreso)
+
+            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            item_fecha_salida.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 5, item_fecha_salida)
+
+            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            item_hora_salida.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 6, item_hora_salida)
+
+            item_total = QTableWidgetItem(str(registro.get('Valor', '')))
+            item_total.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 7, item_total)
 
     def initUI(self):
        # Crear el widget de la página de registros
@@ -84,6 +176,10 @@ class PaginaRegistros(QWidget):
         self.stacked_widget.addWidget(page_registros)
 
     def pantallaTablaRegistros(self):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+
+        # Abre la conexión a la base de datos
         #Pagina de Usuarios
         page_TablaRegistros = QWidget()
         #Layout de la Pagina de Usuarios
@@ -100,44 +196,66 @@ class PaginaRegistros(QWidget):
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_TablaRegistros.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
          # Crear la tabla de registros
-        tabla_registros = QTableWidget(self)
-        tabla_registros.setColumnCount(9)  # Definir el número de columnas
-        tabla_registros.setHorizontalHeaderLabels(
-            ['ID', 'PLACA', 'CASILLERO', 'CASCOS', 'H.INGRESO', 'F.INGRESO', 'H.SALIDA', 'F.SALIDA', 'TOTAL'])
-        tabla_registros.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+        self.tablaRegistrosMotos = QTableWidget(self)
+        self.tablaRegistrosMotos.setColumnCount(10)  # Definir el número de columnas
+        self.tablaRegistrosMotos.verticalHeader().setVisible(False)
+        self.tablaRegistrosMotos.setHorizontalHeaderLabels(
+            ['ID', 'CASILLERO', 'PLACA', 'CASCOS', 'TIPO', 'F.INGRESO', 'H.INGRESO', 'F.SALIDA','H.SALIDA', 'TOTAL'])
+        self.tablaRegistrosMotos.setStyleSheet("""
+            QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
 
-       
-        header = tabla_registros.horizontalHeader()
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
+        """)
+        #seleccionar toda la fila
+        self.tablaRegistrosMotos.setSelectionBehavior(QAbstractItemView.SelectRows)
+        #Configurar cabecera
+        header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_TablaRegistros.addWidget(tabla_registros, 1, 0, 7, 9)
+        # Rellenar la tabla con los datos obtenidos
+        
+        datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
+        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
+        self.actualizarTablaRegistroMotos(self.tablaRegistrosMotos)
+        #--
+        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
         combobox_Tipo = QComboBox()
         combobox_Tipo.addItems(['Placa', 'ID', 'Casillero'])
         combobox_Tipo.setFixedWidth(130)
@@ -180,6 +298,7 @@ class PaginaRegistros(QWidget):
         self.stacked_widgetregistros.addWidget(page_TablaRegistros)
 
     def pantallaTablaFijos(self):
+        db_connection = DatabaseConnection(DB_CONFIG)
         #Pagina de Usuarios
         page_TablaFijo = QWidget()
         #Layout de la Pagina de Usuarios
@@ -196,44 +315,62 @@ class PaginaRegistros(QWidget):
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_TablaFijo.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
          # Crear la tabla de registros
-        tabla_Fijo = QTableWidget(self)
-        tabla_Fijo.setColumnCount(8)  # Definir el número de columnas
-        tabla_Fijo.setHorizontalHeaderLabels(
-            ['ID', 'TIPO','NOTA','H.INGRESO', 'F.INGRESO', 'H.SALIDA', 'F.SALIDA','VALOR'])
-        tabla_Fijo.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+        self.tablaRegistrosFijos = QTableWidget(self)
+        self.tablaRegistrosFijos.setColumnCount(8)  # Definir el número de columnas
+        self.tablaRegistrosFijos.verticalHeader().setVisible(False)
+        self.tablaRegistrosFijos.setHorizontalHeaderLabels(
+            ['ID', 'TIPO','NOTA','F.INGRESO', 'H.INGRESO', 'F.SALIDA', 'H.SALIDA','VALOR'])
+        self.tablaRegistrosFijos.setStyleSheet("""
+            QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
 
-       
-        header = tabla_Fijo.horizontalHeader()
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
+        """)
+        header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_TablaFijo.addWidget(tabla_Fijo, 1, 0, 7, 9)
+        # Rellenar la tabla con los datos obtenidos
+        datosTablaRegistroFijo= db_connection.cargarTableRegistrosFijos()
+        self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijo))
+        self.actualizarTablaFijos(self.tablaRegistrosFijos)
+        #agregar la tabla
+        layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)
 
         combobox_Tipo = QComboBox()
         combobox_Tipo.addItems(['ID'])
@@ -298,35 +435,47 @@ class PaginaRegistros(QWidget):
         tabla_Mensualidades.setHorizontalHeaderLabels(
             ['ID', 'PLACA','F.INGRESO', 'D.RESTANTES'])
         tabla_Mensualidades.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+            QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
 
-       
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
+        """)
         header = tabla_Mensualidades.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante

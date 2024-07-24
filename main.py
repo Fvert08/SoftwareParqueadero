@@ -9,20 +9,12 @@ from pagina_Reportes import PaginaReportes
 from pagina_configuracion import PaginaConfiguracion
 from pagina_creditos import PaginaCreditos
 from PyQt5.QtGui import QScreen
-from DatabaseConnection import DatabaseConnection
-from config import DB_CONFIG
 class MiVentana(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
-        # Se crea la variable para la conexion
-        db = DatabaseConnection(DB_CONFIG)
-        # se abre la conexion
-        db.open()
-        # Se cierra la conexion
-        db.close()
         self.setWindowTitle('SOFTWARE PARQUEADERO')
         self.setStyleSheet("background-color: #151419;")
         # Obtener el tamaño de la pantalla del usuario

@@ -105,10 +105,6 @@ class PaginaTickets(QWidget):
     def pantallaIngresoMotos (self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
-
-        # Abre la conexión a la base de datos
-        db_connection.open()
-
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
         #layout de el registro de los tickets
@@ -153,7 +149,7 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(label_Tiempo, 3, 2, 1, 1, alignment=Qt.AlignCenter | Qt.AlignRight)
 
         combobox_Tiempo = QComboBox()
-        combobox_Tiempo.addItems(['Hora', 'Dia', 'Mes'])
+        combobox_Tiempo.addItems(['Hora', 'Dia'])
         combobox_Tiempo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
         combobox_Tiempo.setFixedWidth(120)
         layout_ticketsIngresoMotos.addWidget(combobox_Tiempo, 3, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
@@ -214,8 +210,7 @@ class PaginaTickets(QWidget):
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
-        textbox_casillero.clear(),
-        db_connection.close()
+        textbox_casillero.clear()
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
@@ -397,6 +392,8 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.addWidget(page_ticketsSalidaMoto)
 
     def pantallaIngresarFijo(self):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
         # Pagina de ticketes salida moto
         page_ticketsIngresoFijo = QWidget()
         #layout de el registro de los tickets
@@ -462,7 +459,17 @@ class PaginaTickets(QWidget):
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 5, 3, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
-
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_Imprimir.clicked.connect(lambda: [
+            db_connection.registrarFijo(
+            combobox_Tipo.currentText(),
+            textbox_Nota.text(),
+            textbox_Valor.text(),
+        ),
+        combobox_Tipo.setCurrentIndex(0),
+        textbox_Nota.clear(),
+        textbox_Valor.clear()
+    ])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)
         layout_ticketsIngresoFijo.setRowStretch(2, 1)
