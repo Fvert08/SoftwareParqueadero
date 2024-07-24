@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
 from TicketIngresoMoto import generarTicketIngresoMoto
+from TicketIngresoFijo import generarTicketIngresoFijo
 class DatabaseConnection:
     def __init__(self, config):
         self.config = config
@@ -29,6 +30,7 @@ class DatabaseConnection:
             print("Conexión a la base de datos MySQL cerrada.")
     
     def execute_query(self, query, params=None):
+        self.open()
         cursor = self.connection.cursor()
         try:
             if params:
@@ -37,9 +39,11 @@ class DatabaseConnection:
                 cursor.execute(query)
             self.connection.commit()
             print("Consulta ejecutada exitosamente.")
+            self.close()
             return cursor
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
+            self.close()
             return None
     
     def registrarMoto(self, placa, cascos, tiempo, casillero):
@@ -48,7 +52,51 @@ class DatabaseConnection:
         query = """
         INSERT INTO registrosMoto (Casillero, Placa, Cascos, Tipo, fechaIngreso, horaIngreso)
         VALUES (%s, %s, %s, %s, %s, %s)
-        """
+        """                                                                                                      
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
         generarTicketIngresoMoto(tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+    
+    def registrarFijo(self, Tipo, Nota, Valor):
+            fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
+            hora_ingreso = datetime.now().strftime('%H:%M:%S')
+            query = """
+            INSERT INTO Fijos (Tipo, Nota, Valor, fechaIngreso, horaIngreso)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            params = (Tipo, Nota, Valor, fecha_ingreso, hora_ingreso)
+            self.execute_query(query, params)
+            generarTicketIngresoFijo(fecha_ingreso, hora_ingreso,Tipo, Nota, Valor)
+    def registrarCasillero(self, Pc, Posicion, Estado):
+            query = """
+            INSERT INTO Casillero (Pc, Posicion, Estado)
+            VALUES (%s, %s, %s)
+            """
+            params = (Pc, Posicion, Estado)
+            self.execute_query(query, params)
+
+    def executeQueryReturnAll(self, query, params=None):
+        self.open()
+        cursor = self.connection.cursor(dictionary=True)
+        try:
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            result = cursor.fetchall()
+            self.close()
+            return result
+        except Error as e:
+            print(f"Error al ejecutar la consulta: {e}")
+            self.close()
+            return None
+        
+    def cargarTableRegistrosMotos(self):
+        query = "SELECT * FROM registrosMoto;"
+        return self.executeQueryReturnAll(query)
+    def cargarTableCasillero(self):
+        query = "SELECT * FROM Casillero;"
+        return self.executeQueryReturnAll(query)
+    def cargarTableRegistrosFijos(self):
+        query = "SELECT * FROM Fijos;"
+        return self.executeQueryReturnAll(query)
