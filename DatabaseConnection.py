@@ -32,6 +32,7 @@ class DatabaseConnection:
     def execute_query(self, query, params=None):
         self.open()
         cursor = self.connection.cursor()
+        print(f"Intentando conectar con: {query}, {params}")
         try:
             if params:
                 cursor.execute(query, params)
@@ -100,3 +101,10 @@ class DatabaseConnection:
     def cargarTableRegistrosFijos(self):
         query = "SELECT * FROM Fijos;"
         return self.executeQueryReturnAll(query)
+    def cambiarEstadoCasillero (self,idCasillero,estado):
+        query = "UPDATE Casillero SET Estado = %s WHERE id = %s"
+        if estado == "OCUPADO":
+            params = ('DISPONIBLE', idCasillero)
+        else:
+            params = ('OCUPADO', idCasillero)
+        self.execute_query(query, params)
