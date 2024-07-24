@@ -108,3 +108,7 @@ class DatabaseConnection:
         else:
             params = ('OCUPADO', idCasillero)
         self.execute_query(query, params)
+    def eliminarCasillero (self,idCasillero):
+        query = "DELETE FROM Casillero WHERE id = %s"
+        params = (idCasillero,)
+        self.execute_query(query, params)

@@ -173,16 +173,20 @@ class PaginaCasilleros(QWidget):
         ),
         self.actualizarTablaCasillero(self.tabla_registrosCasillero)
     ])
-        boton_bloquear = QPushButton('BLOQUEAR')
-        boton_bloquear.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_bloquear, 2, 4, 2, 2,
-                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
+
         
         boton_eliminar = QPushButton('ELIMINAR')
         boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_eliminar, 2, 4, 2, 2,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
-        
+        #---
+        boton_eliminar.clicked.connect(lambda: [
+            db_connection.eliminarCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+    ])
+        #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')
         titulo_cambiarPc .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
         layout_tickets.addWidget(titulo_cambiarPc, 4, 4, 1, 2,
