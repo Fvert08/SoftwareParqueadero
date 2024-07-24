@@ -14,7 +14,6 @@ class PaginaRegistros(QWidget):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
         # Abre la conexión a la base de datos
-        db_connection.open()
         datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
 
@@ -58,6 +57,46 @@ class PaginaRegistros(QWidget):
             item_total = QTableWidgetItem(str(registro.get('Total', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
             tabla_registros.setItem(row_idx, 9, item_total)
+
+    def actualizarTablaFijos(self,tabla_registros):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection(DB_CONFIG)
+        # Abre la conexión a la base de datos
+        datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
+        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroFijos))
+
+        for row_idx, registro in enumerate(datosTablaRegistroFijos):
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 0, item_id)
+
+            item_casillero = QTableWidgetItem(str(registro['Tipo']))
+            item_casillero.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 1, item_casillero)
+
+            item_placa = QTableWidgetItem(registro['Nota'])
+            item_placa.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 2, item_placa)
+
+            item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
+            item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 3, item_fecha_ingreso)
+
+            item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso', '')))
+            item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 4, item_hora_ingreso)
+
+            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            item_fecha_salida.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 5, item_fecha_salida)
+
+            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            item_hora_salida.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 6, item_hora_salida)
+
+            item_total = QTableWidgetItem(str(registro.get('Valor', '')))
+            item_total.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 7, item_total)
 
     def initUI(self):
        # Crear el widget de la página de registros
@@ -140,7 +179,6 @@ class PaginaRegistros(QWidget):
         db_connection = DatabaseConnection(DB_CONFIG)
 
         # Abre la conexión a la base de datos
-        db_connection.open()
         #Pagina de Usuarios
         page_TablaRegistros = QWidget()
         #Layout de la Pagina de Usuarios
@@ -194,11 +232,11 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
+        # Rellenar la tabla con los datos obtenidos
+        
         datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
-        # Rellenar la tabla con los datos obtenidos
         self.actualizarTablaRegistroMotos(self.tablaRegistrosMotos)
-        db_connection.close
         #--
         layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
         combobox_Tipo = QComboBox()
@@ -243,6 +281,7 @@ class PaginaRegistros(QWidget):
         self.stacked_widgetregistros.addWidget(page_TablaRegistros)
 
     def pantallaTablaFijos(self):
+        db_connection = DatabaseConnection(DB_CONFIG)
         #Pagina de Usuarios
         page_TablaFijo = QWidget()
         #Layout de la Pagina de Usuarios
@@ -259,11 +298,12 @@ class PaginaRegistros(QWidget):
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_TablaFijo.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
          # Crear la tabla de registros
-        tabla_Fijo = QTableWidget(self)
-        tabla_Fijo.setColumnCount(8)  # Definir el número de columnas
-        tabla_Fijo.setHorizontalHeaderLabels(
-            ['ID', 'TIPO','NOTA','H.INGRESO', 'F.INGRESO', 'H.SALIDA', 'F.SALIDA','VALOR'])
-        tabla_Fijo.setStyleSheet("""
+        self.tablaRegistrosFijos = QTableWidget(self)
+        self.tablaRegistrosFijos.setColumnCount(8)  # Definir el número de columnas
+        self.tablaRegistrosFijos.verticalHeader().setVisible(False)
+        self.tablaRegistrosFijos.setHorizontalHeaderLabels(
+            ['ID', 'TIPO','NOTA','F.INGRESO', 'H.INGRESO', 'F.SALIDA', 'H.SALIDA','VALOR'])
+        self.tablaRegistrosFijos.setStyleSheet("""
                     QTableWidget {
                         background-color: #222126;
                         color: white;
@@ -293,10 +333,15 @@ class PaginaRegistros(QWidget):
                 """)
 
        
-        header = tabla_Fijo.horizontalHeader()
+        header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_TablaFijo.addWidget(tabla_Fijo, 1, 0, 7, 9)
+        # Rellenar la tabla con los datos obtenidos
+        datosTablaRegistroFijo= db_connection.cargarTableRegistrosFijos()
+        self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijo))
+        self.actualizarTablaFijos(self.tablaRegistrosFijos)
+        #agregar la tabla
+        layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)
 
         combobox_Tipo = QComboBox()
         combobox_Tipo.addItems(['ID'])

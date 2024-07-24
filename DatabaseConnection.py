@@ -30,6 +30,7 @@ class DatabaseConnection:
             print("Conexión a la base de datos MySQL cerrada.")
     
     def execute_query(self, query, params=None):
+        self.open()
         cursor = self.connection.cursor()
         try:
             if params:
@@ -38,9 +39,11 @@ class DatabaseConnection:
                 cursor.execute(query)
             self.connection.commit()
             print("Consulta ejecutada exitosamente.")
+            self.close()
             return cursor
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
+            self.close()
             return None
     
     def registrarMoto(self, placa, cascos, tiempo, casillero):
@@ -73,6 +76,7 @@ class DatabaseConnection:
             self.execute_query(query, params)
 
     def executeQueryReturnAll(self, query, params=None):
+        self.open()
         cursor = self.connection.cursor(dictionary=True)
         try:
             if params:
@@ -80,9 +84,11 @@ class DatabaseConnection:
             else:
                 cursor.execute(query)
             result = cursor.fetchall()
+            self.close()
             return result
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
+            self.close()
             return None
         
     def cargarTableRegistrosMotos(self):
@@ -90,4 +96,7 @@ class DatabaseConnection:
         return self.executeQueryReturnAll(query)
     def cargarTableCasillero(self):
         query = "SELECT * FROM Casillero;"
+        return self.executeQueryReturnAll(query)
+    def cargarTableRegistrosFijos(self):
+        query = "SELECT * FROM Fijos;"
         return self.executeQueryReturnAll(query)

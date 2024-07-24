@@ -105,10 +105,6 @@ class PaginaTickets(QWidget):
     def pantallaIngresoMotos (self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
-
-        # Abre la conexión a la base de datos
-        db_connection.open()
-
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
         #layout de el registro de los tickets
@@ -214,8 +210,7 @@ class PaginaTickets(QWidget):
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
-        textbox_casillero.clear(),
-        db_connection.close()
+        textbox_casillero.clear()
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
@@ -399,9 +394,6 @@ class PaginaTickets(QWidget):
     def pantallaIngresarFijo(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
-
-        # Abre la conexión a la base de datos
-        db_connection.open()
         # Pagina de ticketes salida moto
         page_ticketsIngresoFijo = QWidget()
         #layout de el registro de los tickets
@@ -476,8 +468,7 @@ class PaginaTickets(QWidget):
         ),
         combobox_Tipo.setCurrentIndex(0),
         textbox_Nota.clear(),
-        textbox_Valor.clear(),
-        db_connection.close()
+        textbox_Valor.clear()
     ])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)

@@ -13,8 +13,6 @@ class PaginaCasilleros(QWidget):
     def actualizarTablaCasillero(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
-        # Abre la conexión a la base de datos
-        db_connection.open()
         datosTablaCasillero= db_connection.cargarTableCasillero()
         self.tabla_registrosCasillero.setRowCount(len(datosTablaCasillero))
         for row_idx, registro in enumerate(datosTablaCasillero):
@@ -34,11 +32,8 @@ class PaginaCasilleros(QWidget):
             item_estado.setTextAlignment(Qt.AlignCenter)
             tabla_registros.setItem(row_idx, 3, item_estado)
     def initUI(self):
-        # Crear la instancia de DatabaseConnection
+         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection(DB_CONFIG)
-
-        # Abre la conexión a la base de datos
-        db_connection.open()
         # Crear el widget de la página de registros
         page_casilleros = QWidget()
 
@@ -106,7 +101,6 @@ class PaginaCasilleros(QWidget):
         combobox_Estado.setCurrentIndex(0),
         textbox_numero.clear(),
         self.actualizarTablaCasillero(self.tabla_registrosCasillero),
-        db_connection.close()
     ])
         self.tabla_registrosCasillero = QTableWidget(self)
         self.tabla_registrosCasillero.setColumnCount(5)  # Definir el número de columnas
@@ -146,7 +140,6 @@ class PaginaCasilleros(QWidget):
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
         #---- aqui se carga la tabla
         self.actualizarTablaCasillero(self.tabla_registrosCasillero)
-        db_connection.close
         layout_tickets.addWidget(self.tabla_registrosCasillero, 2, 0, 5, 4)
 
         boton_desocupar = QPushButton('DESOCUPAR')
