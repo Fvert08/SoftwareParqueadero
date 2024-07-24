@@ -187,10 +187,11 @@ class PaginaTickets(QWidget):
                                 alignment=Qt.AlignCenter | Qt.AlignRight)  # Alineamiento arriba y a la izquierda
         #Crear Textbox "Casilleros disponibles" 
         textbox_casillerosDis = QLineEdit(page_tickets)
-        textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 10px;")
+        textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_casillerosDis.setReadOnly(True)
         textbox_casillerosDis.setFixedWidth(70)  # Establecer el ancho fijo
         textbox_casillerosDis.setFixedHeight(50)
+        textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
         layout_ticketsIngresoMotos.addWidget(textbox_casillerosDis, 5, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir

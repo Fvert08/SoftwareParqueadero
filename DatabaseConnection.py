@@ -29,7 +29,7 @@ class DatabaseConnection:
         if self.connection and self.connection.is_connected():
             self.connection.close()
             print("Conexión a la base de datos MySQL cerrada.")
-            
+
     def execute_query(self, query, params=None):
         self.open()
         cursor = self.connection.cursor()
@@ -112,3 +112,9 @@ class DatabaseConnection:
         query = "DELETE FROM Casillero WHERE id = %s"
         params = (idCasillero,)
         self.execute_query(query, params)
+
+    def casillerosDisponibles(self, pc):
+        query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s"
+        params = ("DISPONIBLE", pc)
+        result = self.executeQueryReturnAll(query, params)
+        return result[0]['count'] if result else 0
