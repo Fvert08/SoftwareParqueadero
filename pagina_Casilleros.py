@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLa
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
 # base de datos
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
@@ -108,36 +109,54 @@ class PaginaCasilleros(QWidget):
         self.tabla_registrosCasillero.setHorizontalHeaderLabels(
             ['NUMERO', 'PC', 'Posicion', 'Estado','Placa'])
         self.tabla_registrosCasillero.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+            QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
+
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
+        """)
         header = self.tabla_registrosCasillero.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
+        #se confihuran las propiedades de latabla, para que se seleccione toda la fila y no se permita editar
+        self.tabla_registrosCasillero.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tabla_registrosCasillero.setSelectionBehavior(QAbstractItemView.SelectRows)
+
         #---- aqui se carga la tabla
         self.actualizarTablaCasillero(self.tabla_registrosCasillero)
         layout_tickets.addWidget(self.tabla_registrosCasillero, 2, 0, 5, 4)
