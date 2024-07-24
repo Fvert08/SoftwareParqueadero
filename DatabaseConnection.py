@@ -11,7 +11,8 @@ class DatabaseConnection:
     
     def open(self):
         try:
-            print(f"Intentando conectar con: {self.config}")
+            print(f"Conexión a la base de datos MySQL abierta")
+            #print(f"Intentando conectar con: {self.config}")
             self.connection = mysql.connector.connect(
                 host=self.config['host'],
                 user=self.config['user'],
@@ -23,16 +24,15 @@ class DatabaseConnection:
                 print("Conexión a la base de datos MySQL establecida.")
         except Error as e:
             print(f"Error al conectar con la base de datos MySQL: {e}")
-    
+
     def close(self):
         if self.connection and self.connection.is_connected():
             self.connection.close()
             print("Conexión a la base de datos MySQL cerrada.")
-    
+            
     def execute_query(self, query, params=None):
         self.open()
         cursor = self.connection.cursor()
-        print(f"Intentando conectar con: {query}, {params}")
         try:
             if params:
                 cursor.execute(query, params)

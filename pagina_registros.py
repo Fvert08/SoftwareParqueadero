@@ -17,7 +17,6 @@ class PaginaRegistros(QWidget):
         # Abre la conexión a la base de datos
         datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
-
         for row_idx, registro in enumerate(datosTablaRegistroMotos):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
@@ -64,7 +63,7 @@ class PaginaRegistros(QWidget):
         db_connection = DatabaseConnection(DB_CONFIG)
         # Abre la conexión a la base de datos
         datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
-        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroFijos))
+        self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijos))
 
         for row_idx, registro in enumerate(datosTablaRegistroFijos):
             item_id = QTableWidgetItem(str(registro['id']))
@@ -249,9 +248,7 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        # Rellenar la tabla con los datos obtenidos
-        datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
-        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
+        # Rellenar la tabla
         self.actualizarTablaRegistroMotos(self.tablaRegistrosMotos)
         #--
         layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
@@ -364,9 +361,7 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        # Rellenar la tabla con los datos obtenidos
-        datosTablaRegistroFijo= db_connection.cargarTableRegistrosFijos()
-        self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijo))
+        # Rellenar la tabla
         self.actualizarTablaFijos(self.tablaRegistrosFijos)
         #agregar la tabla
         layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)
