@@ -315,12 +315,6 @@ class PaginaCasilleros(QWidget):
         self.actualizarTablaCasillero(self.tabla_registrosCasillero),
         self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
         ])
-
-
-        boton_guardar = QPushButton('GUARDAR')
-        boton_guardar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_guardar,7, 6, 2, 3,
-                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
   
         page_casilleros.setLayout(layout_tickets)
 
