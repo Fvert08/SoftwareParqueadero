@@ -193,7 +193,8 @@ class PaginaCasilleros(QWidget):
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
         ),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
     ])
 
         
@@ -228,6 +229,16 @@ class PaginaCasilleros(QWidget):
         boton_guardarPc.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_guardarPc,5, 4, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_guardarPc.clicked.connect(lambda: [
+            db_connection.cambiarPcCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+            combobox_pc.currentText()
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+    ])
+
 
         titulo_tablaOrdenDeLlegada = QLabel('ORDEN DE LLENADO')
         titulo_tablaOrdenDeLlegada.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")

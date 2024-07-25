@@ -128,7 +128,12 @@ class DatabaseConnection:
         else:
             params = ('OCUPADO', idCasillero)
         self.execute_query(query, params)
-    
+
+    def cambiarPcCasillero(self, idCasillero, nuevoPc):
+        query = "UPDATE Casillero SET Pc = %s WHERE id = %s"
+        params = (nuevoPc, idCasillero)
+        self.execute_query(query, params)
+
     def eliminarCasillero(self, idCasillero):
         query = "DELETE FROM Casillero WHERE id = %s"
         params = (idCasillero,)
@@ -164,6 +169,7 @@ class DatabaseConnection:
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
         params = (str(posicionCasillero-1),)
         self.execute_query(query, params)
+
     def bajarPosicionCasillero(self, posicionCasillero):
         if posicionCasillero >= (int(self.posicionDisponible())-1):
             print("No hay posición anterior para mover.")
