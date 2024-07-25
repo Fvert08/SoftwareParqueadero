@@ -13,7 +13,7 @@ class PaginaRegistros(QWidget):
         self.initUI()
     def actualizarTablaRegistroMotos(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
         datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
@@ -60,7 +60,7 @@ class PaginaRegistros(QWidget):
 
     def actualizarTablaFijos(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
         datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
         self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijos))
@@ -176,7 +176,7 @@ class PaginaRegistros(QWidget):
 
     def pantallaTablaRegistros(self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
 
         # Abre la conexión a la base de datos
         #Pagina de Usuarios
@@ -294,7 +294,7 @@ class PaginaRegistros(QWidget):
         self.stacked_widgetregistros.addWidget(page_TablaRegistros)
 
     def pantallaTablaFijos(self):
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         #Pagina de Usuarios
         page_TablaFijo = QWidget()
         #Layout de la Pagina de Usuarios
