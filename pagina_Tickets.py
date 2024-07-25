@@ -173,7 +173,8 @@ class PaginaTickets(QWidget):
         textbox_casillero.setText ("1")
         layout_ticketsIngresoMotos.addWidget(textbox_casillero, 4, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
-        
+        textbox_casillero.setText(str(db_connection.casilleroAsignado(1)))
+
         # Crea un boton para cambiar al siguiente casillero disponible
         boton_cambiarcasillero = QPushButton('Siguiente', page_tickets)
         boton_cambiarcasillero.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -211,7 +212,10 @@ class PaginaTickets(QWidget):
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
-        textbox_casillero.clear()
+        db_connection.cambiarEstadoCasillero(textbox_casillero.text(),"DISPONIBLE"),
+        textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
+        textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
