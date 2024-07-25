@@ -11,6 +11,9 @@ class DatabaseConnection:
         self.connection = None
     
     def open(self):
+        if self.connection is not None and self.connection.is_connected():
+            print("La conexión a la base de datos MySQL ya está abierta.")
+            return
         try:
             print(f"Conexión a la base de datos MySQL abierta")
             self.connection = mysql.connector.connect(
@@ -85,12 +88,12 @@ class DatabaseConnection:
         self.execute_query(query, params)
         generarTicketIngresoFijo(fecha_ingreso, hora_ingreso, Tipo, Nota, Valor)
 
-    def registrarCasillero(self, Pc, Posicion, Estado):
+    def registrarCasillero(self, Numero, Pc, Estado):
         query = """
-        INSERT INTO Casillero (Pc, Posicion, Estado)
-        VALUES (%s, %s, %s)
+        INSERT INTO Casillero (id, Pc, Posicion, Estado)
+        VALUES (%s, %s, %s,%s)
         """
-        params = (Pc, Posicion, Estado)
+        params = (Numero, Pc, self.posicionDisponible(), Estado)
         self.execute_query(query, params)
 
     def cargarTableRegistrosMotos(self):
@@ -99,6 +102,9 @@ class DatabaseConnection:
     
     def cargarTableCasillero(self):
         query = "SELECT * FROM Casillero;"
+        return self.executeQueryReturnAll(query)
+    def cargarTableCasilleroOrden(self):
+        query = "SELECT * FROM Casillero ORDER BY Posicion ASC ;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableRegistrosFijos(self):
@@ -129,3 +135,23 @@ class DatabaseConnection:
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
         return result[0]['id'] if result else None
+    
+    def posicionDisponible(self):
+        query = "SELECT COALESCE(MAX(Posicion) + 1, 1) AS siguientePosicion FROM Casillero"
+        result = self.executeQueryReturnAll(query)
+        return result[0]['siguientePosicion'] if result else 1
+    
+    def subirPosicionCasillero(self, posicionCasillero):
+        if posicionCasillero <= 1:
+            print("No hay posición anterior para mover.")
+            return
+        query = "UPDATE Casillero SET Posicion = 0 WHERE Posicion = %s"
+        params = (str(posicionCasillero),)
+        self.execute_query(query, params)
+        query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = %s"
+        params = (str (posicionCasillero), str(posicionCasillero - 1))
+        self.execute_query(query, params)
+        query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
+        params = (str(posicionCasillero-1),)
+        self.execute_query(query, params)
+

@@ -9,6 +9,8 @@ from pagina_Reportes import PaginaReportes
 from pagina_configuracion import PaginaConfiguracion
 from pagina_creditos import PaginaCreditos
 from PyQt5.QtGui import QScreen
+from DatabaseConnection import DatabaseConnection
+from config import DB_CONFIG
 class MiVentana(QWidget):
     def __init__(self):
         super().__init__()
@@ -151,6 +153,9 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(8)
         elif sender.text() == "Creditos":
             self.stacked_widget.setCurrentIndex(10)
+    def closeEvent(self, event):
+        print("Se cerró la ventana")
+      
 
 # Iniciar la aplicación
 if __name__ == '__main__':
