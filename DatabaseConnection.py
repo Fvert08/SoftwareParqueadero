@@ -1,4 +1,3 @@
-# DatabaseConnection.py
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
@@ -6,16 +5,31 @@ from TicketIngresoMoto import generarTicketIngresoMoto
 from TicketIngresoFijo import generarTicketIngresoFijo
 
 class DatabaseConnection:
+    _instance = None
+
+    @staticmethod
+    def get_instance(config=None):
+        if DatabaseConnection._instance is None:
+            if config is None:
+                raise ValueError("Config must be provided for the first initialization.")
+            DatabaseConnection(config)
+        return DatabaseConnection._instance
+
     def __init__(self, config):
-        self.config = config
-        self.connection = None
-    
+        if DatabaseConnection._instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            DatabaseConnection._instance = self
+            self.config = config
+            self.connection = None
+
     def open(self):
         if self.connection is not None and self.connection.is_connected():
             print("La conexión a la base de datos MySQL ya está abierta.")
             return
+
         try:
-            print(f"Conexión a la base de datos MySQL abierta")
+            print("Intentando abrir la conexión a la base de datos MySQL...")
             self.connection = mysql.connector.connect(
                 host=self.config['host'],
                 user=self.config['user'],
@@ -27,7 +41,7 @@ class DatabaseConnection:
                 print("Conexión a la base de datos MySQL establecida.")
         except Error as e:
             print(f"Error al conectar con la base de datos MySQL: {e}")
-
+            
     def close(self):
         if self.connection and self.connection.is_connected():
             self.connection.close()
@@ -47,8 +61,6 @@ class DatabaseConnection:
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
             return None
-        finally:
-            self.close()
     
     def executeQueryReturnAll(self, query, params=None):
         self.open()
@@ -63,8 +75,6 @@ class DatabaseConnection:
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
             return None
-        finally:
-            self.close()
 
     def registrarMoto(self, placa, cascos, tiempo, casillero):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
@@ -154,4 +164,3 @@ class DatabaseConnection:
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
         params = (str(posicionCasillero-1),)
         self.execute_query(query, params)
-

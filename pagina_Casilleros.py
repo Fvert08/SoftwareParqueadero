@@ -13,7 +13,7 @@ class PaginaCasilleros(QWidget):
         self.initUI()
     def actualizarTablaCasillero(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaCasillero= db_connection.cargarTableCasillero()
         self.tabla_registrosCasillero.setRowCount(len(datosTablaCasillero))
         for row_idx, registro in enumerate(datosTablaCasillero):
@@ -35,7 +35,7 @@ class PaginaCasilleros(QWidget):
 
     def actualizarTablaCasilleroOrden(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaCasilleroOrden= db_connection.cargarTableCasilleroOrden()
         self.tablaOrdenDeLlenado.setRowCount(len(datosTablaCasilleroOrden))
         for row_idx, registro in enumerate(datosTablaCasilleroOrden):
@@ -56,7 +56,7 @@ class PaginaCasilleros(QWidget):
             tabla_registros.setItem(row_idx, 3, item_pisicion)
     def initUI(self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Crear el widget de la página de registros
         page_casilleros = QWidget()
 

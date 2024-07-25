@@ -104,7 +104,7 @@ class PaginaTickets(QWidget):
 
     def pantallaIngresoMotos (self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
         #layout de el registro de los tickets
@@ -398,7 +398,7 @@ class PaginaTickets(QWidget):
 
     def pantallaIngresarFijo(self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes salida moto
         page_ticketsIngresoFijo = QWidget()
         #layout de el registro de los tickets

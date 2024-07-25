@@ -155,7 +155,8 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(10)
     def closeEvent(self, event):
         print("Se cerró la ventana")
-      
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        db_connection.close()
 
 # Iniciar la aplicación
 if __name__ == '__main__':
