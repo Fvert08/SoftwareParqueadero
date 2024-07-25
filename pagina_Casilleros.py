@@ -303,12 +303,20 @@ class PaginaCasilleros(QWidget):
         
         ])
 
-
         boton_bajar = QPushButton('BAJAR')
         boton_bajar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_bajar, 2, 9, 2, 1,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
-        
+        boton_bajar.clicked.connect(lambda: [
+            db_connection.bajarPosicionCasillero(
+            int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
+        ),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
+        ])
+
+
         boton_guardar = QPushButton('GUARDAR')
         boton_guardar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_guardar,7, 6, 2, 3,

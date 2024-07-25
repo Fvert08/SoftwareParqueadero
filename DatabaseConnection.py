@@ -153,7 +153,7 @@ class DatabaseConnection:
     
     def subirPosicionCasillero(self, posicionCasillero):
         if posicionCasillero <= 1:
-            print("No hay posición anterior para mover.")
+            print("No hay posición siguiente para mover.")
             return
         query = "UPDATE Casillero SET Posicion = 0 WHERE Posicion = %s"
         params = (str(posicionCasillero),)
@@ -163,4 +163,17 @@ class DatabaseConnection:
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
         params = (str(posicionCasillero-1),)
+        self.execute_query(query, params)
+    def bajarPosicionCasillero(self, posicionCasillero):
+        if posicionCasillero >= (int(self.posicionDisponible())-1):
+            print("No hay posición anterior para mover.")
+            return
+        query = "UPDATE Casillero SET Posicion = 0 WHERE Posicion = %s"
+        params = (str(posicionCasillero),)
+        self.execute_query(query, params)
+        query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = %s"
+        params = (str (posicionCasillero), str(posicionCasillero + 1))
+        self.execute_query(query, params)
+        query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
+        params = (str(posicionCasillero+1),)
         self.execute_query(query, params)
