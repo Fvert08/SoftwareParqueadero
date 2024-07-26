@@ -3,15 +3,17 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
+from PyQt5.QtCore import pyqtSignal
 # base de datos
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
 class PaginaCasilleros(QWidget):
+    senalActualizarTextboxesTicketsRegistrosMotos = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
-    def actualizarTablaCasillero(self,tabla_registros):
+    def actualizarTablaCasillero(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaCasillero= db_connection.cargarTableCasillero()
@@ -19,21 +21,21 @@ class PaginaCasilleros(QWidget):
         for row_idx, registro in enumerate(datosTablaCasillero):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 0, item_id)
+            self.tabla_registrosCasillero.setItem(row_idx, 0, item_id)
 
             item_casillero = QTableWidgetItem(str(registro['Pc']))
             item_casillero.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 1, item_casillero)
+            self.tabla_registrosCasillero.setItem(row_idx, 1, item_casillero)
 
             item_pisicion = QTableWidgetItem(str(registro['Posicion']))
             item_pisicion.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 2, item_pisicion)
+            self.tabla_registrosCasillero.setItem(row_idx, 2, item_pisicion)
 
             item_estado = QTableWidgetItem(str(registro['Estado']))
             item_estado.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 3, item_estado)
+            self.tabla_registrosCasillero.setItem(row_idx, 3, item_estado)
 
-    def actualizarTablaCasilleroOrden(self,tabla_registros):
+    def actualizarTablaCasilleroOrden(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaCasilleroOrden= db_connection.cargarTableCasilleroOrden()
@@ -41,19 +43,23 @@ class PaginaCasilleros(QWidget):
         for row_idx, registro in enumerate(datosTablaCasilleroOrden):
             item_id = QTableWidgetItem(str(registro['Posicion']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 0, item_id)
+            self.tablaOrdenDeLlenado.setItem(row_idx, 0, item_id)
 
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 1, item_id)
+            self.tablaOrdenDeLlenado.setItem(row_idx, 1, item_id)
 
             item_casillero = QTableWidgetItem(str(registro['Estado']))
             item_casillero.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 2, item_casillero)
+            self.tablaOrdenDeLlenado.setItem(row_idx, 2, item_casillero)
 
             item_pisicion = QTableWidgetItem(str(registro['Pc']))
             item_pisicion.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 3, item_pisicion)
+            self.tablaOrdenDeLlenado.setItem(row_idx, 3, item_pisicion)
+    def actualizarTablasCasilleros (self):
+        self.actualizarTablaCasillero()
+        self.actualizarTablaCasilleroOrden()
+        self.senalActualizarTextboxesTicketsRegistrosMotos.emit()
     def initUI(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -180,7 +186,7 @@ class PaginaCasilleros(QWidget):
         self.tabla_registrosCasillero.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         #---- aqui se carga la tabla
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+        self.actualizarTablaCasillero()
         layout_tickets.addWidget(self.tabla_registrosCasillero, 2, 0, 5, 4)
 
         boton_desocupar = QPushButton('DESOCUPAR')
@@ -193,8 +199,7 @@ class PaginaCasilleros(QWidget):
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
         ),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
-        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+        self.actualizarTablasCasilleros()
     ])
 
         
@@ -207,7 +212,7 @@ class PaginaCasilleros(QWidget):
             db_connection.eliminarCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
         ),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+        self.actualizarTablaCasillero()
     ])
         #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')
@@ -235,8 +240,7 @@ class PaginaCasilleros(QWidget):
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             combobox_pc.currentText()
         ),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
-        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+        self.actualizarTablasCasilleros()
     ])
 
 
@@ -297,7 +301,7 @@ class PaginaCasilleros(QWidget):
         self.tablaOrdenDeLlenado.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tablaOrdenDeLlenado.setSelectionBehavior(QAbstractItemView.SelectRows)
         #---- aqui se carga la tabla
-        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+        self.actualizarTablaCasilleroOrden()
         layout_tickets.addWidget(self.tablaOrdenDeLlenado, 2, 6, 5, 3)
 
         boton_subir = QPushButton('SUBIR')
@@ -308,8 +312,7 @@ class PaginaCasilleros(QWidget):
             db_connection.subirPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
-        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablasCasilleros(),
         self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
         
         ])
@@ -322,8 +325,7 @@ class PaginaCasilleros(QWidget):
             db_connection.bajarPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
-        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablasCasilleros(),
         self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
         ])
   

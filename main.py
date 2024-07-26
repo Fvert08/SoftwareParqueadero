@@ -131,6 +131,10 @@ class MiVentana(QWidget):
         self.pagina_creditos = PaginaCreditos(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_creditos)
 
+        #Conexiones de señales entre páginas
+        self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
+        self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.connect(self.pagina_tickets.actualizarTextboxCasilleros) # conectar señal para actualizar los textbox de casilleros de registrar botos
+
     def cambiar_color(self):
         sender = self.sender()
         sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")

@@ -3,12 +3,17 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
+from PyQt5.QtCore import pyqtSignal
 class PaginaTickets(QWidget):
+    senalActualizarTablasCasilleros= pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
-
+    def actualizarTextboxCasilleros (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
+        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
     def initUI(self):
         #----Paginas
         #Pagina del menú
@@ -165,15 +170,15 @@ class PaginaTickets(QWidget):
         label_casillero.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsIngresoMotos.addWidget(label_casillero, 4, 2, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignRight)  # Alineamiento arriba y a la izquierda
-        textbox_casillero = QLineEdit(page_tickets)
-        textbox_casillero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_casillero.setReadOnly(True)
-        textbox_casillero.setFixedWidth(100)  # Establecer el ancho fijo
-        textbox_casillero.setFixedHeight(50)
-        textbox_casillero.setText ("1")
-        layout_ticketsIngresoMotos.addWidget(textbox_casillero, 4, 3, 1, 1,
+        self.textbox_casillero = QLineEdit(page_tickets)
+        self.textbox_casillero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_casillero.setReadOnly(True)
+        self.textbox_casillero.setFixedWidth(100)  # Establecer el ancho fijo
+        self.textbox_casillero.setFixedHeight(50)
+        self.textbox_casillero.setText ("1")
+        layout_ticketsIngresoMotos.addWidget(self.textbox_casillero, 4, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
-        textbox_casillero.setText(str(db_connection.casilleroAsignado(1)))
+        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1)))
 
         # Crea un boton para cambiar al siguiente casillero disponible
         boton_cambiarcasillero = QPushButton('Siguiente', page_tickets)
@@ -187,13 +192,13 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(label_casillerosDis, 5, 2, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignRight)  # Alineamiento arriba y a la izquierda
         #Crear Textbox "Casilleros disponibles" 
-        textbox_casillerosDis = QLineEdit(page_tickets)
-        textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_casillerosDis.setReadOnly(True)
-        textbox_casillerosDis.setFixedWidth(70)  # Establecer el ancho fijo
-        textbox_casillerosDis.setFixedHeight(50)
-        textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
-        layout_ticketsIngresoMotos.addWidget(textbox_casillerosDis, 5, 3, 1, 1,
+        self.textbox_casillerosDis = QLineEdit(page_tickets)
+        self.textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_casillerosDis.setReadOnly(True)
+        self.textbox_casillerosDis.setFixedWidth(70)  # Establecer el ancho fijo
+        self.textbox_casillerosDis.setFixedHeight(50)
+        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        layout_ticketsIngresoMotos.addWidget(self.textbox_casillerosDis, 5, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
         boton_imprimir = QPushButton('Imprimir', page_tickets)
@@ -207,15 +212,14 @@ class PaginaTickets(QWidget):
             textbox_placa.text(),
             combobox_cascos.currentText(),
             combobox_Tiempo.currentText(),
-            textbox_casillero.text()
+            self.textbox_casillerosDis.text()
         ),
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
-        db_connection.cambiarEstadoCasillero(textbox_casillero.text(),"DISPONIBLE"),
-        textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
-        textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
-        
+        db_connection.cambiarEstadoCasillero(self.textbox_casillero.text(),"DISPONIBLE"),
+        self.actualizarTextboxCasilleros(),
+        self.senalActualizarTablasCasilleros.emit()
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
