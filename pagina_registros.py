@@ -13,11 +13,10 @@ class PaginaRegistros(QWidget):
         self.initUI()
     def actualizarTablaRegistroMotos(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
         datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
-
         for row_idx, registro in enumerate(datosTablaRegistroMotos):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
@@ -61,10 +60,10 @@ class PaginaRegistros(QWidget):
 
     def actualizarTablaFijos(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
         datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
-        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroFijos))
+        self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijos))
 
         for row_idx, registro in enumerate(datosTablaRegistroFijos):
             item_id = QTableWidgetItem(str(registro['id']))
@@ -177,7 +176,7 @@ class PaginaRegistros(QWidget):
 
     def pantallaTablaRegistros(self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
 
         # Abre la conexión a la base de datos
         #Pagina de Usuarios
@@ -249,10 +248,7 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        # Rellenar la tabla con los datos obtenidos
-        
-        datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
-        self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
+        # Rellenar la tabla
         self.actualizarTablaRegistroMotos(self.tablaRegistrosMotos)
         #--
         layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
@@ -298,7 +294,7 @@ class PaginaRegistros(QWidget):
         self.stacked_widgetregistros.addWidget(page_TablaRegistros)
 
     def pantallaTablaFijos(self):
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         #Pagina de Usuarios
         page_TablaFijo = QWidget()
         #Layout de la Pagina de Usuarios
@@ -365,9 +361,7 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        # Rellenar la tabla con los datos obtenidos
-        datosTablaRegistroFijo= db_connection.cargarTableRegistrosFijos()
-        self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijo))
+        # Rellenar la tabla
         self.actualizarTablaFijos(self.tablaRegistrosFijos)
         #agregar la tabla
         layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)

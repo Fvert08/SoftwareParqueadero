@@ -13,7 +13,7 @@ class PaginaCasilleros(QWidget):
         self.initUI()
     def actualizarTablaCasillero(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaCasillero= db_connection.cargarTableCasillero()
         self.tabla_registrosCasillero.setRowCount(len(datosTablaCasillero))
         for row_idx, registro in enumerate(datosTablaCasillero):
@@ -32,9 +32,31 @@ class PaginaCasilleros(QWidget):
             item_estado = QTableWidgetItem(str(registro['Estado']))
             item_estado.setTextAlignment(Qt.AlignCenter)
             tabla_registros.setItem(row_idx, 3, item_estado)
+
+    def actualizarTablaCasilleroOrden(self,tabla_registros):
+         # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        datosTablaCasilleroOrden= db_connection.cargarTableCasilleroOrden()
+        self.tablaOrdenDeLlenado.setRowCount(len(datosTablaCasilleroOrden))
+        for row_idx, registro in enumerate(datosTablaCasilleroOrden):
+            item_id = QTableWidgetItem(str(registro['Posicion']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 0, item_id)
+
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 1, item_id)
+
+            item_casillero = QTableWidgetItem(str(registro['Estado']))
+            item_casillero.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 2, item_casillero)
+
+            item_pisicion = QTableWidgetItem(str(registro['Pc']))
+            item_pisicion.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 3, item_pisicion)
     def initUI(self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Crear el widget de la página de registros
         page_casilleros = QWidget()
 
@@ -93,9 +115,9 @@ class PaginaCasilleros(QWidget):
         boton_agregar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_agregar,8, 2, 1, 2, alignment=Qt.AlignLeft)
         boton_agregar.clicked.connect(lambda: [
-            db_connection.registrarCasillero(    
-            combobox_pc.currentText(),
+            db_connection.registrarCasillero(
             textbox_numero.text(),
+            combobox_pc.currentText(),
             combobox_Estado.currentText()
         ),
         combobox_pc.setCurrentIndex(0),
@@ -153,7 +175,7 @@ class PaginaCasilleros(QWidget):
         header = self.tabla_registrosCasillero.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        #se confihuran las propiedades de latabla, para que se seleccione toda la fila y no se permita editar
+        #se configuran las propiedades de latabla, para que se seleccione toda la fila y no se permita editar
         self.tabla_registrosCasillero.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_registrosCasillero.setSelectionBehavior(QAbstractItemView.SelectRows)
 
@@ -165,17 +187,29 @@ class PaginaCasilleros(QWidget):
         boton_desocupar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_desocupar, 2, 4, 2, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
-        
-        boton_bloquear = QPushButton('BLOQUEAR')
-        boton_bloquear.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_bloquear, 2, 4, 2, 2,
-                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_desocupar.clicked.connect(lambda: [
+            db_connection.cambiarEstadoCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+    ])
+
         
         boton_eliminar = QPushButton('ELIMINAR')
         boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_eliminar, 2, 4, 2, 2,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
-        
+        #---
+        boton_eliminar.clicked.connect(lambda: [
+            db_connection.eliminarCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero)
+    ])
+        #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')
         titulo_cambiarPc .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
         layout_tickets.addWidget(titulo_cambiarPc, 4, 4, 1, 2,
@@ -195,61 +229,103 @@ class PaginaCasilleros(QWidget):
         boton_guardarPc.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_guardarPc,5, 4, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_guardarPc.clicked.connect(lambda: [
+            db_connection.cambiarPcCasillero(
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+            combobox_pc.currentText()
+        ),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+    ])
+
 
         titulo_tablaOrdenDeLlegada = QLabel('ORDEN DE LLENADO')
         titulo_tablaOrdenDeLlegada.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
         layout_tickets.addWidget(titulo_tablaOrdenDeLlegada, 1, 6, 1, 3, alignment= Qt.AlignCenter |Qt.AlignTop)
+        self.tablaOrdenDeLlenado = QTableWidget(self)
+        self.tablaOrdenDeLlenado.setColumnCount(4)  # Definir el número de columnas
+        self.tablaOrdenDeLlenado.verticalHeader().setVisible(False)
+        self.tablaOrdenDeLlenado.setHorizontalHeaderLabels(
+            ['POSICION','NUMERO', 'ESTADO', 'PC'])
+        self.tablaOrdenDeLlenado.setStyleSheet("""
+            QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-        tabla_tablaOrdenDeLlegada = QTableWidget(self)
-        tabla_tablaOrdenDeLlegada.setColumnCount(3)  # Definir el número de columnas
-        tabla_tablaOrdenDeLlegada.setHorizontalHeaderLabels(
-            ['NUMERO', 'ESTADO', 'PC'])
-        tabla_tablaOrdenDeLlegada.setStyleSheet("""
-         QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
-        header = tabla_tablaOrdenDeLlegada.horizontalHeader()
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
+        """)
+        header = self.tablaOrdenDeLlenado.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_tickets.addWidget(tabla_tablaOrdenDeLlegada, 2, 6, 5, 3)
+         #se configuran las propiedades de latabla, para que se seleccione toda la fila y no se permita editar
+        self.tablaOrdenDeLlenado.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tablaOrdenDeLlenado.setSelectionBehavior(QAbstractItemView.SelectRows)
+        #---- aqui se carga la tabla
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado)
+        layout_tickets.addWidget(self.tablaOrdenDeLlenado, 2, 6, 5, 3)
 
         boton_subir = QPushButton('SUBIR')
         boton_subir.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_subir, 2, 9, 2, 1,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
+        boton_subir.clicked.connect(lambda: [
+            db_connection.subirPosicionCasillero(
+            int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
+        ),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
+        
+        ])
+
         boton_bajar = QPushButton('BAJAR')
         boton_bajar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_bajar, 2, 9, 2, 1,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
-        
-        boton_guardar = QPushButton('GUARDAR')
-        boton_guardar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_guardar,7, 6, 2, 3,
-                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
+        boton_bajar.clicked.connect(lambda: [
+            db_connection.bajarPosicionCasillero(
+            int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
+        ),
+        self.actualizarTablaCasilleroOrden(self.tablaOrdenDeLlenado),
+        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
+        ])
   
         page_casilleros.setLayout(layout_tickets)
 

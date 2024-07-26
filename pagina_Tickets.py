@@ -122,7 +122,7 @@ class PaginaTickets(QWidget):
 
     def pantallaIngresoMotos (self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes ingreso
         page_tickets = QWidget()
         #layout de el registro de los tickets
@@ -191,7 +191,8 @@ class PaginaTickets(QWidget):
         textbox_casillero.setText ("1")
         layout_ticketsIngresoMotos.addWidget(textbox_casillero, 4, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
-        
+        textbox_casillero.setText(str(db_connection.casilleroAsignado(1)))
+
         # Crea un boton para cambiar al siguiente casillero disponible
         boton_cambiarcasillero = QPushButton('Siguiente', page_tickets)
         boton_cambiarcasillero.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -205,10 +206,11 @@ class PaginaTickets(QWidget):
                                 alignment=Qt.AlignCenter | Qt.AlignRight)  # Alineamiento arriba y a la izquierda
         #Crear Textbox "Casilleros disponibles" 
         textbox_casillerosDis = QLineEdit(page_tickets)
-        textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 10px;")
+        textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_casillerosDis.setReadOnly(True)
         textbox_casillerosDis.setFixedWidth(70)  # Establecer el ancho fijo
         textbox_casillerosDis.setFixedHeight(50)
+        textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
         layout_ticketsIngresoMotos.addWidget(textbox_casillerosDis, 5, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
@@ -228,7 +230,10 @@ class PaginaTickets(QWidget):
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
-        textbox_casillero.clear()
+        db_connection.cambiarEstadoCasillero(textbox_casillero.text(),"DISPONIBLE"),
+        textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
+        textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
@@ -411,7 +416,7 @@ class PaginaTickets(QWidget):
 
     def pantallaIngresarFijo(self):
          # Crear la instancia de DatabaseConnection
-        db_connection = DatabaseConnection(DB_CONFIG)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes salida moto
         page_ticketsIngresoFijo = QWidget()
         #layout de el registro de los tickets
