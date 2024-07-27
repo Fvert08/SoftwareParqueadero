@@ -98,6 +98,25 @@ class DatabaseConnection:
         self.execute_query(query, params)
         generarTicketIngresoFijo(fecha_ingreso, hora_ingreso, Tipo, Nota, Valor)
 
+    def registrarSalidaMoto(self, idRegistro,totalPagado):
+        fecha_salida = datetime.now().strftime('%Y-%m-%d')
+        hora_salida = datetime.now().strftime('%H:%M:%S')
+        query = "UPDATE registrosMoto SET fechaSalida = %s, horaSalida = %s, Total = %s WHERE id = %s"
+        params = (fecha_salida, hora_salida, totalPagado, idRegistro)
+        self.execute_query(query, params)
+    
+    def buscarMotoPorId(self, idRegistro):
+        query = "SELECT * FROM registrosMoto WHERE id = %s"
+        params = (idRegistro,)
+        result = self.executeQueryReturnAll(query, params)
+        return dict(result[0]) if result else None
+    
+    def buscarMotoPorPlaca(self, placaRegistro):
+        query = "SELECT * FROM registrosMoto WHERE Placa = %s AND fechaSalida IS NULL"
+        params = (placaRegistro,)
+        result = self.executeQueryReturnAll(query, params)
+        return dict(result[0]) if result else None
+
     def registrarCasillero(self, Numero, Pc, Estado):
         query = """
         INSERT INTO Casillero (id, Pc, Posicion, Estado)

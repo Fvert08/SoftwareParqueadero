@@ -9,9 +9,11 @@ from pagina_Reportes import PaginaReportes
 from pagina_configuracion import PaginaConfiguracion
 from pagina_creditos import PaginaCreditos
 from PyQt5.QtGui import QScreen
+from PyQt5.QtCore import pyqtSignal
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
 class MiVentana(QWidget):
+    #Señales para actualizar tablas y textbox de otras pantallas
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -131,6 +133,11 @@ class MiVentana(QWidget):
         self.pagina_creditos = PaginaCreditos(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_creditos)
 
+        #Conexiones de señales entre páginas
+        self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
+        self.pagina_tickets.senalActualizarTablaRegistroMotos.connect(self.pagina_registros.actualizarTablaRegistroMotos) # Actualizar la tabla de ingresos motos
+        self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.connect(self.pagina_tickets.actualizarTextboxCasilleros) # conectar señal para actualizar los textbox de casilleros de registrar botos
+        
     def cambiar_color(self):
         sender = self.sender()
         sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
@@ -142,10 +149,13 @@ class MiVentana(QWidget):
                 self.ultimo_boton_seleccionado.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
+            self.pagina_tickets.senalActualizarTablaRegistroMotos.emit()#Se actualiza la tabla registros motos
             self.stacked_widget.setCurrentIndex(0)
         elif sender.text() == "Generar Tickets":
+            self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.emit()#Se actualizan las text boxes de registro moto
             self.stacked_widget.setCurrentIndex(2)
         elif sender.text() == "Gestionar casilleros":
+            self.pagina_tickets.senalActualizarTablasCasilleros.emit()#Se actualizan las tablas de casilleros
             self.stacked_widget.setCurrentIndex(4)
         elif sender.text() == "Gestión de reportes":
             self.stacked_widget.setCurrentIndex(6)
