@@ -11,7 +11,7 @@ class PaginaRegistros(QWidget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
-    def actualizarTablaRegistroMotos(self,tabla_registros):
+    def actualizarTablaRegistroMotos(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
@@ -20,43 +20,43 @@ class PaginaRegistros(QWidget):
         for row_idx, registro in enumerate(datosTablaRegistroMotos):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 0, item_id)
+            self.tablaRegistrosMotos.setItem(row_idx, 0, item_id)
 
             item_casillero = QTableWidgetItem(str(registro['Casillero']))
             item_casillero.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 1, item_casillero)
+            self.tablaRegistrosMotos.setItem(row_idx, 1, item_casillero)
 
             item_placa = QTableWidgetItem(registro['Placa'])
             item_placa.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 2, item_placa)
+            self.tablaRegistrosMotos.setItem(row_idx, 2, item_placa)
 
             item_cascos = QTableWidgetItem(str(registro['Cascos']))
             item_cascos.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 3, item_cascos)
+            self.tablaRegistrosMotos.setItem(row_idx, 3, item_cascos)
 
             item_tipo = QTableWidgetItem(registro['Tipo'])
             item_tipo.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 4, item_tipo)
+            self.tablaRegistrosMotos.setItem(row_idx, 4, item_tipo)
 
             item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
             item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 5, item_fecha_ingreso)
+            self.tablaRegistrosMotos.setItem(row_idx, 5, item_fecha_ingreso)
 
             item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso', '')))
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 6, item_hora_ingreso)
+            self.tablaRegistrosMotos.setItem(row_idx, 6, item_hora_ingreso)
 
             item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 7, item_fecha_salida)
+            self.tablaRegistrosMotos.setItem(row_idx, 7, item_fecha_salida)
 
             item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 8, item_hora_salida)
+            self.tablaRegistrosMotos.setItem(row_idx, 8, item_hora_salida)
 
             item_total = QTableWidgetItem(str(registro.get('Total', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 9, item_total)
+            self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
 
     def actualizarTablaFijos(self,tabla_registros):
          # Crear la instancia de DatabaseConnection
@@ -249,7 +249,7 @@ class PaginaRegistros(QWidget):
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
         # Rellenar la tabla
-        self.actualizarTablaRegistroMotos(self.tablaRegistrosMotos)
+        self.actualizarTablaRegistroMotos()
         #--
         layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
         combobox_Tipo = QComboBox()

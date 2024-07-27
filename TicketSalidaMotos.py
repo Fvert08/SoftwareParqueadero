@@ -1,9 +1,14 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
-
+import win32print
+import win32ui
+from PIL import ImageWin
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar,Placa,Casillero, ruta_logo, ruta_guardado):
+def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar,Placa,Casillero):
     width, height = 1720, 2080  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+    directorio_actual = os.path.dirname(os.path.abspath(__file__))
+    ruta_logo = os.path.join(directorio_actual, "Logo.png")
+    ruta_guardado = os.path.join(directorio_actual, "TicketSalidaMoto.png")
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -55,22 +60,53 @@ def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,Tiem
     d.text((720, 2000), f"Casillero: {Casillero}", font=font, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
+    imprimirTicket(ruta_guardado)
     print(f"Recibo de salida generado")
 
-# Ejemplo de uso
-Placa = "ABC12C"
-Cascos = "2"
-Casillero = "4"
-FechaIngreso = "13-07-2024"
-FechaSalida = "13-07-2024"
-HoraIngreso = "10:10:00"
-HoraSalida= "10:17:00"
-TiempoTotal = "00:07:00"
-TotalAPagar = "$1.000"
-# Obtener la ruta del directorio actual
-directorio_actual = os.path.dirname(os.path.abspath(__file__))
+def mm_to_pixels(mm, dpi):
+    return int((mm / 25.4) * dpi)
+# Función para imprimir el recibo
 
-ruta_logo = os.path.join(directorio_actual, "Logo.png")
-ruta_guardado = os.path.join(directorio_actual, "TicketSalidaMoto.png")
+def imprimirTicket(ruta_archivo):
+    try:
+        # Obtener el nombre de la impresora predeterminada
+        impresora_predeterminada = win32print.GetDefaultPrinter()
+        print(f"Impresora predeterminada: {impresora_predeterminada}")
 
-generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar,Placa,Casillero, ruta_logo, ruta_guardado)
+        # Supongamos una resolución de impresora de 203 DPI
+        dpi = 203
+        paper_width_mm = 70  # Ajustar a 70mm para hacer la imagen más pequeña
+        paper_width_px = mm_to_pixels(paper_width_mm, dpi)
+
+        # Abrir la impresora
+        hPrinter = win32print.OpenPrinter(impresora_predeterminada)
+        try:
+            # Crear un trabajo de impresión
+            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketSalidaMoto", None, "RAW"))
+            try:
+                win32print.StartPagePrinter(hPrinter)
+                
+                # Cargar la imagen
+                bmp = Image.open(ruta_archivo)
+                bmp = bmp.resize((paper_width_px, int(bmp.height * (paper_width_px / bmp.width))), Image.LANCZOS)
+                dib = ImageWin.Dib(bmp)
+                
+                # Obtener el contexto de dispositivo
+                hDC = win32ui.CreateDC()
+                hDC.CreatePrinterDC(impresora_predeterminada)
+                
+                # Ajustar el tamaño de la imagen al tamaño del papel
+                hDC.StartDoc("TicketSalidaMoto")
+                hDC.StartPage()
+                dib.draw(hDC.GetHandleOutput(), (0, 0, bmp.size[0], bmp.size[1]))
+                hDC.EndPage()
+                hDC.EndDoc()
+                
+                win32print.EndPagePrinter(hPrinter)
+            finally:
+                win32print.EndDocPrinter(hPrinter)
+        finally:
+            win32print.ClosePrinter(hPrinter)
+        print("Impresión enviada correctamente.")
+    except Exception as e:
+        print(f"Error al intentar imprimir: {e}")
