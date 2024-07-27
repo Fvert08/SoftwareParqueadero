@@ -4,12 +4,85 @@ from PyQt5.QtCore import Qt,QSize
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QApplication, QMessageBox, QWidget
+from datetime import datetime
+from TicketSalidaMotos import generarTicketSalidaMoto
 class PaginaTickets(QWidget):
     senalActualizarTablasCasilleros= pyqtSignal()
+    senalActualizarTablaRegistroMotos = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+
+    def calcularTiempoTranscurrido (self,horaIngreso,fechaIngreso,fechaHoraARestar):
+          # Convertir timedelta a un objeto time
+        horaIngreso_time = (datetime.min + horaIngreso).time()
+        # Combinar fecha y hora de ingreso en un objeto datetime
+        fechaHoraIngreso = datetime.combine(fechaIngreso, horaIngreso_time)
+        # Calcular la diferencia
+        diferencia = fechaHoraARestar - fechaHoraIngreso
+            # Obtener horas, minutos y segundos
+        horas, resto = divmod(diferencia.total_seconds(), 3600)
+        minutos, segundos = divmod(resto, 60)
+        # Formatear el resultado
+        return  horas,minutos,segundos
+
+
+    def cargarBusquedaSalidaMoto (self):
+        datosBusquedaSalidaMoto = None
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        if self.textboxCodigoSacarMoto.text():
+            datosBusquedaSalidaMoto= db_connection.buscarMotoPorId(self.textboxCodigoSacarMoto.text())
+        else:
+            if self.textboxPlacaSacarMoto.text():
+                datosBusquedaSalidaMoto= db_connection.buscarMotoPorPlaca(self.textboxPlacaSacarMoto.text())    
+                print (f"placa a buscar: {self.textboxPlacaSacarMoto.text()}")      
+        if datosBusquedaSalidaMoto:
+            self.textboxCodigoSacarMoto.setText(str(datosBusquedaSalidaMoto['id']))
+            self.textboxPlacaSacarMoto.setText(str(datosBusquedaSalidaMoto['Placa']))
+            self.textboxCasilleroSacarMoto.setText(str(datosBusquedaSalidaMoto['Casillero']))
+            self.textboxCascosSacarMoto.setText(str(datosBusquedaSalidaMoto['Cascos']))
+            self.textboxPagadoPorSacarMoto.setText(str(datosBusquedaSalidaMoto['Tipo']))
+            self.textboxFIngresoSacarMoto.setText(str(datosBusquedaSalidaMoto['fechaIngreso']))
+            self.textboxHIngresoSacarMoto.setText(str(datosBusquedaSalidaMoto['horaIngreso']))
+            
+            if datosBusquedaSalidaMoto['fechaSalida']: #Si ya fue registrada mostrarlos datos
+                self.textboxFSalidaSacarMoto.setText(str(datosBusquedaSalidaMoto['fechaSalida']))
+                self.textboxHSalidaSacarMoto.setText(str(datosBusquedaSalidaMoto['horaSalida']))
+                self.textboxTotalAPagarSacarMoto.setText(str(datosBusquedaSalidaMoto['Total']))
+                # Convertir timedelta a un objeto time
+                horaSalida_time = (datetime.min + datosBusquedaSalidaMoto['horaSalida']).time()
+                # Combinar fecha y hora de ingreso en un objeto datetime
+                fechaHoraSalida = datetime.combine(datosBusquedaSalidaMoto['fechaSalida'], horaSalida_time)
+                horas,minutos,segundos = self.calcularTiempoTranscurrido(datosBusquedaSalidaMoto['horaIngreso'], datosBusquedaSalidaMoto['fechaIngreso'],fechaHoraSalida)
+                resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
+                self.textboxTiempoTotalSacarMoto.setText(resultado)
+                self.boton_facturar.setDisabled(True)#Deshabilitar botón para imprimir
+
+            else:#Si no, calcular el tiepo y el total a pagar
+                fechaActual = datetime.now().strftime('%Y-%m-%d')
+                horaActual = datetime.now().strftime('%H:%M:%S')
+                self.textboxFSalidaSacarMoto.setText(str(fechaActual))
+                self.textboxHSalidaSacarMoto.setText(str(horaActual))
+                #Calcular tiempo transcurrido
+                horas,minutos,segundos = self.calcularTiempoTranscurrido(datosBusquedaSalidaMoto['horaIngreso'], datosBusquedaSalidaMoto['fechaIngreso'],datetime.now())
+                resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
+                self.textboxTiempoTotalSacarMoto.setText(resultado)
+                # Cambiar estas variables segun los precios a cobrar del parqueadero
+                cobroPorHora= 1000 #Cobro por hora del parqueadero
+                cobroPorDia = 5000 #Cobro ppr dia del parqueadero
+                #-------------------------------------------------------------------
+                if (minutos or segundos)>0: #Si Se lleva a subre pasar un segundo o un minuto de más se cobrará una hora completa
+                    horas+=1
+                if str(datosBusquedaSalidaMoto['Tipo']) == "Dia":
+                    self.totalAPagarSacarMoto = cobroPorDia
+                else:
+                    self.totalAPagarSacarMoto = horas*cobroPorHora
+                self.textboxTotalAPagarSacarMoto.setText(f"${str(self.totalAPagarSacarMoto)}")
+                self.boton_facturar.setEnabled(True)# Habilitar Botón para imprimir
+        else:
+            print("No se encontraron registros")
     def actualizarTextboxCasilleros (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
@@ -62,7 +135,20 @@ class PaginaTickets(QWidget):
 
         # Crea un boton para ingresar a generar ticket ingresar moto
         boton_IngresarM = QPushButton()
-        boton_IngresarM.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_IngresarM.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         boton_IngresarM.setIcon(QIcon('IngresoMoto.png'))  # Establecer el icono
         boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
@@ -71,7 +157,20 @@ class PaginaTickets(QWidget):
 
         # Crea un boton para ingresar a generar ticket sacar moto
         boton_SacarM = QPushButton()
-        boton_SacarM.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_SacarM.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         boton_SacarM.setIcon(QIcon('SalidaMoto.png'))  # Establecer el icono
         boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
@@ -80,7 +179,20 @@ class PaginaTickets(QWidget):
 
         # Crea un boton para ingresar a generar ticket ingresar Fijo
         boton_IngresarF = QPushButton()
-        boton_IngresarF.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_IngresarF.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         boton_IngresarF.setIcon(QIcon('IngresoFijo.png'))  # Establecer el icono
         boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarF, 2, 1, 5, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
@@ -88,7 +200,20 @@ class PaginaTickets(QWidget):
 
         # Crea un boton para ingresar a generar ticket sacar Fijo
         boton_SacarF = QPushButton()
-        boton_SacarF.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_SacarF.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         boton_SacarF.setIcon(QIcon('SalidaFijo.png'))  # Establecer el icono
         boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarF, 2, 2, 5, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
@@ -182,7 +307,20 @@ class PaginaTickets(QWidget):
 
         # Crea un boton para cambiar al siguiente casillero disponible
         boton_cambiarcasillero = QPushButton('Siguiente', page_tickets)
-        boton_cambiarcasillero.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_cambiarcasillero.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 15px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 4, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignRight)
 
@@ -202,8 +340,20 @@ class PaginaTickets(QWidget):
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
         boton_imprimir = QPushButton('Imprimir', page_tickets)
-        boton_imprimir.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        boton_imprimir.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         layout_ticketsIngresoMotos.addWidget(boton_imprimir, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop | Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -219,7 +369,8 @@ class PaginaTickets(QWidget):
         combobox_Tiempo.setCurrentIndex(0),
         db_connection.cambiarEstadoCasillero(self.textbox_casillero.text(),"DISPONIBLE"),
         self.actualizarTextboxCasilleros(),
-        self.senalActualizarTablasCasilleros.emit()
+        self.senalActualizarTablasCasilleros.emit(),
+        self.senalActualizarTablaRegistroMotos.emit()
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
@@ -236,6 +387,7 @@ class PaginaTickets(QWidget):
         
 
     def pantallaSacarMoto (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes salida moto
         page_ticketsSalidaMoto = QWidget()
         #layout de el registro de los tickets
@@ -258,27 +410,43 @@ class PaginaTickets(QWidget):
         label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSalidaMotos.addWidget(label_codigo, 1, 2, 1, 1, alignment=Qt.AlignCenter | Qt.AlignRight)
         # Text box codigo
-        textbox_codigo = QLineEdit()
-        textbox_codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_codigo.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_codigo, 1, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
+        self.textboxCodigoSacarMoto = QLineEdit()
+        self.textboxCodigoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxCodigoSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxCodigoSacarMoto, 1, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
         #-----
         # Crear el label "Placa" y la textbox
         label_placa = QLabel('Placa:')
         label_placa.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSalidaMotos.addWidget(label_placa, 2, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight)
         # Text box codigo
-        textbox_Placa = QLineEdit()
-        textbox_Placa.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Placa.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_Placa, 2, 3, 1, 1, alignment=Qt.AlignTop| Qt.AlignLeft)
+        self.textboxPlacaSacarMoto = QLineEdit()
+        self.textboxPlacaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxPlacaSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxPlacaSacarMoto, 2, 3, 1, 1, alignment=Qt.AlignTop| Qt.AlignLeft)
         #----
         # Crea un boton para buscar
         boton_buscar = QPushButton('Buscar')
-        boton_buscar.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        boton_buscar.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         layout_ticketsSalidaMotos.addWidget(boton_buscar, 1, 6, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignLeft)
+        boton_buscar.clicked.connect(lambda: [
+            self.cargarBusquedaSalidaMoto(),
+            db_connection.cambiarEstadoCasillero(self.textboxCasilleroSacarMoto.text(),"OCUPADO"),
+    ])
 #----Mostrar---
     #---Fila 1
         # Crear el label "Casillero" y la textbox
@@ -286,101 +454,148 @@ class PaginaTickets(QWidget):
         label_casillero.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_casillero, 3, 1, 1, 1, alignment=Qt.AlignTop)
         # Text box casillero
-        textbox_casillero = QLineEdit()
-        textbox_casillero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_casillero.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_casillero, 4, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_casillero.setReadOnly(True)
+        self.textboxCasilleroSacarMoto = QLineEdit()
+        self.textboxCasilleroSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxCasilleroSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget( self.textboxCasilleroSacarMoto, 4, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxCasilleroSacarMoto.setReadOnly(True)
         # Crear el label "Cascos" y la textbox
         label_cascos = QLabel('Cascos')
         label_cascos.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_cascos, 3, 3, 1, 1, alignment=Qt.AlignTop)
         # Text box Cascos
-        textbox_cascos = QLineEdit()
-        textbox_cascos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_cascos.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_cascos, 4, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_cascos.setReadOnly(True)
+        self.textboxCascosSacarMoto = QLineEdit()
+        self.textboxCascosSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxCascosSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxCascosSacarMoto, 4, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxCascosSacarMoto.setReadOnly(True)
      #---Fila 2
         # Crear el label "Fecha ingreso" y la textbox
         label_FIngreso = QLabel('Fecha ingreso')
         label_FIngreso.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_FIngreso, 5, 1, 1, 2, alignment=Qt.AlignTop)
         # Text box casillero
-        textbox_FIngreso = QLineEdit()
-        textbox_FIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_FIngreso.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_FIngreso, 6, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_FIngreso.setReadOnly(True)
+        self.textboxFIngresoSacarMoto = QLineEdit()
+        self.textboxFIngresoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxFIngresoSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxFIngresoSacarMoto, 6, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxFIngresoSacarMoto.setReadOnly(True)
         # Crear el label "Hora ingreso" y la textbox
         label_HIngreso = QLabel('Hora ingreso')
         label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_HIngreso, 5, 3, 1, 2, alignment=Qt.AlignTop)
         # Text box Cascos
-        textbox_HIngreso = QLineEdit()
-        textbox_HIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_HIngreso.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_HIngreso, 6, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_HIngreso.setReadOnly(True)
+        self.textboxHIngresoSacarMoto = QLineEdit()
+        self.textboxHIngresoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxHIngresoSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxHIngresoSacarMoto, 6, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxHIngresoSacarMoto.setReadOnly(True)
     #---Fila 3
         # Crear el label "Fecha salida" y la textbox
         label_FSalida= QLabel('Fecha salida')
         label_FSalida.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_FSalida, 7, 1, 1, 2, alignment=Qt.AlignTop)
-        # Text box casillero
-        textbox_FSalida = QLineEdit()
-        textbox_FSalida.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_FSalida.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_FSalida, 8, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_FSalida.setReadOnly(True)
+        # Text box Fecha de salida
+        self.textboxFSalidaSacarMoto = QLineEdit()
+        self.textboxFSalidaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxFSalidaSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxFSalidaSacarMoto, 8, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxFSalidaSacarMoto.setReadOnly(True)
         # Crear el label "Hora salida" y la textbox
         label_HSalida = QLabel('Hora salida')
         label_HSalida.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_HSalida, 7, 3, 1, 2, alignment=Qt.AlignTop)
-        # Text box Cascos
-        textbox_HSalida = QLineEdit()
-        textbox_HSalida.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_HSalida.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_HSalida, 8, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_HSalida.setReadOnly(True)
+        # Text box Hoira salida
+        self.textboxHSalidaSacarMoto = QLineEdit()
+        self.textboxHSalidaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxHSalidaSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxHSalidaSacarMoto, 8, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxHSalidaSacarMoto.setReadOnly(True)
     #---Fila 4
         # Crear el label "Pagado por" y la textbox
         label_PagadoPor= QLabel('Pagado por')
         label_PagadoPor.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_PagadoPor, 9, 1, 1, 2, alignment=Qt.AlignTop)
         # Text box casillero
-        textbox_PagadoPor = QLineEdit()
-        textbox_PagadoPor.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_PagadoPor.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_PagadoPor, 10, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_PagadoPor.setReadOnly(True)
+        self.textboxPagadoPorSacarMoto = QLineEdit()
+        self.textboxPagadoPorSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxPagadoPorSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxPagadoPorSacarMoto, 10, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxPagadoPorSacarMoto.setReadOnly(True)
         # Crear el label "Tiempo total" y la textbox
         label_TiempoTotal = QLabel('Tiempo total')
         label_TiempoTotal.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_TiempoTotal, 9, 3, 1, 2, alignment=Qt.AlignTop)
         # Text box tiempo total
-        textbox_TiempoTotal = QLineEdit()
-        textbox_TiempoTotal.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_TiempoTotal.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_TiempoTotal, 10, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_TiempoTotal.setReadOnly(True)
+        self.textboxTiempoTotalSacarMoto = QLineEdit()
+        self.textboxTiempoTotalSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxTiempoTotalSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxTiempoTotalSacarMoto, 10, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxTiempoTotalSacarMoto.setReadOnly(True)
 #----Facturar
         # Crear el label "Total a pagar" y la textbox
         label_TotalAPagar = QLabel('Total a pagar')
         label_TotalAPagar.setStyleSheet("color: #FFFFFF;font-size: 37px;")
         layout_ticketsSalidaMotos.addWidget(label_TotalAPagar, 6, 6, 1, 2, alignment=Qt.AlignTop| Qt.AlignCenter)
         # Text box Cascos
-        textbox_TotalAPagar = QLineEdit()
-        textbox_TotalAPagar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
-        textbox_TotalAPagar.setFixedWidth(200)
-        layout_ticketsSalidaMotos.addWidget(textbox_TotalAPagar, 7, 6, 1, 1, alignment=Qt.AlignTop| Qt.AlignCenter)
-        textbox_TotalAPagar.setReadOnly(True)
+        self.textboxTotalAPagarSacarMoto = QLineEdit()
+        self.textboxTotalAPagarSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 27px;")
+        self.textboxTotalAPagarSacarMoto.setFixedWidth(200)
+        layout_ticketsSalidaMotos.addWidget(self.textboxTotalAPagarSacarMoto, 7, 6, 1, 1, alignment=Qt.AlignTop| Qt.AlignCenter)
+        self.textboxTotalAPagarSacarMoto.setReadOnly(True)
         # Crea un boton para facturar
-        boton_facturar = QPushButton('Facturar')
-        boton_facturar.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 27px; border-radius: 15px; padding: 15px 30px;")
-        layout_ticketsSalidaMotos.addWidget(boton_facturar, 8, 6, 2, 2,
+        self.boton_facturar = QPushButton('Facturar')
+        self.boton_facturar.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
+        self.boton_facturar.setDisabled(True)
+        # Conectar el botón de imprimir a la función registrarMoto
+        self.boton_facturar.clicked.connect(lambda: [
+            db_connection.registrarSalidaMoto(
+            self.textboxCodigoSacarMoto.text(),
+            self.textboxTotalAPagarSacarMoto.text()
+        ),
+        generarTicketSalidaMoto(self.textboxFIngresoSacarMoto.text(),
+                                self.textboxFSalidaSacarMoto.text(),
+                                self.textboxHIngresoSacarMoto.text(),
+                                self.textboxHSalidaSacarMoto.text(),
+                                self.textboxTiempoTotalSacarMoto.text(),
+                                self.textboxTotalAPagarSacarMoto.text(),
+                                self.textboxPlacaSacarMoto.text(),
+                                self.textboxCasilleroSacarMoto.text()),
+        db_connection.cambiarEstadoCasillero(self.textboxCasilleroSacarMoto.text(),"OCUPADO"),
+        self.textboxCodigoSacarMoto.clear(),
+        self.textboxPlacaSacarMoto.clear (),
+        self.textboxCasilleroSacarMoto.clear(),
+        self.textboxCascosSacarMoto.clear(),
+        self.textboxFIngresoSacarMoto.clear(),
+        self.textboxHIngresoSacarMoto.clear(),
+        self.textboxFSalidaSacarMoto.clear(),
+        self.textboxHSalidaSacarMoto.clear(),
+        self.textboxPagadoPorSacarMoto.clear(),
+        self.textboxTiempoTotalSacarMoto.clear(),
+        self.textboxTotalAPagarSacarMoto.clear(),
+        self.senalActualizarTablasCasilleros.emit(),
+        self.senalActualizarTablaRegistroMotos.emit(),
+        self.boton_facturar.setDisabled(True)
+    ])
+        
+        
+        layout_ticketsSalidaMotos.addWidget(self.boton_facturar, 8, 6, 2, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
+        
+
         # Establecer las proporciones de las filas en la cuadricula
 
         layout_ticketsSalidaMotos.setRowStretch(0, 0)
@@ -464,8 +679,20 @@ class PaginaTickets(QWidget):
     #---Fila 5
         # Boton para imprimir
         boton_Imprimir = QPushButton('Imprimir')
-        boton_Imprimir.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        boton_Imprimir.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 5, 3, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -520,8 +747,20 @@ class PaginaTickets(QWidget):
         layout_ticketsSacarFijo.addWidget(textbox_codigo, 1, 2, 1, 2, alignment=Qt.AlignCenter)
         # Boton para buscar
         boton_Buscar = QPushButton('Buscar')
-        boton_Buscar.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        boton_Buscar.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         layout_ticketsSacarFijo.addWidget(boton_Buscar, 1, 5, 1, 2,
                                 alignment=Qt.AlignCenter)
     #---Mostrar
@@ -611,8 +850,20 @@ class PaginaTickets(QWidget):
         textbox_TotalApagar.setReadOnly(True)
         # Crea un boton para facturar
         boton_facturar = QPushButton('Facturar')
-        boton_facturar.setStyleSheet(
-            "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
+        boton_facturar.setStyleSheet("""
+            QPushButton {
+                color: white; 
+                background-color: #222125; 
+                font-size: 30px; 
+                border-radius: 15px; 
+                padding: 15px 30px;
+            }
+            QPushButton:pressed {
+                background-color: #444444;
+                color: lightgray;
+                border: 2px solid #555555;
+            }
+        """)
         layout_ticketsSacarFijo.addWidget(boton_facturar, 7, 5, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
         # Establecer las proporciones de las filas en la cuadricula
