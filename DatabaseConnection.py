@@ -140,6 +140,10 @@ class DatabaseConnection:
         query = "SELECT * FROM Fijos;"
         return self.executeQueryReturnAll(query)
     
+    def cargarTableMensualidades(self):
+        query = "SELECT * FROM Mensualidad;"
+        return self.executeQueryReturnAll(query)
+    
     def cambiarEstadoCasillero(self, idCasillero, estado):
         query = "UPDATE Casillero SET Estado = %s WHERE id = %s"
         if estado == "OCUPADO":
