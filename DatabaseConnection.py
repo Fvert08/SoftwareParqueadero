@@ -104,6 +104,13 @@ class DatabaseConnection:
         query = "UPDATE registrosMoto SET fechaSalida = %s, horaSalida = %s, Total = %s WHERE id = %s"
         params = (fecha_salida, hora_salida, totalPagado, idRegistro)
         self.execute_query(query, params)
+
+    def registrarSalidaFijo(self, idRegistroFijo):
+        fecha_salida = datetime.now().strftime('%Y-%m-%d')
+        hora_salida = datetime.now().strftime('%H:%M:%S')
+        query = "UPDATE Fijos SET fechaSalida = %s, horaSalida = %s WHERE id = %s"
+        params = (fecha_salida, hora_salida, idRegistroFijo)
+        self.execute_query(query, params)
     
     def buscarMotoPorId(self, idRegistro):
         query = "SELECT * FROM registrosMoto WHERE id = %s"
@@ -125,6 +132,12 @@ class DatabaseConnection:
         params = (Numero, Pc, self.posicionDisponible(), Estado)
         self.execute_query(query, params)
 
+    def buscarFijoPorId(self, idRegistroFijo):
+        query = "SELECT * FROM Fijos WHERE id = %s"
+        params = (idRegistroFijo,)
+        result = self.executeQueryReturnAll(query, params)
+        return dict(result[0]) if result else None
+
     def cargarTableRegistrosMotos(self):
         query = "SELECT * FROM registrosMoto;"
         return self.executeQueryReturnAll(query)
@@ -141,7 +154,7 @@ class DatabaseConnection:
         return self.executeQueryReturnAll(query)
     
     def cargarTableMensualidades(self):
-        query = "SELECT * FROM Mensualidad;"
+        query = "SELECT * FROM Mensualidades;"
         return self.executeQueryReturnAll(query)
     
     def cambiarEstadoCasillero(self, idCasillero, estado):

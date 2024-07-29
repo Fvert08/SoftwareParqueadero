@@ -105,7 +105,7 @@ class PaginaRegistros(QWidget):
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
 
-    def actualizarTablaFijos(self,tabla_registros):
+    def actualizarTablaFijos(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
@@ -115,35 +115,35 @@ class PaginaRegistros(QWidget):
         for row_idx, registro in enumerate(datosTablaRegistroFijos):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 0, item_id)
+            self.tablaRegistrosFijos.setItem(row_idx, 0, item_id)
 
             item_casillero = QTableWidgetItem(str(registro['Tipo']))
             item_casillero.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 1, item_casillero)
+            self.tablaRegistrosFijos.setItem(row_idx, 1, item_casillero)
 
             item_placa = QTableWidgetItem(registro['Nota'])
             item_placa.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 2, item_placa)
+            self.tablaRegistrosFijos.setItem(row_idx, 2, item_placa)
 
             item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
             item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 3, item_fecha_ingreso)
+            self.tablaRegistrosFijos.setItem(row_idx, 3, item_fecha_ingreso)
 
             item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso', '')))
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 4, item_hora_ingreso)
+            self.tablaRegistrosFijos.setItem(row_idx, 4, item_hora_ingreso)
 
             item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 5, item_fecha_salida)
+            self.tablaRegistrosFijos.setItem(row_idx, 5, item_fecha_salida)
 
             item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 6, item_hora_salida)
+            self.tablaRegistrosFijos.setItem(row_idx, 6, item_hora_salida)
 
             item_total = QTableWidgetItem(str(registro.get('Valor', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 7, item_total)
+            self.tablaRegistrosFijos.setItem(row_idx, 7, item_total)
 
     def initUI(self):
        # Crear el widget de la página de registros
@@ -409,7 +409,7 @@ class PaginaRegistros(QWidget):
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
         # Rellenar la tabla
-        self.actualizarTablaFijos(self.tablaRegistrosFijos)
+        self.actualizarTablaFijos()
         #agregar la tabla
         layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)
 
