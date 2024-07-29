@@ -7,9 +7,11 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMessageBox, QWidget
 from datetime import datetime
 from TicketSalidaMotos import generarTicketSalidaMoto
+from TicketSalidaFijo import generarTicketSalidaFijo
 class PaginaTickets(QWidget):
     senalActualizarTablasCasilleros= pyqtSignal()
     senalActualizarTablaRegistroMotos = pyqtSignal()
+    senalActualizarTablaRegistroFijos = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -28,7 +30,40 @@ class PaginaTickets(QWidget):
         # Formatear el resultado
         return  horas,minutos,segundos
 
-
+    def cargarBusquedaSalidaFijo (self):
+        datosBusquedaSalidaFijos = None
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        if self.textboxCodigoFijo.text():
+            datosBusquedaSalidaFijos= db_connection.buscarFijoPorId(self.textboxCodigoFijo.text())      
+        if datosBusquedaSalidaFijos:
+            self.textboxTipoFijos.setText(str(datosBusquedaSalidaFijos['Tipo']))
+            self.textboxNotaFijos.setText(str(datosBusquedaSalidaFijos['Nota']))
+            self.textboxFIngresoFijos.setText(str(datosBusquedaSalidaFijos['fechaIngreso']))
+            self.textboxHIngresoFijos.setText(str(datosBusquedaSalidaFijos['horaIngreso']))
+            self.textboxTotalApagarFijos.setText(str(datosBusquedaSalidaFijos['Valor']))
+            if datosBusquedaSalidaFijos['fechaSalida']: #Si ya fue registrada mostrarlos datos
+                self.textboxHSalidaFijos.setText(str(datosBusquedaSalidaFijos['horaSalida']))
+                self.textboxFSalidaFijos.setText(str(datosBusquedaSalidaFijos['fechaSalida']))
+                # Convertir timedelta a un objeto time
+                horaSalida_time = (datetime.min + datosBusquedaSalidaFijos['horaSalida']).time()
+                # Combinar fecha y hora de ingreso en un objeto datetime
+                fechaHoraSalida = datetime.combine(datosBusquedaSalidaFijos['fechaSalida'], horaSalida_time)
+                horas,minutos,segundos = self.calcularTiempoTranscurrido(datosBusquedaSalidaFijos['horaIngreso'], datosBusquedaSalidaFijos['fechaIngreso'],fechaHoraSalida)
+                resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
+                self.textboxTiempoTotalFijos.setText(resultado)
+                self.botonfacturarFijos.setDisabled(True)#Deshabilitar botón para imprimir
+            else:#Si no, calcular el tiepo y el total a pagar
+                fechaActual = datetime.now().strftime('%Y-%m-%d')
+                horaActual = datetime.now().strftime('%H:%M:%S')
+                self.textboxFSalidaFijos.setText(str(fechaActual))
+                self.textboxHSalidaFijos.setText(str(horaActual))
+                #Calcular tiempo transcurrido
+                horas,minutos,segundos = self.calcularTiempoTranscurrido(datosBusquedaSalidaFijos['horaIngreso'], datosBusquedaSalidaFijos['fechaIngreso'],datetime.now())
+                resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
+                self.textboxTiempoTotalFijos.setText(resultado)
+                self.botonfacturarFijos.setEnabled(True)# Habilitar Botón para imprimir
+        else:
+            print("No se encontraron registros")
     def cargarBusquedaSalidaMoto (self):
         datosBusquedaSalidaMoto = None
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -46,7 +81,6 @@ class PaginaTickets(QWidget):
             self.textboxPagadoPorSacarMoto.setText(str(datosBusquedaSalidaMoto['Tipo']))
             self.textboxFIngresoSacarMoto.setText(str(datosBusquedaSalidaMoto['fechaIngreso']))
             self.textboxHIngresoSacarMoto.setText(str(datosBusquedaSalidaMoto['horaIngreso']))
-            
             if datosBusquedaSalidaMoto['fechaSalida']: #Si ya fue registrada mostrarlos datos
                 self.textboxFSalidaSacarMoto.setText(str(datosBusquedaSalidaMoto['fechaSalida']))
                 self.textboxHSalidaSacarMoto.setText(str(datosBusquedaSalidaMoto['horaSalida']))
@@ -83,6 +117,7 @@ class PaginaTickets(QWidget):
                 self.boton_facturar.setEnabled(True)# Habilitar Botón para imprimir
         else:
             print("No se encontraron registros")
+
     def actualizarTextboxCasilleros (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
@@ -608,14 +643,9 @@ class PaginaTickets(QWidget):
         self.senalActualizarTablaRegistroMotos.emit(),
         self.boton_facturar.setDisabled(True)
     ])
-        
-        
         layout_ticketsSalidaMotos.addWidget(self.boton_facturar, 8, 6, 2, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
-        
-
         # Establecer las proporciones de las filas en la cuadricula
-
         layout_ticketsSalidaMotos.setRowStretch(0, 0)
         layout_ticketsSalidaMotos.setRowStretch(1, 1)
         layout_ticketsSalidaMotos.setRowStretch(2, 1)
@@ -722,7 +752,8 @@ class PaginaTickets(QWidget):
         ),
         combobox_Tipo.setCurrentIndex(0),
         textbox_Nota.clear(),
-        textbox_Valor.clear()
+        textbox_Valor.clear(),
+        self.senalActualizarTablaRegistroFijos.emit(),
     ])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)
@@ -737,6 +768,7 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.addWidget(page_ticketsIngresoFijo)
 
     def pantallaSacarFijo(self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes salida moto
         page_ticketsSacarFijo = QWidget()
         #layout de el registro de los tickets
@@ -759,13 +791,13 @@ class PaginaTickets(QWidget):
         label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_codigo, 1, 1, 1, 2, alignment=Qt.AlignCenter)
         # Text box Codigo
-        textbox_codigo = QLineEdit()
-        textbox_codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_codigo.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_codigo, 1, 2, 1, 2, alignment=Qt.AlignCenter)
+        self.textboxCodigoFijo = QLineEdit()
+        self.textboxCodigoFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxCodigoFijo.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxCodigoFijo, 1, 2, 1, 2, alignment=Qt.AlignCenter)
         # Boton para buscar
-        boton_Buscar = QPushButton('Buscar')
-        boton_Buscar.setStyleSheet("""
+        botonBuscarFijos = QPushButton('Buscar')
+        botonBuscarFijos.setStyleSheet("""
             QPushButton {
                 color: white; 
                 background-color: #222125; 
@@ -779,7 +811,9 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        layout_ticketsSacarFijo.addWidget(boton_Buscar, 1, 5, 1, 2,
+        botonBuscarFijos.clicked.connect(lambda: [
+            self.cargarBusquedaSalidaFijo(),])
+        layout_ticketsSacarFijo.addWidget(botonBuscarFijos, 1, 5, 1, 2,
                                 alignment=Qt.AlignCenter)
     #---Mostrar
     #---Fila 1
@@ -788,87 +822,87 @@ class PaginaTickets(QWidget):
         label_Tipo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_Tipo, 3, 1, 1, 2, alignment=Qt.AlignTop)
         # Text box tipo
-        textbox_Tipo = QLineEdit()
-        textbox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Tipo.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_Tipo, 4, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_Tipo.setReadOnly(True)
+        self.textboxTipoFijos = QLineEdit()
+        self.textboxTipoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxTipoFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxTipoFijos, 4, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxTipoFijos.setReadOnly(True)
         # Crear el label "Nota" y la textbox
         label_Nota = QLabel('Nota')
         label_Nota.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_Nota, 3, 3, 1, 2, alignment=Qt.AlignTop)
         # Text box Cascos
-        textbox_Nota = QLineEdit()
-        textbox_Nota.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Nota.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_Nota, 4, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_Nota.setReadOnly(True)
+        self.textboxNotaFijos = QLineEdit()
+        self.textboxNotaFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxNotaFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxNotaFijos, 4, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxNotaFijos.setReadOnly(True)
      #---Fila 2
         # Crear el label "Fecha ingreso" y la textbox
         label_FIngreso = QLabel('Fecha ingreso')
         label_FIngreso.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_FIngreso, 5, 1, 1, 2, alignment=Qt.AlignTop)
         # Text box casillero
-        textbox_FIngreso = QLineEdit()
-        textbox_FIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_FIngreso.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_FIngreso, 6, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_FIngreso.setReadOnly(True)
+        self.textboxFIngresoFijos = QLineEdit()
+        self.textboxFIngresoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxFIngresoFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxFIngresoFijos, 6, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxFIngresoFijos.setReadOnly(True)
         # Crear el label "Hora ingreso" y la textbox
         label_HIngreso = QLabel('Hora ingreso')
         label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_HIngreso, 5, 3, 1, 2, alignment=Qt.AlignTop)
         # Text box Cascos
-        textbox_HIngreso = QLineEdit()
-        textbox_HIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_HIngreso.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_HIngreso, 6, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_HIngreso.setReadOnly(True)
+        self.textboxHIngresoFijos = QLineEdit()
+        self.textboxHIngresoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxHIngresoFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxHIngresoFijos, 6, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxHIngresoFijos.setReadOnly(True)
     #---Fila 3
         # Crear el label "Fecha salida" y la textbox
         label_FSalida= QLabel('Fecha salida')
         label_FSalida.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_FSalida, 7, 1, 1, 2, alignment=Qt.AlignTop)
         # Text box casillero
-        textbox_FSalida = QLineEdit()
-        textbox_FSalida.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_FSalida.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_FSalida, 8, 1, 1, 1, alignment=Qt.AlignTop)
-        textbox_FSalida.setReadOnly(True)
+        self.textboxFSalidaFijos = QLineEdit()
+        self.textboxFSalidaFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxFSalidaFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxFSalidaFijos, 8, 1, 1, 1, alignment=Qt.AlignTop)
+        self.textboxFSalidaFijos.setReadOnly(True)
         # Crear el label "Hora salida" y la textbox
         label_HSalida = QLabel('Hora salida')
         label_HSalida.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_HSalida, 7, 3, 1, 2, alignment=Qt.AlignTop)
         # Text box Cascos
-        textbox_HSalida = QLineEdit()
-        textbox_HSalida.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_HSalida.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_HSalida, 8, 3, 1, 1, alignment= Qt.AlignTop)
-        textbox_HSalida.setReadOnly(True)
+        self.textboxHSalidaFijos = QLineEdit()
+        self.textboxHSalidaFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxHSalidaFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxHSalidaFijos, 8, 3, 1, 1, alignment= Qt.AlignTop)
+        self.textboxHSalidaFijos.setReadOnly(True)
     #---Fila 4
         # Crear el label "Tiempo total" y la textbox
         label_TiempoTotal = QLabel('Tiempo total')
         label_TiempoTotal.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_TiempoTotal, 9, 1, 1, 2, alignment=Qt.AlignTop)
         # Text box tiempo total
-        textbox_TiempoTotal = QLineEdit()
-        textbox_TiempoTotal.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_TiempoTotal.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_TiempoTotal, 10, 1, 1, 1, alignment= Qt.AlignTop)
-        textbox_TiempoTotal.setReadOnly(True)
+        self.textboxTiempoTotalFijos = QLineEdit()
+        self.textboxTiempoTotalFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxTiempoTotalFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxTiempoTotalFijos, 10, 1, 1, 1, alignment= Qt.AlignTop)
+        self.textboxTiempoTotalFijos.setReadOnly(True)
         # Crear el label "Total a pagar" y la textbox
         label_TotalApagar= QLabel('Total a pagar')
         label_TotalApagar.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSacarFijo.addWidget(label_TotalApagar, 5, 5, 1, 2, alignment=Qt.AlignTop)
         # Text box total a pagar
-        textbox_TotalApagar = QLineEdit()
-        textbox_TotalApagar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_TotalApagar.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(textbox_TotalApagar, 6, 5, 1, 1, alignment=Qt.AlignTop)
-        textbox_TotalApagar.setReadOnly(True)
+        self.textboxTotalApagarFijos = QLineEdit()
+        self.textboxTotalApagarFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxTotalApagarFijos.setFixedWidth(240)
+        layout_ticketsSacarFijo.addWidget(self.textboxTotalApagarFijos, 6, 5, 1, 1, alignment=Qt.AlignTop)
+        self.textboxTotalApagarFijos.setReadOnly(True)
         # Crea un boton para facturar
-        boton_facturar = QPushButton('Facturar')
-        boton_facturar.setStyleSheet("""
+        self.botonfacturarFijos = QPushButton('Facturar')
+        self.botonfacturarFijos.setStyleSheet("""
             QPushButton {
                 color: white; 
                 background-color: #222125; 
@@ -882,7 +916,36 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        layout_ticketsSacarFijo.addWidget(boton_facturar, 7, 5, 1, 2,
+        self.botonfacturarFijos.setDisabled(True)
+        # Conectar el botón de imprimir a la función registrarMoto
+        self.botonfacturarFijos.clicked.connect(lambda: [
+            db_connection.registrarSalidaFijo(
+            self.textboxCodigoFijo.text()
+        ),
+        generarTicketSalidaFijo(self.textboxTipoFijos.text(),
+                                self.textboxNotaFijos.text(),
+                                self.textboxFIngresoFijos.text(),
+                                self.textboxFSalidaFijos.text(),
+                                self.textboxHIngresoFijos.text(),
+                                self.textboxHSalidaFijos.text(),
+                                self.textboxTiempoTotalFijos.text(),
+                                self.textboxTotalApagarFijos.text()
+                                ),
+        self.textboxCodigoFijo.clear(),
+        self.textboxTipoFijos.clear (),
+        self.textboxNotaFijos.clear(),
+        self.textboxFIngresoFijos.clear(),
+        self.textboxHIngresoFijos.clear(),
+        self.textboxFSalidaFijos.clear(),
+        self.textboxHSalidaFijos.clear(),
+        self.textboxTotalApagarFijos.clear(),
+        self.textboxHIngresoFijos.clear(),
+        self.textboxFSalidaFijos.clear(),
+        self.senalActualizarTablaRegistroFijos.emit(),
+        self.botonfacturarFijos.setDisabled(True)
+    ])
+
+        layout_ticketsSacarFijo.addWidget(self.botonfacturarFijos, 7, 5, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsSacarFijo.setRowStretch(0, 0)

@@ -137,7 +137,7 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
         self.pagina_tickets.senalActualizarTablaRegistroMotos.connect(self.pagina_registros.actualizarTablaRegistroMotos) # Actualizar la tabla de ingresos motos
         self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.connect(self.pagina_tickets.actualizarTextboxCasilleros) # conectar señal para actualizar los textbox de casilleros de registrar botos
-        
+        self.pagina_tickets.senalActualizarTablaRegistroFijos.connect(self.pagina_registros.actualizarTablaFijos) #conectar señal para actualizar las tablas de Fijos
     def cambiar_color(self):
         sender = self.sender()
         sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
@@ -150,6 +150,7 @@ class MiVentana(QWidget):
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
             self.pagina_tickets.senalActualizarTablaRegistroMotos.emit()#Se actualiza la tabla registros motos
+            self.pagina_tickets.senalActualizarTablaRegistroFijos.emit()#Se actualiza la tabla registro Fijos
             self.stacked_widget.setCurrentIndex(0)
         elif sender.text() == "Generar Tickets":
             self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.emit()#Se actualizan las text boxes de registro moto
