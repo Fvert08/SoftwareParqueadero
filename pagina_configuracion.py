@@ -35,6 +35,7 @@ class PaginaConfiguracion(QWidget):
         self.pantallaConexion()
         self.pantallaPC()
         self.pantallaSuscripcion()
+        
         #------------------------Menu lateral---------------------------
         # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
         linea_vertical = QFrame()
@@ -42,6 +43,7 @@ class PaginaConfiguracion(QWidget):
         linea_vertical.setLineWidth(1)
         linea_vertical.setStyleSheet("color: #FFFFFF;")
         layout_configuracion.addWidget(linea_vertical, 0, 0, 8, 1)
+
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('Menú')
         titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
@@ -66,6 +68,7 @@ class PaginaConfiguracion(QWidget):
         boton_Usuarios.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_configuracion.addWidget(boton_Usuarios, 1, 1, 1, 1, alignment=Qt.AlignHCenter  | Qt.AlignCenter)
         boton_Usuarios.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(0))
+
         # Crea un boton para cambiar a las configuraciones de Conexión
         boton_Conexion = QPushButton("CONEXIÓN")
         boton_Conexion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")

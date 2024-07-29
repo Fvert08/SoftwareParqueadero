@@ -11,6 +11,53 @@ class PaginaRegistros(QWidget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+
+    def actualizarTablaMensualidades(self,tabla_Mensualidades):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        datosTablaMensualides = db_connection.cargarTableMensualidades()
+        self.tabla_Mensualidades.setRowCount(len(datosTablaMensualides))
+        for row_idx, registro in enumerate(datosTablaMensualides):
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 0, item_id)
+
+            item_placa = QTableWidgetItem(registro['Placa'])
+            item_placa.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 1, item_placa)
+
+            item_nombre = QTableWidgetItem(registro['Nombre'])
+            item_nombre.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 2, item_nombre)
+
+            item_telefono = QTableWidgetItem(registro['Telefono'])
+            item_telefono.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 3, item_telefono)
+
+            item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
+            item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 4, item_fecha_ingreso)
+
+            item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso')))
+            item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 5, item_hora_ingreso)
+
+            # Convertir la fecha de ingreso a un objeto datetime si es necesario
+            if isinstance(registro['fechaIngreso'], (datetime, date)):
+                fecha_ingreso = registro['fechaIngreso']
+            else:
+                fecha_ingreso = datetime.strptime(registro['fechaIngreso'], '%Y-%m-%d')
+
+            # Obtener la fecha actual
+            fecha_actual = datetime.now()
+
+            # Calcular la diferencia entre las dos fechas
+            diferencia = fecha_actual - fecha_ingreso
+
+            item_Transcurridos = QTableWidgetItem(str(diferencia.days))
+            item_Transcurridos.setTextAlignment(Qt.AlignCenter)
+            tabla_Mensualidades.setItem(row_idx, 6, item_Transcurridos)    
+
     def actualizarTablaRegistroMotos(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -408,6 +455,8 @@ class PaginaRegistros(QWidget):
         self.stacked_widgetregistros.addWidget(page_TablaFijo)
     
     def pantallaTablaMensualidades(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         #Pagina de Usuarios
         page_TablaMensualidades = QWidget()
         #Layout de la Pagina de Usuarios
@@ -424,11 +473,12 @@ class PaginaRegistros(QWidget):
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_TablaMensualidades.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
          # Crear la tabla de registros
-        tabla_Mensualidades = QTableWidget(self)
-        tabla_Mensualidades.setColumnCount(4)  # Definir el número de columnas
-        tabla_Mensualidades.setHorizontalHeaderLabels(
-            ['ID', 'PLACA','F.INGRESO', 'D.RESTANTES'])
-        tabla_Mensualidades.setStyleSheet("""
+        self.tabla_Mensualidades = QTableWidget(self)
+        self.tabla_Mensualidades.setColumnCount(7)  # Definir el número de columnas
+        self.tabla_Mensualidades.verticalHeader().setVisible(False)
+        self.tabla_Mensualidades.setHorizontalHeaderLabels(
+            ['ID', 'PLACA','NOMBRE', 'TELEFONO','F.INGRESO','H.INGRESO','D.TRANSCURRIDOS'])
+        self.tabla_Mensualidades.setStyleSheet("""
             QTableWidget {
                 background-color: #222126;
                 color: white;
@@ -470,10 +520,16 @@ class PaginaRegistros(QWidget):
                 color: white; /* Color del texto del QLineEdit durante la edición */
             }
         """)
-        header = tabla_Mensualidades.horizontalHeader()
+        #seleccionar toda la fila
+        self.tabla_Mensualidades.setSelectionBehavior(QAbstractItemView.SelectRows)
+        #Configurar cabecera      
+        header = self.tabla_Mensualidades.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_TablaMensualidades.addWidget(tabla_Mensualidades, 1, 0, 7, 9)
+        layout_TablaMensualidades.addWidget(self.tabla_Mensualidades, 1, 0, 7, 9)
+
+        # Rellenar la tabla
+        self.actualizarTablaMensualidades(self.tabla_Mensualidades)
 
         combobox_Tipo = QComboBox()
         combobox_Tipo.addItems(['Placa', 'ID'])
@@ -483,7 +539,7 @@ class PaginaRegistros(QWidget):
         
         textbox_Tipo  = QLineEdit()
         textbox_Tipo .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Tipo .setFixedWidth(250)
+        textbox_Tipo .setFixedWidth(200)
         layout_TablaMensualidades.addWidget(textbox_Tipo , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
 
         #Boton Buscar 
