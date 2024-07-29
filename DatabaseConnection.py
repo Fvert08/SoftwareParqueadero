@@ -154,7 +154,7 @@ class DatabaseConnection:
         return self.executeQueryReturnAll(query)
     
     def cargarTableMensualidades(self):
-        query = "SELECT * FROM Mensualidad;"
+        query = "SELECT * FROM Mensualidades;"
         return self.executeQueryReturnAll(query)
     
     def cambiarEstadoCasillero(self, idCasillero, estado):
