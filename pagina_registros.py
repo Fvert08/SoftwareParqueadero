@@ -41,6 +41,18 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso')))
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tabla_Mensualidades.setItem(row_idx, 5, item_hora_ingreso)
+
+            item_fechaUltimoPago = QTableWidgetItem(registro['fechaUltimoPago'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
+            item_fechaUltimoPago.setTextAlignment(Qt.AlignCenter)
+            self.tabla_Mensualidades.setItem(row_idx, 6, item_fechaUltimoPago)
+
+            item_horaUltimoPago = QTableWidgetItem(str(registro.get('horaUltimoPago')))
+            item_horaUltimoPago.setTextAlignment(Qt.AlignCenter)
+            self.tabla_Mensualidades.setItem(row_idx, 7, item_horaUltimoPago)
+
+            item_fechaRenovacion = QTableWidgetItem(str(registro.get('fechaRenovacion')))
+            item_fechaRenovacion.setTextAlignment(Qt.AlignCenter)
+            self.tabla_Mensualidades.setItem(row_idx, 8, item_fechaRenovacion)
   
 
     def actualizarTablaRegistroMotos(self):
@@ -459,10 +471,10 @@ class PaginaRegistros(QWidget):
         layout_TablaMensualidades.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
          # Crear la tabla de registros
         self.tabla_Mensualidades = QTableWidget(self)
-        self.tabla_Mensualidades.setColumnCount(7)  # Definir el número de columnas
+        self.tabla_Mensualidades.setColumnCount(9)  # Definir el número de columnas
         self.tabla_Mensualidades.verticalHeader().setVisible(False)
         self.tabla_Mensualidades.setHorizontalHeaderLabels(
-            ['ID', 'PLACA','NOMBRE', 'TELEFONO','F.INGRESO','H.INGRESO','D.TRANSCURRIDOS'])
+            ['ID', 'PLACA','NOMBRE', 'TELEFONO','F.INGRESO','H.INGRESO','F.U.PAGO','H.U.PAGO','F.RENOVACIÓN', 'D.TRANSCURRIDOS'])
         self.tabla_Mensualidades.setStyleSheet("""
             QTableWidget {
                 background-color: #222126;
