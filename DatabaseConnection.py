@@ -77,7 +77,18 @@ class DatabaseConnection:
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
             return None
-
+    def obtenerUltimoRegistro(self):
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            resultado = cursor.fetchone()
+            return resultado[0] if resultado else None
+        except Error as e:
+            print(f"Error al obtener el último registro: {e}")
+            return None
+        finally:
+            cursor.close()  # Cerrar el cursor después de usarlo
+        
     def registrarMoto(self, placa, cascos, tiempo, casillero):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
         hora_ingreso = datetime.now().strftime('%H:%M:%S')
@@ -87,7 +98,10 @@ class DatabaseConnection:
         """
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
-        generarTicketIngresoMoto(tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+        # Obtener el ID del nuevo registro
+        nuevo_id = self.obtenerUltimoRegistro()
+        generarTicketIngresoMoto(nuevo_id,tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+
     def registrarMensualidad(self, placa, nombre, telefono):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
         hora_ingreso = datetime.now().strftime('%H:%M:%S')
@@ -97,7 +111,9 @@ class DatabaseConnection:
         """
         params = (placa, nombre, telefono, fecha_ingreso, hora_ingreso, fecha_ingreso, hora_ingreso,fecha_ingreso)
         self.execute_query(query, params)
-        generarTicketIngresoMensualidad(fecha_ingreso, hora_ingreso,nombre,placa,telefono)
+        # Obtener el ID del nuevo registro
+        nuevo_id = self.obtenerUltimoRegistro()
+        generarTicketIngresoMensualidad(nuevo_id,fecha_ingreso, hora_ingreso,nombre,placa,telefono)
     
     def registrarFijo(self, Tipo, Nota, Valor):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
@@ -108,7 +124,10 @@ class DatabaseConnection:
         """
         params = (Tipo, Nota, Valor, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
-        generarTicketIngresoFijo(fecha_ingreso, hora_ingreso, Tipo, Nota, Valor)
+
+        # Obtener el ID del nuevo registro
+        nuevo_id = self.obtenerUltimoRegistro()
+        generarTicketIngresoFijo(nuevo_id,fecha_ingreso, hora_ingreso, Tipo, Nota, Valor)
 
     def registrarSalidaMoto(self, idRegistro,totalPagado):
         fecha_salida = datetime.now().strftime('%Y-%m-%d')
@@ -156,7 +175,7 @@ class DatabaseConnection:
         self.execute_query(query, params)
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosBusquedarenovarMensualidad= db_connection.buscarMensualidadPorId(idRegistroMensualidad)
-        generarTicketRenovarMensualidad(fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
+        generarTicketRenovarMensualidad(str(datosBusquedarenovarMensualidad['id']),fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
     def buscarMotoPorId(self, idRegistro):
         query = "SELECT * FROM registrosMoto WHERE id = %s"

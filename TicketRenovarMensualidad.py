@@ -8,12 +8,12 @@ from PIL import ImageWin
 def mm_to_pixels(mm, dpi):
     return int((mm / 25.4) * dpi)
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketRenovarMensualidad(Fecha, Hora,Nombre,Placa,Telefono,FechaVigencia):
+def generarTicketRenovarMensualidad(codigo,Fecha, Hora,Nombre,Placa,Telefono,FechaVigencia):
     # Obtener la ruta del directorio actual
     directorio_actual = os.path.dirname(os.path.abspath(__file__))
     ruta_logo = os.path.join(directorio_actual, "Logo.png")
     ruta_guardado = os.path.join(directorio_actual, "TicketRenovarMensualidad.png")
-    codigo_barras = "0001"
+    codigo_barras = str(codigo)
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
     width, height = 1720, 2300  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
