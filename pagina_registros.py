@@ -41,22 +41,7 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso')))
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             tabla_Mensualidades.setItem(row_idx, 5, item_hora_ingreso)
-
-            # Convertir la fecha de ingreso a un objeto datetime si es necesario
-            if isinstance(registro['fechaIngreso'], (datetime, date)):
-                fecha_ingreso = registro['fechaIngreso']
-            else:
-                fecha_ingreso = datetime.strptime(registro['fechaIngreso'], '%Y-%m-%d')
-
-            # Obtener la fecha actual
-            fecha_actual = datetime.now()
-
-            # Calcular la diferencia entre las dos fechas
-            diferencia = fecha_actual - fecha_ingreso
-
-            item_Transcurridos = QTableWidgetItem(str(diferencia.days))
-            item_Transcurridos.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 6, item_Transcurridos)    
+  
 
     def actualizarTablaRegistroMotos(self):
          # Crear la instancia de DatabaseConnection

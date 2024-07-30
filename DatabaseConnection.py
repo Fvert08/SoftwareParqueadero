@@ -145,6 +145,7 @@ class DatabaseConnection:
     def cargarTableCasillero(self):
         query = "SELECT * FROM Casillero;"
         return self.executeQueryReturnAll(query)
+    
     def cargarTableCasilleroOrden(self):
         query = "SELECT * FROM Casillero ORDER BY Posicion ASC ;"
         return self.executeQueryReturnAll(query)
@@ -156,6 +157,28 @@ class DatabaseConnection:
     def cargarTableMensualidades(self):
         query = "SELECT * FROM Mensualidades;"
         return self.executeQueryReturnAll(query)
+    
+    def cargarTableUsuarios(self):
+        query = "SELECT * FROM Usuarios;"
+        return self.executeQueryReturnAll(query)
+
+    def cargarTablePCAgregados(self):
+        query = "SELECT * FROM regPC;"
+        return self.executeQueryReturnAll(query)
+    
+    def cargarTableRegistros(self):
+        query = "SELECT * FROM Reporte;"
+        return self.executeQueryReturnAll(query)
+    
+    def contarTablePCAgregados(self, pc_value):
+        query = "SELECT COUNT(*) AS cantidad FROM Casillero WHERE Pc = %s;"
+        
+        result = self.executeQueryReturnAll(query, (pc_value,))
+
+        # Verifica el formato del resultado
+        if result and len(result) > 0:
+            return result[0]['cantidad']  # Devuelve el conteo usando la clave 'cantidad'
+        return 0  # Retorna 0 si no hay resultados
     
     def cambiarEstadoCasillero(self, idCasillero, estado):
         query = "UPDATE Casillero SET Estado = %s WHERE id = %s"
