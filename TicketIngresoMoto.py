@@ -10,7 +10,7 @@ def mm_to_pixels(mm, dpi):
     return int((mm / 25.4) * dpi)
 
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketIngresoMoto(Tipo, Placa, Cascos, Casillero, Fecha, Hora):
+def generarTicketIngresoMoto(codigo,Tipo, Placa, Cascos, Casillero, Fecha, Hora):
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
     width, height = 1720, 2540  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
@@ -22,7 +22,7 @@ def generarTicketIngresoMoto(Tipo, Placa, Cascos, Casillero, Fecha, Hora):
     ruta_guardado = os.path.join(directorio_actual, "TicketIngresoMoto.png")
 
     # Codigo
-    codigo_barras = "0001"
+    codigo_barras = str(codigo)
     # Cargar y redimensionar el logo
     logo = Image.open(ruta_logo)
     logo = logo.resize((560, 560), Image.LANCZOS)
