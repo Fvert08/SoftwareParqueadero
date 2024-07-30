@@ -4,7 +4,8 @@ from datetime import datetime
 from TicketIngresoMoto import generarTicketIngresoMoto
 from TicketIngresoFijo import generarTicketIngresoFijo
 from TicketIngresoMensualidad import generarTicketIngresoMensualidad
-
+from TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from config import DB_CONFIG
 class DatabaseConnection:
     _instance = None
 
@@ -122,6 +123,40 @@ class DatabaseConnection:
         query = "UPDATE Fijos SET fechaSalida = %s, horaSalida = %s WHERE id = %s"
         params = (fecha_salida, hora_salida, idRegistroFijo)
         self.execute_query(query, params)
+
+    def registrarRenovarMensualidad(self, idRegistroMensualidad, fechaRenovacionAntigua):
+        # Obtener la fecha y hora actual
+        fecha_salida = datetime.now().strftime('%Y-%m-%d')
+        hora_salida = datetime.now().strftime('%H:%M:%S')
+        
+        # Convertir la fecha antigua en un objeto datetime
+        fecha_antigua = datetime.strptime(fechaRenovacionAntigua, '%Y-%m-%d')
+        
+        # Obtener el día de la fecha antigua
+        dia_antiguo = fecha_antigua.day
+        
+        # Obtener el año y mes actuales
+        fecha_actual = datetime.now()
+        anio_actual = fecha_actual.year
+        mes_actual = fecha_actual.month
+        
+        # Construir la nueva fecha con el año y mes actuales, manteniendo el día antiguo
+        nueva_fecha = datetime(anio_actual, mes_actual, dia_antiguo).strftime('%Y-%m-%d')
+        
+        # Consulta SQL para actualizar las fechas
+        query = """
+            UPDATE Mensualidades
+            SET fechaUltimoPago = %s,
+                horaUltimoPago = %s,
+                fechaRenovacion = %s
+            WHERE id = %s
+        """
+        params = (fecha_salida, hora_salida, nueva_fecha, idRegistroMensualidad)
+        # Ejecutar la consulta
+        self.execute_query(query, params)
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        datosBusquedarenovarMensualidad= db_connection.buscarMensualidadPorId(idRegistroMensualidad)
+        generarTicketRenovarMensualidad(fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
     def buscarMotoPorId(self, idRegistro):
         query = "SELECT * FROM registrosMoto WHERE id = %s"
@@ -131,6 +166,18 @@ class DatabaseConnection:
     
     def buscarMotoPorPlaca(self, placaRegistro):
         query = "SELECT * FROM registrosMoto WHERE Placa = %s AND fechaSalida IS NULL"
+        params = (placaRegistro,)
+        result = self.executeQueryReturnAll(query, params)
+        return dict(result[0]) if result else None
+
+    def buscarMensualidadPorId(self, idRegistro):
+        query = "SELECT * FROM Mensualidades WHERE id = %s"
+        params = (idRegistro,)
+        result = self.executeQueryReturnAll(query, params)
+        return dict(result[0]) if result else None
+    
+    def buscarMensualidadPorPlaca(self, placaRegistro):
+        query = "SELECT * FROM Mensualidades WHERE Placa = %s"
         params = (placaRegistro,)
         result = self.executeQueryReturnAll(query, params)
         return dict(result[0]) if result else None
