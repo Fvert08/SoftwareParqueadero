@@ -29,6 +29,7 @@ class MiVentana(QWidget):
         self.setWindowState(Qt.WindowMaximized)
         self.setMaximumSize(self.width, self.height)  # tamaño máximo igual al tamaño de la pantalla
         self.Pagina_principal()
+
     def Pagina_principal(self):
          # Crear un QLabel para mostrar la imagen
         label_Logo = QLabel(self)
@@ -138,6 +139,7 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTablaRegistroMotos.connect(self.pagina_registros.actualizarTablaRegistroMotos) # Actualizar la tabla de ingresos motos
         self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.connect(self.pagina_tickets.actualizarTextboxCasilleros) # conectar señal para actualizar los textbox de casilleros de registrar botos
         self.pagina_tickets.senalActualizarTablaRegistroFijos.connect(self.pagina_registros.actualizarTablaFijos) #conectar señal para actualizar las tablas de Fijos
+   
     def cambiar_color(self):
         sender = self.sender()
         sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")

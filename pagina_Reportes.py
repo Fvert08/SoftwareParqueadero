@@ -1,17 +1,61 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView,QTableWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtCore import QDate, Qt
 import sys
-from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVBoxLayout, QWidget, QAbstractItemView
 from PyQt5.QtCore import Qt
+from config import DB_CONFIG
+from DatabaseConnection import DatabaseConnection
+from datetime import datetime, date
 class PaginaReportes(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
 
+    def actualizarTablaRegistros(self,tabla_registros):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        datosTablaRegistros = db_connection.cargarTableRegistros()
+        self.tabla_registros.setRowCount(len(datosTablaRegistros))
+        for row_idx, registro in enumerate(datosTablaRegistros):
+            
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 0, item_id)
+            
+            item_Fecha = QTableWidgetItem(registro['Fecha'].strftime('%Y-%m-%d') if isinstance(registro['Fecha'], (datetime, date)) else str(registro['Fecha']))
+            item_Fecha.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 1, item_Fecha)
+            
+            item_hora = QTableWidgetItem(str(registro.get('Hora')))
+            item_hora.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 2, item_hora)
+
+            item_Tipo = QTableWidgetItem(str(registro['Tipo']))
+            item_Tipo.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 3, item_Tipo)
+
+            item_FechaInicio = QTableWidgetItem(registro['fechaInicio'].strftime('%Y-%m-%d') if isinstance(registro['fechaInicio'], (datetime, date)) else str(registro['fechaInicio']))
+            item_FechaInicio.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 4, item_FechaInicio)
+
+            item_FechaFin = QTableWidgetItem(registro['fechaFin'].strftime('%Y-%m-%d') if isinstance(registro['fechaFin'], (datetime, date)) else str(registro['fechaFin']))
+            item_FechaFin.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 5, item_FechaFin)
+
+            item_Registros = QTableWidgetItem(str(registro['Registros']))
+            item_Registros.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 6, item_Registros)
+
+            item_DineroTotal = QTableWidgetItem(str(registro['dineroTotal']))
+            item_DineroTotal.setTextAlignment(Qt.AlignCenter)
+            tabla_registros.setItem(row_idx, 7, item_DineroTotal)
+
     def initUI(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Crear el widget de la página de registros
         page_reportes = QWidget()
 
@@ -33,11 +77,12 @@ class PaginaReportes(QWidget):
         titulo_tablaReportes.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
         layout_reportes.addWidget(titulo_tablaReportes, 1, 2, 1, 1, alignment= Qt.AlignCenter |Qt.AlignBottom)
         #Tabla
-        tabla_registros = QTableWidget(self)
-        tabla_registros.setColumnCount(8)  # Definir el número de columnas
-        tabla_registros.setHorizontalHeaderLabels(
+        self.tabla_registros = QTableWidget(self)
+        self.tabla_registros.setColumnCount(8)  # Definir el número de columnas
+        self.tabla_registros.verticalHeader().setVisible(False)
+        self.tabla_registros.setHorizontalHeaderLabels(
             ['ID', 'Tipo', 'Desde','Hasta','Fecha generación','Hora generación','Registros','Total'])
-        tabla_registros.setStyleSheet("""
+        self.tabla_registros.setStyleSheet("""
                     QTableWidget {
                         background-color: #222126;
                         color: white;
@@ -65,10 +110,16 @@ class PaginaReportes(QWidget):
                         background-color: #151419; /* Color de fondo al seleccionar */
                     }
                 """)
-        header = tabla_registros.horizontalHeader()
+        #seleccionar toda la fila
+        self.tabla_registros.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        header = self.tabla_registros.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_reportes.addWidget(tabla_registros, 2, 0, 8, 5)
+        layout_reportes.addWidget(self.tabla_registros, 2, 0, 8, 5)
+
+        # Rellenar la tabla
+        self.actualizarTablaRegistros(self.tabla_registros)
         # Crea un boton para Reimprimir
         boton_reimprimir = QPushButton('Reimprimir')
         boton_reimprimir.setStyleSheet(
