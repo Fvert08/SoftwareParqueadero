@@ -148,6 +148,10 @@ class PaginaTickets(QWidget):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
         self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        if self.textbox_casillerosDis.text() == "0": #Si no hay casilleros disponibles desactivar el boton imprimir
+            self.botonImprimirRegistroMoto.setDisabled(True)
+        else:
+            self.botonImprimirRegistroMoto.setEnabled(True)
     def initUI(self):
         #----Paginas
         #Pagina del menú
@@ -418,8 +422,8 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(self.textbox_casillerosDis, 5, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
-        boton_imprimir = QPushButton('Imprimir', page_tickets)
-        boton_imprimir.setStyleSheet("""
+        self.botonImprimirRegistroMoto = QPushButton('Imprimir', page_tickets)
+        self.botonImprimirRegistroMoto.setStyleSheet("""
             QPushButton {
                 color: white; 
                 background-color: #222125; 
@@ -433,10 +437,10 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        layout_ticketsIngresoMotos.addWidget(boton_imprimir, 6, 3, 1, 1,
+        layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop | Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
-        boton_imprimir.clicked.connect(lambda: [
+        self.botonImprimirRegistroMoto.clicked.connect(lambda: [
             db_connection.registrarMoto(
             textbox_placa.text(),
             combobox_cascos.currentText(),
@@ -1075,7 +1079,6 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresarMensualidad.setRowStretch(4, 1)
         layout_ticketsIngresarMensualidad.setRowStretch(5, 1)
         layout_ticketsIngresarMensualidad.setRowStretch(6, 1)
- 
         #Se agrega el layout a la pagina
         page_ticketsIngresarMensualidad.setLayout(layout_ticketsIngresarMensualidad)
         #Se agrega al stack
@@ -1124,7 +1127,7 @@ class PaginaTickets(QWidget):
         self.botonBuscarRenovarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_ticketsRenovarMensualidad.addWidget(self.botonBuscarRenovarMensualidad,1, 5, 2, 2,alignment=Qt.AlignLeft |Qt.AlignCenter)
         self.botonBuscarRenovarMensualidad.clicked.connect(lambda: [
-            self.cargarBusquedaRenovarMensualidad(),
+        self.cargarBusquedaRenovarMensualidad(),
     ])
         #Nombre
         titulo_Nombre = QLabel('NOMBRE')

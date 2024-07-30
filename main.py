@@ -31,7 +31,7 @@ class MiVentana(QWidget):
         self.Pagina_principal()
 
     def Pagina_principal(self):
-         # Crear un QLabel para mostrar la imagen
+        # Crear un QLabel para mostrar la imagen
         label_Logo = QLabel(self)
         
         # Crear un QPixmap con la ruta de la imagen

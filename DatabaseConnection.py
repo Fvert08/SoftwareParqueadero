@@ -39,6 +39,7 @@ class DatabaseConnection:
                 database=self.config['database'],
                 port=int(self.config.get('port', 3306))
             )
+            self.connection.autocommit = True # se activa el auto commit
             if self.connection.is_connected():
                 print("Conexión a la base de datos MySQL establecida.")
         except Error as e:
@@ -53,6 +54,8 @@ class DatabaseConnection:
         self.open()
         cursor = self.connection.cursor()
         try:
+            # Añade 'SQL_NO_CACHE' a la consulta para evitar el uso de la caché
+            query = query.replace("SELECT", "SELECT SQL_NO_CACHE", 1)
             if params:
                 cursor.execute(query, params)
             else:
@@ -68,6 +71,8 @@ class DatabaseConnection:
         self.open()
         cursor = self.connection.cursor(dictionary=True)
         try:
+            # Añade 'SQL_NO_CACHE' a la consulta para evitar el uso de la caché
+            query = query.replace("SELECT", "SELECT SQL_NO_CACHE", 1)
             if params:
                 cursor.execute(query, params)
             else:
@@ -77,6 +82,9 @@ class DatabaseConnection:
         except Error as e:
             print(f"Error al ejecutar la consulta: {e}")
             return None
+        finally:
+            cursor.close()
+
     def obtenerUltimoRegistro(self):
         cursor = self.connection.cursor()
         try:
