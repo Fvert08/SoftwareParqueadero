@@ -12,7 +12,7 @@ class PaginaRegistros(QWidget):
         self.stacked_widget = stacked_widget
         self.initUI()
 
-    def actualizarTablaMensualidades(self,tabla_Mensualidades):
+    def actualizarTablaMensualidades(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaMensualides = db_connection.cargarTableMensualidades()
@@ -20,27 +20,27 @@ class PaginaRegistros(QWidget):
         for row_idx, registro in enumerate(datosTablaMensualides):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 0, item_id)
+            self.tabla_Mensualidades.setItem(row_idx, 0, item_id)
 
             item_placa = QTableWidgetItem(registro['Placa'])
             item_placa.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 1, item_placa)
+            self.tabla_Mensualidades.setItem(row_idx, 1, item_placa)
 
             item_nombre = QTableWidgetItem(registro['Nombre'])
             item_nombre.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 2, item_nombre)
+            self.tabla_Mensualidades.setItem(row_idx, 2, item_nombre)
 
             item_telefono = QTableWidgetItem(registro['Telefono'])
             item_telefono.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 3, item_telefono)
+            self.tabla_Mensualidades.setItem(row_idx, 3, item_telefono)
 
             item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
             item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 4, item_fecha_ingreso)
+            self.tabla_Mensualidades.setItem(row_idx, 4, item_fecha_ingreso)
 
             item_hora_ingreso = QTableWidgetItem(str(registro.get('horaIngreso')))
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
-            tabla_Mensualidades.setItem(row_idx, 5, item_hora_ingreso)
+            self.tabla_Mensualidades.setItem(row_idx, 5, item_hora_ingreso)
   
 
     def actualizarTablaRegistroMotos(self):
@@ -514,7 +514,7 @@ class PaginaRegistros(QWidget):
         layout_TablaMensualidades.addWidget(self.tabla_Mensualidades, 1, 0, 7, 9)
 
         # Rellenar la tabla
-        self.actualizarTablaMensualidades(self.tabla_Mensualidades)
+        self.actualizarTablaMensualidades()
 
         combobox_Tipo = QComboBox()
         combobox_Tipo.addItems(['Placa', 'ID'])

@@ -3,6 +3,7 @@ from mysql.connector import Error
 from datetime import datetime
 from TicketIngresoMoto import generarTicketIngresoMoto
 from TicketIngresoFijo import generarTicketIngresoFijo
+from TicketIngresoMensualidad import generarTicketIngresoMensualidad
 
 class DatabaseConnection:
     _instance = None
@@ -86,6 +87,16 @@ class DatabaseConnection:
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
         generarTicketIngresoMoto(tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+    def registrarMensualidad(self, placa, nombre, telefono):
+        fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
+        hora_ingreso = datetime.now().strftime('%H:%M:%S')
+        query = """
+        INSERT INTO Mensualidades (Placa, Nombre, Telefono, fechaIngreso, horaIngreso,fechaUltimoPago,horaUltimoPago,fechaRenovacion)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        params = (placa, nombre, telefono, fecha_ingreso, hora_ingreso, fecha_ingreso, hora_ingreso,fecha_ingreso)
+        self.execute_query(query, params)
+        generarTicketIngresoMensualidad(fecha_ingreso, hora_ingreso,nombre,placa,telefono)
     
     def registrarFijo(self, Tipo, Nota, Valor):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')

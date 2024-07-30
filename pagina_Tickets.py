@@ -12,6 +12,7 @@ class PaginaTickets(QWidget):
     senalActualizarTablasCasilleros= pyqtSignal()
     senalActualizarTablaRegistroMotos = pyqtSignal()
     senalActualizarTablaRegistroFijos = pyqtSignal()
+    senalActualizarTablaRegistroMensualidades = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -965,6 +966,7 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.addWidget(page_ticketsSacarFijo)
 
     def pantallaIngresarMensualidad(self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Pagina de ticketes salida moto
         page_ticketsIngresarMensualidad = QWidget()
         #layout de el registro de los tickets
@@ -1016,18 +1018,29 @@ class PaginaTickets(QWidget):
         boton_imprimir = QPushButton('IMPRIMIR')
         boton_imprimir.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
         layout_ticketsIngresarMensualidad.addWidget(boton_imprimir,3, 0, 2, 7,alignment=Qt.AlignHCenter |Qt.AlignCenter)
-
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_imprimir.clicked.connect(lambda: [
+            db_connection.registrarMensualidad(
+            textbox_Placa.text(),
+            textbox_Nombre.text(),
+            textbox_Telefono.text(),
+        ),
+        textbox_Placa.clear(),
+        textbox_Nombre.clear(),
+        textbox_Telefono.clear(),
+        self.senalActualizarTablaRegistroMensualidades.emit()#Se emite la señal para actualizar la tabla de mensualidades
+    ])
         #Mensualidades Vigentes
-        titulo_Telefono = QLabel('Mensualidades\nVigentes')
+        titulo_MensualidadesVigentes = QLabel('Mensualidades\nVigentes')
         # Centrar el texto en el QLabel
-        titulo_Telefono.setAlignment(Qt.AlignCenter)
-        titulo_Telefono .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_ticketsIngresarMensualidad.addWidget(titulo_Telefono  ,6, 0, 2, 7, alignment= Qt.AlignCenter |Qt.AlignLeft)
+        titulo_MensualidadesVigentes.setAlignment(Qt.AlignCenter)
+        titulo_MensualidadesVigentes .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_ticketsIngresarMensualidad.addWidget(titulo_MensualidadesVigentes  ,6, 0, 2, 7, alignment= Qt.AlignCenter |Qt.AlignLeft)
         
-        textbox_Telefono = QLineEdit()
-        textbox_Telefono.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Telefono.setFixedWidth(60)
-        layout_ticketsIngresarMensualidad.addWidget(textbox_Telefono, 6, 3, 2, 1, alignment=Qt.AlignLeft |Qt.AlignCenter)
+        textbox_MensualidadesVigentes = QLineEdit()
+        textbox_MensualidadesVigentes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_MensualidadesVigentes.setFixedWidth(60)
+        layout_ticketsIngresarMensualidad.addWidget(textbox_MensualidadesVigentes, 6, 3, 2, 1, alignment=Qt.AlignLeft |Qt.AlignCenter)
 
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresarMensualidad.setRowStretch(0, 0)
