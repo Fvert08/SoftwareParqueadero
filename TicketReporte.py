@@ -1,10 +1,15 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
-
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fecha, Hora, ruta_logo, ruta_guardado):
+def generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos ,Fecha, Hora):
+    
+    # Obtener la ruta del directorio actual
+    directorio_actual = os.path.dirname(os.path.abspath(__file__))
+
+    ruta_logo = os.path.join(directorio_actual, "Logo.png")
+    ruta_guardado = os.path.join(directorio_actual, "TicketReporteCompleto.png")
     # Dimensiones típicas de un recibo POS, cuadruplicadas para mejorar calidad
-    width, height = 1720, 1760  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+    width, height = 1720, 2480 # Cuadruplicar el tamaño original para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -38,7 +43,7 @@ def generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fech
     d.text((360, 736), f"TICKET DE REPORTE", font=font_bold, fill='black')
     d.text((80, 800), f"------------------------------------------------", font=font_bold, fill='black')
     font = ImageFont.truetype("arial.ttf", 96)
-    d.text((80, 880), f"Numero de reporte: 1", font=font_bold, fill='black')
+    d.text((80, 880), f"Numero de reporte: {codigo}", font=font_bold, fill='black')
     d.text((80, 960), f"Fecha de generación: {Fecha}", font=font_bold, fill='black')
     d.text((80, 1040), f"Hora de generación: {Hora}", font=font_bold, fill='black')
     d.text((80, 1120), f"------------------------------------------------", font=font_bold, fill='black')
@@ -46,26 +51,38 @@ def generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fech
     d.text((80, 1280), f"Fecha inicio: {FechaInicio}", font=font_bold, fill='black')
     d.text((80, 1360), f"Fecha fin: {FechaFin}", font=font_bold, fill='black')
     d.text((80, 1440), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((80, 1520), f"Total de registros: {Registros}", font=font_bold, fill='black')
-    d.text((80, 1600), f"Dinero total: {DineroTotal}", font=font_bold, fill='black')
-    d.text((80, 1680), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((80, 1520), f"Motos hora: {registrosMotosHora}", font=font_bold, fill='black')
+    d.text((80, 1600), f"Total: {dineroTotalMotosHora}", font=font_bold, fill='black')
+
+    d.text((80, 1760), f"Motos dia: {registrosMotosDia}", font=font_bold, fill='black')
+    d.text((80, 1840), f"Total: {dineroTotalMotosDia}", font=font_bold, fill='black')
+
+    d.text((80, 2000), f"Motos Mes: {registrosMotosMes}", font=font_bold, fill='black')
+    d.text((80, 2080), f"Total: {dineroTotalMotosMes}", font=font_bold, fill='black')
+
+    d.text((80, 2240), f"Fijos: {registrosFijos}", font=font_bold, fill='black')
+    d.text((80, 2320), f"Total: {dineroTotalFijos}", font=font_bold, fill='black')
+
+    d.text((80, 2400), f"------------------------------------------------", font=font_bold, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
-    print(f"Ticket de reporte generado")
+    print(f"Ticket Reporte Completo generado")
 
 # Ejemplo de uso
 Tipo = "Todo"
 FechaInicio="13-07-2024"
 FechaFin = "13-07-2024"
-Registros = "100"
-DineroTotal = "$100.000"
+registrosMotosHora="40"
+dineroTotalMotosHora= "400000"
+registrosMotosDia="30"
+dineroTotalMotosDia="30000"
+registrosMotosMes="20"
+dineroTotalMotosMes="2000"
+registrosFijos="10"
+dineroTotalFijos="10000"
 Fecha = "13-07-2024"
 Hora = "10:17:00"
+codigo = "4"
 
-# Obtener la ruta del directorio actual
-directorio_actual = os.path.dirname(os.path.abspath(__file__))
 
-ruta_logo = os.path.join(directorio_actual, "Logo.png")
-ruta_guardado = os.path.join(directorio_actual, "TicketReporte.png")
-
-generarTicketReporte(Tipo, FechaInicio, FechaFin,Registros,DineroTotal, Fecha, Hora, ruta_logo, ruta_guardado)
+generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos ,Fecha, Hora)
