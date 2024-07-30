@@ -46,7 +46,7 @@ def generarTicketIngresoMensualidad(Fecha, Hora,Nombre,Placa,Telefono):
     # Datos del Ticket
     font = ImageFont.truetype("arial.ttf", 120)
     d.text((80, 640), f"-------------------------------------------------", font=font_bold, fill='black')
-    d.text((360, 736), f"TICKET NUEVA MENSUALIDAD", font=font_bold, fill='black')
+    d.text((260, 736), f"TICKET NUEVA MENSUALIDAD", font=font_bold, fill='black')
     d.text((80, 800), f"-------------------------------------------------", font=font_bold, fill='black')
     
     font = ImageFont.truetype("arial.ttf", 96)

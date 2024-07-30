@@ -8,14 +8,14 @@ from PIL import ImageWin
 def mm_to_pixels(mm, dpi):
     return int((mm / 25.4) * dpi)
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketIngresoMensualidad(Fecha, Hora,Nombre,Placa,Telefono,FechaVigencia):
+def generarTicketRenovarMensualidad(Fecha, Hora,Nombre,Placa,Telefono,FechaVigencia):
     # Obtener la ruta del directorio actual
     directorio_actual = os.path.dirname(os.path.abspath(__file__))
     ruta_logo = os.path.join(directorio_actual, "Logo.png")
     ruta_guardado = os.path.join(directorio_actual, "TicketRenovarMensualidad.png")
     codigo_barras = "0001"
     # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
-    width, height = 1720, 2250  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
+    width, height = 1720, 2300  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -46,7 +46,7 @@ def generarTicketIngresoMensualidad(Fecha, Hora,Nombre,Placa,Telefono,FechaVigen
     # Datos del Ticket
     font = ImageFont.truetype("arial.ttf", 120)
     d.text((80, 640), f"-------------------------------------------------", font=font_bold, fill='black')
-    d.text((360, 736), f"TICKET RENOVAR MENSUALIDAD", font=font_bold, fill='black')
+    d.text((200, 736), f"TICKET RENOVAR MENSUALIDAD", font=font_bold, fill='black')
     d.text((80, 800), f"-------------------------------------------------", font=font_bold, fill='black')
     
     font = ImageFont.truetype("arial.ttf", 96)
@@ -55,7 +55,7 @@ def generarTicketIngresoMensualidad(Fecha, Hora,Nombre,Placa,Telefono,FechaVigen
     d.text((80, 1040), f"Nombre: {Nombre}", font=font_bold, fill='black')
     d.text((80, 1120), f"Placa: {Placa}", font=font_bold, fill='black')
     d.text((80, 1200), f"Telefono: {Telefono}", font=font_bold, fill='black')
-    d.text((80, 1280), f"Fecha vigencia: {FechaVigencia}", font=font_bold, fill='black')
+    d.text((80, 1280), f"Vigencia desde: {FechaVigencia}", font=font_bold, fill='black')
     
     # Generar código de barras
     cod_barra = barcode.get_barcode_class('code128')

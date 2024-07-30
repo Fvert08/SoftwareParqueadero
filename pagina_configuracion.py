@@ -3,15 +3,61 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtCore import QDate, Qt
 import sys
-from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVBoxLayout, QWidget, QAbstractItemView
 from PyQt5.QtCore import Qt
-
-
+from config import DB_CONFIG
+from DatabaseConnection import DatabaseConnection
 class PaginaConfiguracion(QWidget):
+
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+
+
+    def actualizarTablaUsuarios(self,tabla_Usuarios):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        datosTablaUsuarios = db_connection.cargarTableUsuarios()
+        self.tabla_Usuarios.setRowCount(len(datosTablaUsuarios))
+        for row_idx, registro in enumerate(datosTablaUsuarios):
+            
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_Usuarios.setItem(row_idx, 0, item_id)
+            
+            item_Usuario = QTableWidgetItem(str(registro['Usuario']))
+            item_Usuario.setTextAlignment(Qt.AlignCenter)
+            tabla_Usuarios.setItem(row_idx, 1, item_Usuario)
+            
+            item_Contrasena = QTableWidgetItem(str(registro['Contrasena']))
+            item_Contrasena.setTextAlignment(Qt.AlignCenter)
+            tabla_Usuarios.setItem(row_idx, 2, item_Contrasena)
+
+            item_Tipo = QTableWidgetItem(str(registro['Tipo']))
+            item_Tipo.setTextAlignment(Qt.AlignCenter)
+            tabla_Usuarios.setItem(row_idx, 3, item_Tipo)
+
+    def actualizarTablaPCAgregados(self,tabla_PCAgregados):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        datosTablaPCAgregados = db_connection.cargarTablePCAgregados()
+        self.tabla_PCAgregados.setRowCount(len(datosTablaPCAgregados))
+        for row_idx, registro in enumerate(datosTablaPCAgregados):
+            
+            item_id = QTableWidgetItem(str(registro['id']))
+            item_id.setTextAlignment(Qt.AlignCenter)
+            tabla_PCAgregados.setItem(row_idx, 0, item_id)
+            
+            item_Descripcion = QTableWidgetItem(str(registro['Descripcion']))
+            item_Descripcion.setTextAlignment(Qt.AlignCenter)
+            tabla_PCAgregados.setItem(row_idx, 1, item_Descripcion)
+
+            pc_value = registro['id']
+            cantidad = db_connection.contarTablePCAgregados(pc_value) 
+            item_ContarPc = QTableWidgetItem(str(cantidad))
+            item_ContarPc.setTextAlignment(Qt.AlignCenter)
+            tabla_PCAgregados.setItem(row_idx, 2, item_ContarPc)
 
     def initUI(self):
         #----Paginas
@@ -101,6 +147,8 @@ class PaginaConfiguracion(QWidget):
         self.stacked_widget.addWidget(page_configuracion)
     
     def pantallaUsuarios(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         #Pagina de Usuarios
         page_Usuarios = QWidget()
         #Layout de la Pagina de Usuarios
@@ -121,11 +169,12 @@ class PaginaConfiguracion(QWidget):
         titulo_usuariosAgregados .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_Usuarios.addWidget(titulo_usuariosAgregados  , 1, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         #Tabla
-        tabla_Usuarios = QTableWidget(self)
-        tabla_Usuarios.setColumnCount(4)  # Definir el número de columnas
-        tabla_Usuarios.setHorizontalHeaderLabels(
+        self.tabla_Usuarios = QTableWidget(self)
+        self.tabla_Usuarios.setColumnCount(4)  # Definir el número de columnas
+        self.tabla_Usuarios.verticalHeader().setVisible(False)
+        self.tabla_Usuarios.setHorizontalHeaderLabels(
             ['ID', 'USUARIO', 'CONTRASEÑA', 'TIPO'])
-        tabla_Usuarios.setStyleSheet("""
+        self.tabla_Usuarios.setStyleSheet("""
                     QTableWidget {
                         background-color: #222126;
                         color: white;
@@ -153,10 +202,17 @@ class PaginaConfiguracion(QWidget):
                         background-color: #151419; /* Color de fondo al seleccionar */
                     }
                 """)
-        header = tabla_Usuarios.horizontalHeader()
+        #seleccionar toda la fila
+        self.tabla_Usuarios.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        header = self.tabla_Usuarios.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_Usuarios.addWidget(tabla_Usuarios, 2, 0, 4, 4)
+        layout_Usuarios.addWidget(self.tabla_Usuarios, 2, 0, 4, 4)
+
+        # Rellenar la tabla
+        self.actualizarTablaUsuarios(self.tabla_Usuarios)
+
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
         boton_editar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
@@ -308,6 +364,8 @@ class PaginaConfiguracion(QWidget):
         self.stacked_widgetConfiguracion.addWidget(page_Conexion)
 
     def pantallaPC(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         #Pagina de pc
         page_PC = QWidget()
         #Layout de la Pagina de pc
@@ -328,10 +386,11 @@ class PaginaConfiguracion(QWidget):
         titulo_PcAgregados.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_PC.addWidget(titulo_PcAgregados, 1, 0, 1, 4, alignment=Qt.AlignBottom | Qt.AlignCenter)
         #Tabla
-        tabla_PCAgregados = QTableWidget(self)
-        tabla_PCAgregados.setColumnCount(3)  # Definir el número de columnas
-        tabla_PCAgregados.setHorizontalHeaderLabels(['ID', 'DESCRIPCIÓN', 'CASILLEROS\nASOCIADOS'])
-        tabla_PCAgregados.setStyleSheet("""
+        self.tabla_PCAgregados = QTableWidget(self)
+        self.tabla_PCAgregados.setColumnCount(3)  # Definir el número de columnas
+        self.tabla_PCAgregados.verticalHeader().setVisible(False)
+        self.tabla_PCAgregados.setHorizontalHeaderLabels(['ID', 'DESCRIPCIÓN', 'CASILLEROS\nASOCIADOS'])
+        self.tabla_PCAgregados.setStyleSheet("""
                     QTableWidget {
                         background-color: #222126;
                         color: white;
@@ -359,10 +418,17 @@ class PaginaConfiguracion(QWidget):
                         background-color: #151419; /* Color de fondo al seleccionar */
                     }
                 """)
-        header = tabla_PCAgregados.horizontalHeader()
+        #seleccionar toda la fila
+        self.tabla_PCAgregados.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        header = self.tabla_PCAgregados.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_PC.addWidget(tabla_PCAgregados, 2, 0, 4, 4)
+        layout_PC.addWidget(self.tabla_PCAgregados, 2, 0, 4, 4)
+
+        # Rellenar la tabla
+        self.actualizarTablaPCAgregados(self.tabla_PCAgregados)
+
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
         boton_editar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
