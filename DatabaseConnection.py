@@ -397,4 +397,16 @@ class DatabaseConnection:
         nuevo_id = self.obtenerUltimoRegistro()
         generarTicketReporteCompleto(nuevo_id,Tipo,fechaAcual,horaActual,fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
             
-        
+    def registrarSuscripcion(self):
+            fechaActual = datetime.now().strftime('%Y-%m-%d')
+            query = """
+            INSERT INTO Suscripcion (FA)
+            VALUES (%s)
+            """
+            params = (fechaActual,)
+            self.execute_query(query, params)
+
+    def consultarUltimaSuscripcion (self):
+            query = "SELECT FA FROM Suscripcion ORDER BY FA DESC LIMIT 1"
+            result = self.executeQueryReturnAll(query)
+            return result[0]['FA'] if result else None

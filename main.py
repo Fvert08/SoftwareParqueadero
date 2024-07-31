@@ -141,6 +141,7 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTablaRegistroFijos.connect(self.pagina_registros.actualizarTablaFijos) #conectar señal para actualizar las tablas de Fijos
         self.pagina_tickets.senalActualizarTablaRegistroMensualidades.connect(self.pagina_registros.actualizarTablaMensualidades) #conectar señal para actualizar las tablas de Mensualidad
         self.pagina_reportes.senalActualizarTablaReportes.connect(self.pagina_reportes.actualizarTablaRegistros)#conectar señal para actualizar las tablas de reportes
+        self.pagina_configuracion.senalActualizarTextboxesSuscripcion.connect(self.pagina_configuracion.actualizarTextboxesSuscripcion)
     def cambiar_color(self):
         sender = self.sender()
         sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
@@ -167,6 +168,7 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(6)
         elif sender.text() == "Configuracion":
             self.stacked_widget.setCurrentIndex(8)
+            self.pagina_configuracion.senalActualizarTextboxesSuscripcion.emit()
         elif sender.text() == "Creditos":
             self.stacked_widget.setCurrentIndex(10)
     def closeEvent(self, event):
