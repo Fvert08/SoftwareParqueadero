@@ -161,6 +161,7 @@ class PaginaReportes(QWidget):
         date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
         date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
         date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        date_desde.setDisplayFormat("yyyy-MM-dd")
         calendarDesde_widget = date_desde.calendarWidget()
         calendarDesde_widget.setStyleSheet("font-size: 20px;") 
         calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
@@ -176,6 +177,7 @@ class PaginaReportes(QWidget):
         date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
         date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
         date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        date_hasta.setDisplayFormat("yyyy-MM-dd")
         calendarhasta_widget = date_hasta.calendarWidget()
         calendarhasta_widget.setStyleSheet("font-size: 20px;") 
         calendarhasta_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")

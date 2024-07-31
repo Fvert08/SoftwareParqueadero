@@ -336,12 +336,15 @@ class DatabaseConnection:
         query= """
         SELECT COUNT(*) AS registrosDia, SUM(Total) AS totalDia
         FROM registrosMoto
-        WHERE Tipo = 'Dia'AND fechaSalida BETWEEN %s AND %s;
+        WHERE Tipo = 'Dia' AND fechaSalida BETWEEN %s AND %s;
         """
         resultsDia = self.executeQueryReturnAll(query,params)
-        if resultsDia:
-            registrosDia = resultsDia[0][0]  # El primer campo de la primera fila
-            totalDia = resultsDia[0][1]       # El segundo campo de la primera fila
+        if resultsDia and resultsDia[0]['totalDia']:
+            registrosDia = resultsDia[0]['registrosDia']  # El primer campo de la primera fila
+            totalDia = resultsDia[0]['totalDia']      # El segundo campo de la primera fila
+        else:
+            registrosDia = 0
+            totalDia = 0
         #------------ Consulta hora ---------------
         query = """
         SELECT COUNT(*) AS registrosHora, SUM(Total) AS totalHora
@@ -349,9 +352,12 @@ class DatabaseConnection:
         WHERE Tipo = 'Hora' AND fechaSalida BETWEEN %s AND %s;
         """
         resultsHora = self.executeQueryReturnAll(query,params)
-        if resultsHora:
-            registrosHora = resultsHora[0][0]  # El primer campo de la primera fila
-            totalHora = resultsHora[0][1]       # El segundo campo de la primera fila
+        if resultsHora and resultsHora[0]['totalHora'] :
+            registrosHora = resultsHora[0]['registrosHora']  # El primer campo de la primera fila
+            totalHora = resultsHora[0]['totalHora']     # El segundo campo de la primera fila
+        else:
+            registrosHora = 0
+            totalHora = 0
         #------------ Consulta Mensualidades ---------------
         query = """
         SELECT COUNT(*) AS registrosMes
@@ -360,9 +366,12 @@ class DatabaseConnection:
         """
         resultsMes = self.executeQueryReturnAll(query,params)
         if resultsMes:
-            registrosMes = resultsMes[0][0]  # El primer campo de la primera fila
-            if registrosMes is not None:
-                totalMes =   registrosMes*45000 # El segundo campo de la primera fila
+            registrosMes = resultsMes[0]['registrosMes']  # El primer campo de la primera fila
+            totalMes =   registrosMes*45000 # El segundo campo de la primera fila
+        else:
+            registrosMes= 0
+            totalMes = 0
+            
         #------------ Consulta Fijos -----------------------
         query = """
         SELECT COUNT(*) AS registrosFijos, SUM(Valor) AS totalFijos
@@ -370,21 +379,10 @@ class DatabaseConnection:
         WHERE fechaSalida BETWEEN %s AND %s;
         """
         resultsFijos = self.executeQueryReturnAll(query,params)
-        if resultsFijos:
-            registrosFijos = resultsFijos[0][0]  # El primer campo de la primera fila
-            totalFijos = resultsFijos[0][1]       # El segundo campo de la primera fila
-        # Cambiar none por 0 en caso de que no hayan registros
-
-        if registrosDia == None :
-            registrosDia = 0
-            totalDia = 0
-        if registrosHora == None :
-            registrosHora = 0
-            totalHora = 0
-        if registrosMes == None:
-            registrosMes= 0
-            totalMes = 0
-        if registrosFijos ==  None:
+        if resultsFijos and resultsFijos[0]['totalFijos']:
+            registrosFijos = resultsFijos[0]['registrosFijos']  # El primer campo de la primera fila
+            totalFijos = resultsFijos[0]['totalFijos']       # El segundo campo de la primera fila
+        else:
             registrosFijos = 0
             totalFijos = 0
         #--------- Generar registro del reporte --------
@@ -392,7 +390,7 @@ class DatabaseConnection:
         horaActual= datetime.now().strftime('%H:%M:%S')
         query = """
         INSERT INTO Reporte (Fecha, Hora, Tipo, fechaInicio, fechaFin, registrosMotosHora, totalMotosHora, registrosMotosDia, totalMotosDia,registrosMotosMes,totalMotosMes,registrosFijos,totalFijos)
-        VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s,)
+        VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s)
         """
         params = (fechaAcual,horaActual,"Completo",fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
         self.execute_query(query, params)
