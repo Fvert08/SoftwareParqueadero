@@ -189,6 +189,15 @@ class PaginaReportes(QWidget):
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_reportes.addWidget(boton_imprimir, 10, 5, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
+         # Conectar el botón de imprimir a la función registrarMoto
+        boton_imprimir.clicked.connect(lambda: [
+            db_connection.consultarReporte(
+                date_desde.text(),
+                date_hasta.text(),
+        ),
+        #self.senalActualizarTablaRegistroMotos.emit()
+        ])
+
         layout_reportes.setRowStretch(0, 0)
         layout_reportes.setRowStretch(1, 1)
         layout_reportes.setRowStretch(2, 1)
