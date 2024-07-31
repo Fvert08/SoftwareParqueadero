@@ -7,14 +7,17 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVB
 from PyQt5.QtCore import Qt
 from config import DB_CONFIG
 from DatabaseConnection import DatabaseConnection
+from TicketReporte import generarTicketReporteCompleto
 from datetime import datetime, date
+from PyQt5.QtCore import pyqtSignal
 class PaginaReportes(QWidget):
+    senalActualizarTablaReportes = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
 
-    def actualizarTablaRegistros(self,tabla_registros):
+    def actualizarTablaRegistros(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaRegistros = db_connection.cargarTableRegistros()
@@ -23,35 +26,59 @@ class PaginaReportes(QWidget):
             
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 0, item_id)
+            self.tabla_registros.setItem(row_idx, 0, item_id)
             
             item_Fecha = QTableWidgetItem(registro['Fecha'].strftime('%Y-%m-%d') if isinstance(registro['Fecha'], (datetime, date)) else str(registro['Fecha']))
             item_Fecha.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 1, item_Fecha)
+            self.tabla_registros.setItem(row_idx, 1, item_Fecha)
             
             item_hora = QTableWidgetItem(str(registro.get('Hora')))
             item_hora.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 2, item_hora)
+            self.tabla_registros.setItem(row_idx, 2, item_hora)
 
             item_Tipo = QTableWidgetItem(str(registro['Tipo']))
             item_Tipo.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 3, item_Tipo)
+            self.tabla_registros.setItem(row_idx, 3, item_Tipo)
 
             item_FechaInicio = QTableWidgetItem(registro['fechaInicio'].strftime('%Y-%m-%d') if isinstance(registro['fechaInicio'], (datetime, date)) else str(registro['fechaInicio']))
             item_FechaInicio.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 4, item_FechaInicio)
+            self.tabla_registros.setItem(row_idx, 4, item_FechaInicio)
 
             item_FechaFin = QTableWidgetItem(registro['fechaFin'].strftime('%Y-%m-%d') if isinstance(registro['fechaFin'], (datetime, date)) else str(registro['fechaFin']))
             item_FechaFin.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 5, item_FechaFin)
+            self.tabla_registros.setItem(row_idx, 5, item_FechaFin)
 
-            item_Registros = QTableWidgetItem(str(registro['Registros']))
-            item_Registros.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 6, item_Registros)
+            item_RegistrosMotosHora = QTableWidgetItem(str(registro['registrosMotosHora']))
+            item_RegistrosMotosHora.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 6, item_RegistrosMotosHora)
 
-            item_DineroTotal = QTableWidgetItem(str(registro['dineroTotal']))
-            item_DineroTotal.setTextAlignment(Qt.AlignCenter)
-            tabla_registros.setItem(row_idx, 7, item_DineroTotal)
+            item_DineroTotalMotosHora = QTableWidgetItem(str(registro['totalMotosHora']))
+            item_DineroTotalMotosHora.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 7, item_DineroTotalMotosHora)
+
+            item_RegistrosMotosDia = QTableWidgetItem(str(registro['registrosMotosDia']))
+            item_RegistrosMotosDia.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 8, item_RegistrosMotosDia)
+
+            item_DineroTotalMotosDia = QTableWidgetItem(str(registro['totalMotosDia']))
+            item_DineroTotalMotosDia.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 9, item_DineroTotalMotosDia)
+
+            item_RegistrosMotosMes = QTableWidgetItem(str(registro['registrosMotosMes']))
+            item_RegistrosMotosMes.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 10, item_RegistrosMotosMes)
+
+            item_DineroTotalMotosMes = QTableWidgetItem(str(registro['totalMotosMes']))
+            item_DineroTotalMotosMes.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 11, item_DineroTotalMotosMes)
+
+            item_RegistrosMotosFijos = QTableWidgetItem(str(registro['registrosFijos']))
+            item_RegistrosMotosFijos.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 12, item_RegistrosMotosFijos)
+
+            item_DineroTotalMotosFijos = QTableWidgetItem(str(registro['totalFijos']))
+            item_DineroTotalMotosFijos.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registros.setItem(row_idx, 13, item_DineroTotalMotosFijos)
 
     def initUI(self):
         # Crear la instancia de DatabaseConnection
@@ -78,76 +105,94 @@ class PaginaReportes(QWidget):
         layout_reportes.addWidget(titulo_tablaReportes, 1, 2, 1, 1, alignment= Qt.AlignCenter |Qt.AlignBottom)
         #Tabla
         self.tabla_registros = QTableWidget(self)
-        self.tabla_registros.setColumnCount(8)  # Definir el número de columnas
+        self.tabla_registros.setColumnCount(14)  # Definir el número de columnas
         self.tabla_registros.verticalHeader().setVisible(False)
         self.tabla_registros.setHorizontalHeaderLabels(
-            ['ID', 'Tipo', 'Desde','Hasta','Fecha generación','Hora generación','Registros','Total'])
+            ['ID', 'Fecha.G', 'Hora.G','Tipo','Fecha.I','Fecha.F','Reg.M.Hora','Total.M.Hora','Reg.M.Dia','Total.M.Dia','Reg.M.Mes','Total.M.Mes','Reg.F','Total.F'])
         self.tabla_registros.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+                  QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
+
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
                 """)
+        header = self.tabla_registros.horizontalHeader()
         #seleccionar toda la fila
         self.tabla_registros.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         header = self.tabla_registros.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
+        
+        #se configuran las propiedades de latabla, para que se seleccione toda la fila y no se permita editar
+        self.tabla_registros.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tabla_registros.setSelectionBehavior(QAbstractItemView.SelectRows)
         layout_reportes.addWidget(self.tabla_registros, 2, 0, 8, 5)
 
         # Rellenar la tabla
-        self.actualizarTablaRegistros(self.tabla_registros)
+        self.actualizarTablaRegistros()
         # Crea un boton para Reimprimir
         boton_reimprimir = QPushButton('Reimprimir')
         boton_reimprimir.setStyleSheet(
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_reportes.addWidget(boton_reimprimir, 10, 4, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignRight)
+        boton_reimprimir.clicked.connect(lambda: [
+            generarTicketReporteCompleto(
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 0).text(),
+            "COPIA",
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 1).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 2).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 4).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 5).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 6).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 7).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 8).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 9).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 10).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 11).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 12).text(),
+            self.tabla_registros.item(self.tabla_registros.currentRow(), 13).text(),
+        ),
+        self.senalActualizarTablaReportes.emit()
+        ])
+        
         #Formulario
-        # Crear el label "ID" y la textbox
-        label_id = QLabel('ID')
-        label_id.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_reportes.addWidget(label_id, 2, 5, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight)
-        # Text box ID
-        textbox_id = QLineEdit()
-        textbox_id.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_id.setFixedWidth(240)
-        layout_reportes.addWidget(textbox_id, 3, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
-        textbox_id.setReadOnly(True)
-        # Crear el label "reportar" y la textbox
-        label_reportar = QLabel('Reportar')
-        label_reportar.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_reportes.addWidget(label_reportar, 4, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
-        # combobox box reportar
-        combobox_reportar= QComboBox()
-        combobox_reportar.addItems(['Todo', 'Hora', 'Dia', 'Mes'])
-        combobox_reportar.setFixedWidth(240)
-        combobox_reportar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
-        layout_reportes.addWidget(combobox_reportar, 5, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
-
         # Crear el label "Desde" y la textbox
         label_desde = QLabel('Desde')
         label_desde.setStyleSheet("color: #FFFFFF;font-size: 40px;")
@@ -159,6 +204,7 @@ class PaginaReportes(QWidget):
         date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
         date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
         date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        date_desde.setDisplayFormat("yyyy-MM-dd")
         calendarDesde_widget = date_desde.calendarWidget()
         calendarDesde_widget.setStyleSheet("font-size: 20px;") 
         calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
@@ -174,6 +220,7 @@ class PaginaReportes(QWidget):
         date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
         date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
         date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        date_hasta.setDisplayFormat("yyyy-MM-dd")
         calendarhasta_widget = date_hasta.calendarWidget()
         calendarhasta_widget.setStyleSheet("font-size: 20px;") 
         calendarhasta_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
@@ -187,6 +234,20 @@ class PaginaReportes(QWidget):
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_reportes.addWidget(boton_imprimir, 10, 5, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
+         # Conectar el botón de imprimir a la función registrarMoto
+        boton_imprimir.clicked.connect(lambda: [
+            db_connection.consultarReporte(
+                date_desde.text(),
+                date_hasta.text(),
+                "ORIGINAL"
+        ),
+            date_desde.setMaximumDate(QDate.currentDate()),
+            date_hasta.setDate(QDate.currentDate()),
+            self.actualizarTablaRegistros()
+
+        #self.senalActualizarTablaRegistroMotos.emit()
+        ])
+
         layout_reportes.setRowStretch(0, 0)
         layout_reportes.setRowStretch(1, 1)
         layout_reportes.setRowStretch(2, 1)

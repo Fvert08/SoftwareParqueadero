@@ -5,6 +5,7 @@ from TicketIngresoMoto import generarTicketIngresoMoto
 from TicketIngresoFijo import generarTicketIngresoFijo
 from TicketIngresoMensualidad import generarTicketIngresoMensualidad
 from TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from TicketReporte import generarTicketReporteCompleto
 from config import DB_CONFIG
 class DatabaseConnection:
     _instance = None
@@ -322,8 +323,78 @@ class DatabaseConnection:
         params = (str(posicionCasillero),)
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = %s"
-        params = (str (posicionCasillero), str(posicionCasillero + 1))
+        
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
         params = (str(posicionCasillero+1),)
         self.execute_query(query, params)
+
+    def consultarReporte (self,fechaInicio,fechaFin,Tipo):
+        #--------- Definir fechas de busqueda ------------
+        params = (str (fechaInicio), str(fechaFin))
+        #------------ Consulta dia ---------------
+        query= """
+        SELECT COUNT(*) AS registrosDia, SUM(Total) AS totalDia
+        FROM registrosMoto
+        WHERE Tipo = 'Dia' AND fechaSalida BETWEEN %s AND %s;
+        """
+        resultsDia = self.executeQueryReturnAll(query,params)
+        if resultsDia and resultsDia[0]['totalDia']:
+            registrosDia = resultsDia[0]['registrosDia']  # El primer campo de la primera fila
+            totalDia = resultsDia[0]['totalDia']      # El segundo campo de la primera fila
+        else:
+            registrosDia = 0
+            totalDia = 0
+        #------------ Consulta hora ---------------
+        query = """
+        SELECT COUNT(*) AS registrosHora, SUM(Total) AS totalHora
+        FROM registrosMoto
+        WHERE Tipo = 'Hora' AND fechaSalida BETWEEN %s AND %s;
+        """
+        resultsHora = self.executeQueryReturnAll(query,params)
+        if resultsHora and resultsHora[0]['totalHora'] :
+            registrosHora = resultsHora[0]['registrosHora']  # El primer campo de la primera fila
+            totalHora = resultsHora[0]['totalHora']     # El segundo campo de la primera fila
+        else:
+            registrosHora = 0
+            totalHora = 0
+        #------------ Consulta Mensualidades ---------------
+        query = """
+        SELECT COUNT(*) AS registrosMes
+        FROM Mensualidades
+        WHERE fechaUltimoPago BETWEEN %s AND %s;
+        """
+        resultsMes = self.executeQueryReturnAll(query,params)
+        if resultsMes:
+            registrosMes = resultsMes[0]['registrosMes']  # El primer campo de la primera fila
+            totalMes =   registrosMes*45000 # El segundo campo de la primera fila
+        else:
+            registrosMes= 0
+            totalMes = 0
+            
+        #------------ Consulta Fijos -----------------------
+        query = """
+        SELECT COUNT(*) AS registrosFijos, SUM(Valor) AS totalFijos
+        FROM Fijos
+        WHERE fechaSalida BETWEEN %s AND %s;
+        """
+        resultsFijos = self.executeQueryReturnAll(query,params)
+        if resultsFijos and resultsFijos[0]['totalFijos']:
+            registrosFijos = resultsFijos[0]['registrosFijos']  # El primer campo de la primera fila
+            totalFijos = resultsFijos[0]['totalFijos']       # El segundo campo de la primera fila
+        else:
+            registrosFijos = 0
+            totalFijos = 0
+        #--------- Generar registro del reporte --------
+        fechaAcual = datetime.now().strftime('%Y-%m-%d')
+        horaActual= datetime.now().strftime('%H:%M:%S')
+        query = """
+        INSERT INTO Reporte (Fecha, Hora, Tipo, fechaInicio, fechaFin, registrosMotosHora, totalMotosHora, registrosMotosDia, totalMotosDia,registrosMotosMes,totalMotosMes,registrosFijos,totalFijos)
+        VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s)
+        """
+        params = (fechaAcual,horaActual,"Completo",fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
+        self.execute_query(query, params)
+        nuevo_id = self.obtenerUltimoRegistro()
+        generarTicketReporteCompleto(nuevo_id,Tipo,fechaAcual,horaActual,fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
+            
+        
