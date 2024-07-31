@@ -329,7 +329,7 @@ class DatabaseConnection:
         params = (str(posicionCasillero+1),)
         self.execute_query(query, params)
 
-    def consultarReporte (self, fechaInicio,fechaFin):
+    def consultarReporte (self,fechaInicio,fechaFin,Tipo):
         #--------- Definir fechas de busqueda ------------
         params = (str (fechaInicio), str(fechaFin))
         #------------ Consulta dia ---------------
@@ -395,6 +395,6 @@ class DatabaseConnection:
         params = (fechaAcual,horaActual,"Completo",fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
         self.execute_query(query, params)
         nuevo_id = self.obtenerUltimoRegistro()
-        generarTicketReporteCompleto(nuevo_id,"Completo",fechaAcual,horaActual,fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
+        generarTicketReporteCompleto(nuevo_id,Tipo,fechaAcual,horaActual,fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
             
         
