@@ -1,7 +1,12 @@
 from PIL import Image, ImageDraw, ImageFont
 import os
+import win32print
+import win32ui
+from PIL import ImageWin
+def mm_to_pixels(mm, dpi):
+    return int((mm / 25.4) * dpi)
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos ,Fecha, Hora):
+def generarTicketReporteCompleto(codigo,Tipo,Fecha, Hora,FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos):
     
     # Obtener la ruta del directorio actual
     directorio_actual = os.path.dirname(os.path.abspath(__file__))
@@ -9,7 +14,7 @@ def generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMot
     ruta_logo = os.path.join(directorio_actual, "Logo.png")
     ruta_guardado = os.path.join(directorio_actual, "TicketReporteCompleto.png")
     # Dimensiones típicas de un recibo POS, cuadruplicadas para mejorar calidad
-    width, height = 1720, 2480 # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+    width, height = 1720, 2720 # Cuadruplicar el tamaño original para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -63,11 +68,61 @@ def generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMot
     d.text((80, 2240), f"Fijos: {registrosFijos}", font=font_bold, fill='black')
     d.text((80, 2320), f"Total: {dineroTotalFijos}", font=font_bold, fill='black')
 
-    d.text((80, 2400), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((80, 2480), f"Registros: ", font=font_bold, fill='black')
+    d.text((80, 2560), f"Total: ", font=font_bold, fill='black')
+
+    d.text((80, 2640), f"------------------------------------------------", font=font_bold, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
+    imprimirTicket(ruta_guardado)
     print(f"Ticket Reporte Completo generado")
 
+
+
+# Función para imprimir el recibo
+def imprimirTicket(ruta_archivo):
+    try:
+        # Obtener el nombre de la impresora predeterminada
+        impresora_predeterminada = win32print.GetDefaultPrinter()
+        print(f"Impresora predeterminada: {impresora_predeterminada}")
+
+        # Supongamos una resolución de impresora de 203 DPI
+        dpi = 203
+        paper_width_mm = 70  # Ajustar a 70mm para hacer la imagen más pequeña
+        paper_width_px = mm_to_pixels(paper_width_mm, dpi)
+
+        # Abrir la impresora
+        hPrinter = win32print.OpenPrinter(impresora_predeterminada)
+        try:
+            # Crear un trabajo de impresión
+            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketReporteCompleto", None, "RAW"))
+            try:
+                win32print.StartPagePrinter(hPrinter)
+                
+                # Cargar la imagen
+                bmp = Image.open(ruta_archivo)
+                bmp = bmp.resize((paper_width_px, int(bmp.height * (paper_width_px / bmp.width))), Image.LANCZOS)
+                dib = ImageWin.Dib(bmp)
+                
+                # Obtener el contexto de dispositivo
+                hDC = win32ui.CreateDC()
+                hDC.CreatePrinterDC(impresora_predeterminada)
+                
+                # Ajustar el tamaño de la imagen al tamaño del papel
+                hDC.StartDoc("TicketReporteCompleto")
+                hDC.StartPage()
+                dib.draw(hDC.GetHandleOutput(), (0, 0, bmp.size[0], bmp.size[1]))
+                hDC.EndPage()
+                hDC.EndDoc()
+                
+                win32print.EndPagePrinter(hPrinter)
+            finally:
+                win32print.EndDocPrinter(hPrinter)
+        finally:
+            win32print.ClosePrinter(hPrinter)
+        print("Impresión enviada correctamente.")
+    except Exception as e:
+        print(f"Error al intentar imprimir: {e}")
 # Ejemplo de uso
 Tipo = "Todo"
 FechaInicio="13-07-2024"
@@ -85,4 +140,4 @@ Hora = "10:17:00"
 codigo = "4"
 
 
-generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos ,Fecha, Hora)
+#generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos ,Fecha, Hora)

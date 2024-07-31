@@ -45,11 +45,11 @@ class PaginaReportes(QWidget):
             item_FechaFin.setTextAlignment(Qt.AlignCenter)
             tabla_registros.setItem(row_idx, 5, item_FechaFin)
 
-            item_Registros = QTableWidgetItem(str(registro['Registros']))
+            item_Registros = QTableWidgetItem(str(registro['registrosMotosHora']))
             item_Registros.setTextAlignment(Qt.AlignCenter)
             tabla_registros.setItem(row_idx, 6, item_Registros)
 
-            item_DineroTotal = QTableWidgetItem(str(registro['dineroTotal']))
+            item_DineroTotal = QTableWidgetItem(str(registro['totalMotosHora']))
             item_DineroTotal.setTextAlignment(Qt.AlignCenter)
             tabla_registros.setItem(row_idx, 7, item_DineroTotal)
 
@@ -126,6 +126,8 @@ class PaginaReportes(QWidget):
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
         layout_reportes.addWidget(boton_reimprimir, 10, 4, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignRight)
+        
+        
         #Formulario
         # Crear el label "ID" y la textbox
         label_id = QLabel('ID')
