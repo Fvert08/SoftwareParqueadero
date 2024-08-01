@@ -10,7 +10,9 @@ from pagina_configuracion import PaginaConfiguracion
 from pagina_creditos import PaginaCreditos
 from PyQt5.QtGui import QScreen
 from PyQt5.QtCore import pyqtSignal
+from datetime import datetime, date
 from DatabaseConnection import DatabaseConnection
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from config import DB_CONFIG
 class MiVentana(QWidget):
     #Señales para actualizar tablas y textbox de otras pantallas
@@ -29,7 +31,18 @@ class MiVentana(QWidget):
         self.setWindowState(Qt.WindowMaximized)
         self.setMaximumSize(self.width, self.height)  # tamaño máximo igual al tamaño de la pantalla
         self.Pagina_principal()
-
+    def diasSuscripcion (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        ultimoPago = db_connection.consultarUltimaSuscripcion()
+        fechaActual = datetime.now().date()  # Convertir a objeto date
+        if ultimoPago:
+            # Asegurarse de que ultimoPago sea un objeto date
+            if isinstance(ultimoPago, str):
+                ultimoPago = datetime.strptime(ultimoPago, '%Y-%m-%d').date()
+            
+            dias_restantes = 30 - (fechaActual - ultimoPago).days  # Calcular la diferencia en días
+            return dias_restantes
+        
     def Pagina_principal(self):
         # Crear un QLabel para mostrar la imagen
         label_Logo = QLabel(self)
@@ -66,7 +79,6 @@ class MiVentana(QWidget):
         self.botonRegistros.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         self.botonRegistros.setIcon(QIcon('registrosSel.png'))
         self.botonRegistros.setCheckable(True)
-        self.botonRegistros.setChecked(True)
         self.botonRegistros.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonRegistros, alignment=Qt.AlignCenter)
 
@@ -111,8 +123,6 @@ class MiVentana(QWidget):
         #agrega al layout el menú y el stack
         main_layout.addWidget(menuizquierdo)
         main_layout.addWidget(self.stacked_widget)
-        # Se captura el ultimo boton seleccionado
-        self.ultimo_boton_seleccionado = self.botonRegistros
         # se setea el layout principal 
         self.setLayout(main_layout)
         # Crear instancias de las páginas y agregarlas al QStackedWidget
@@ -133,6 +143,18 @@ class MiVentana(QWidget):
 
         self.pagina_creditos = PaginaCreditos(self.stacked_widget)
         self.stacked_widget.addWidget(self.pagina_creditos)
+         # Se captura el ultimo boton seleccionado
+        if self.diasSuscripcion() <= 0:
+            self.botonConfiguracion.setChecked(True)
+            self.stacked_widget.setCurrentIndex(8)
+            self.ultimo_boton_seleccionado = self.botonConfiguracion
+            self.botonConfiguracion.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+            self.botonRegistros.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        else:
+            self.botonRegistros.setChecked(True)
+            self.ultimo_boton_seleccionado = self.botonRegistros
+
+
 
         #Conexiones de señales entre páginas
         self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
@@ -141,11 +163,22 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTablaRegistroFijos.connect(self.pagina_registros.actualizarTablaFijos) #conectar señal para actualizar las tablas de Fijos
         self.pagina_tickets.senalActualizarTablaRegistroMensualidades.connect(self.pagina_registros.actualizarTablaMensualidades) #conectar señal para actualizar las tablas de Mensualidad
         self.pagina_reportes.senalActualizarTablaReportes.connect(self.pagina_reportes.actualizarTablaRegistros)#conectar señal para actualizar las tablas de reportes
+        self.pagina_configuracion.senalActualizarTextboxesSuscripcion.connect(self.pagina_configuracion.actualizarTextboxesSuscripcion)
     def cambiar_color(self):
         sender = self.sender()
-        sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         boton_actual = self.sender()
-
+        if self.diasSuscripcion() <= 0:
+            if (sender.text() != "Creditos") and (sender.text() != "Configuracion"):
+                sender = self.botonConfiguracion
+                boton_actual = sender
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Su suscripción ha caducado, renueve su suscripción.")
+                msg.setWindowTitle("Renueve su suscripción")
+                msg.setStandardButtons(QMessageBox.Ok)
+                msg.exec_()
+        
+        sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
         if boton_actual != self.ultimo_boton_seleccionado:
             if self.ultimo_boton_seleccionado:
                 self.ultimo_boton_seleccionado.setChecked(False)
@@ -167,8 +200,10 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(6)
         elif sender.text() == "Configuracion":
             self.stacked_widget.setCurrentIndex(8)
+            self.pagina_configuracion.senalActualizarTextboxesSuscripcion.emit()
         elif sender.text() == "Creditos":
             self.stacked_widget.setCurrentIndex(10)
+
     def closeEvent(self, event):
         print("Se cerró la ventana")
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)

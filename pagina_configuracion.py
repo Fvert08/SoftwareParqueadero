@@ -7,8 +7,13 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVB
 from PyQt5.QtCore import Qt
 from config import DB_CONFIG
 from DatabaseConnection import DatabaseConnection
-class PaginaConfiguracion(QWidget):
+from FileEnCo import generarCodigoEncriptado
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
+from datetime import datetime, date
+from PyQt5.QtCore import pyqtSignal
 
+class PaginaConfiguracion(QWidget):
+    senalActualizarTextboxesSuscripcion = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -496,7 +501,49 @@ class PaginaConfiguracion(QWidget):
         page_PC.setLayout(layout_PC)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_PC)
-    
+    def actualizarTextboxesSuscripcion (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        ultimoPago = db_connection.consultarUltimaSuscripcion()
+        fechaActual = datetime.now().date()  # Convertir a objeto date
+        
+        if ultimoPago:
+            # Asegurarse de que ultimoPago sea un objeto date
+            if isinstance(ultimoPago, str):
+                ultimoPago = datetime.strptime(ultimoPago, '%Y-%m-%d').date()
+            
+            dias_restantes = 30 - (fechaActual - ultimoPago).days  # Calcular la diferencia en días
+            self.textboxDiasRestantesSuscripcion.setText(str(dias_restantes))
+            
+            if dias_restantes > 0:
+                self.textboxEstadoActualSuscripcion.setText("ACTIVA")
+            else:
+                self.textboxEstadoActualSuscripcion.setText("INACTIVA")
+
+    def verificarCodigoMensualidad(self, textoCodigo):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        fecha_str = datetime.now().strftime('%Y-%m-%d')
+        fecha_actual = datetime.strptime(fecha_str, "%Y-%m-%d")
+        dia = fecha_actual.day
+        codigo = generarCodigoEncriptado("parqueaderola18", str(fecha_str), int(dia))  # Se genera un código a partir de una palabra clave, la fecha y un numero de iteraciones, que variará en función del día
+        if textoCodigo == codigo:
+            print("Suscripción Activada")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Su suscripcón ha sido renovada.")
+            msg.setWindowTitle("Renovación correcta")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
+            db_connection.registrarSuscripcion()
+            self.actualizarTextboxesSuscripcion()
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("El código es erroneo, porfavor verifíquelo.")
+            msg.setWindowTitle("Error en el código")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
+            print("Código erróneo")
+
     def pantallaSuscripcion(self):
          #Pagina de Suscripcion
         page_Suscripcion = QWidget()
@@ -526,25 +573,34 @@ class PaginaConfiguracion(QWidget):
         boton_validar = QPushButton('VALIDAR')
         boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
         layout_Suscripcion.addWidget(boton_validar,2, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignBottom)
+         # Conectar el botón de imprimir a la función registrarMoto
+        boton_validar.clicked.connect(lambda: [
+            self.verificarCodigoMensualidad(
+                textbox_Codigo.text()
+        ),
+            textbox_Codigo.clear()
+        ])
+
 
         titulo_EstadoActual= QLabel('ESTADO ACTUAL')
         titulo_EstadoActual .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_Suscripcion.addWidget(titulo_EstadoActual  , 4, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignRight)
 
-        textbox_EstadoActual = QLineEdit()
-        textbox_EstadoActual.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
-        textbox_EstadoActual.setFixedWidth(180)
-        layout_Suscripcion.addWidget(textbox_EstadoActual, 4, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
+        self.textboxEstadoActualSuscripcion = QLineEdit()
+        self.textboxEstadoActualSuscripcion.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxEstadoActualSuscripcion.setFixedWidth(180)
+        layout_Suscripcion.addWidget(self.textboxEstadoActualSuscripcion, 4, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
 
 
-        titulo_DiasRestantes = QLabel('DIAS RESTANTES')
-        titulo_DiasRestantes .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Suscripcion.addWidget(titulo_DiasRestantes  , 5, 0, 1, 4, alignment= Qt.AlignTop |Qt.AlignRight)
+        tituloDiasRestantesSuscripción = QLabel('DIAS RESTANTES')
+        tituloDiasRestantesSuscripción .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Suscripcion.addWidget(tituloDiasRestantesSuscripción  , 5, 0, 1, 4, alignment= Qt.AlignTop |Qt.AlignRight)
 
-        textbox_DiasRestantes = QLineEdit()
-        textbox_DiasRestantes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_DiasRestantes.setFixedWidth(180)
-        layout_Suscripcion.addWidget(textbox_DiasRestantes, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
+        self.textboxDiasRestantesSuscripcion = QLineEdit()
+        self.textboxDiasRestantesSuscripcion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxDiasRestantesSuscripcion.setFixedWidth(180)
+        layout_Suscripcion.addWidget(self.textboxDiasRestantesSuscripcion, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
+        self.actualizarTextboxesSuscripcion() #Actualizar etxboxes
         #Fila-Tamaño
         layout_Suscripcion.setRowStretch(0, 0)
         layout_Suscripcion.setRowStretch(1, 1)
