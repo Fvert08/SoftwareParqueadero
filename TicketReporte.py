@@ -57,19 +57,20 @@ def generarTicketReporteCompleto(codigo,Tipo,Fecha, Hora,FechaInicio, FechaFin,r
     d.text((80, 1360), f"Fecha fin: {FechaFin}", font=font_bold, fill='black')
     d.text((80, 1440), f"------------------------------------------------", font=font_bold, fill='black')
     d.text((80, 1520), f"Motos hora: {registrosMotosHora}", font=font_bold, fill='black')
-    d.text((80, 1600), f"Total: {dineroTotalMotosHora}", font=font_bold, fill='black')
+    d.text((80, 1600), f"Total: ${int(dineroTotalMotosHora):,.0f}", font=font, fill='black')
 
     d.text((80, 1760), f"Motos dia: {registrosMotosDia}", font=font_bold, fill='black')
-    d.text((80, 1840), f"Total: {dineroTotalMotosDia}", font=font_bold, fill='black')
+    d.text((80, 1840), f"Total: ${int(dineroTotalMotosDia):,.0f}", font=font, fill='black')
 
     d.text((80, 2000), f"Motos Mes: {registrosMotosMes}", font=font_bold, fill='black')
-    d.text((80, 2080), f"Total: {dineroTotalMotosMes}", font=font_bold, fill='black')
+    d.text((80, 2080), f"Total: ${int(dineroTotalMotosMes):,.0f}", font=font, fill='black')
+
 
     d.text((80, 2240), f"Fijos: {registrosFijos}", font=font_bold, fill='black')
-    d.text((80, 2320), f"Total: {dineroTotalFijos}", font=font_bold, fill='black')
+    d.text((80, 2320), f"Total: ${int(dineroTotalFijos):,.0f}", font=font, fill='black')
 
     d.text((80, 2480), f"Registros: {int(registrosMotosHora)+int(registrosMotosDia)+int(registrosMotosMes)+int(registrosFijos)} ", font=font_bold, fill='black')
-    d.text((80, 2560), f"Total: {int(dineroTotalMotosHora)+int(dineroTotalMotosDia)+int(dineroTotalMotosMes)+int(dineroTotalFijos)}", font=font_bold, fill='black')
+    d.text((80, 2560), f"Total: ${int(dineroTotalMotosHora)+int(dineroTotalMotosDia)+int(dineroTotalMotosMes)+int(dineroTotalFijos):,.0f}", font=font, fill='black')
 
     d.text((80, 2640), f"------------------------------------------------", font=font_bold, fill='black')
     # Guardar la imagen en la ruta especificada
