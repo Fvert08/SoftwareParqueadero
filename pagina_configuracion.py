@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from config import DB_CONFIG
 from DatabaseConnection import DatabaseConnection
 from FileEnCo import generarCodigoEncriptado
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
 
@@ -526,9 +527,21 @@ class PaginaConfiguracion(QWidget):
         codigo = generarCodigoEncriptado("parqueaderola18", str(fecha_str), int(dia))  # Se genera un código a partir de una palabra clave, la fecha y un numero de iteraciones, que variará en función del día
         if textoCodigo == codigo:
             print("Suscripción Activada")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Su suscripcón ha sido renovada.")
+            msg.setWindowTitle("Renovación correcta")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
             db_connection.registrarSuscripcion()
             self.actualizarTextboxesSuscripcion()
         else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("El código es erroneo, porfavor verifíquelo.")
+            msg.setWindowTitle("Error en el código")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
             print("Código erróneo")
 
     def pantallaSuscripcion(self):
