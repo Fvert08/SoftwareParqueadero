@@ -1,6 +1,6 @@
 import datetime
 
-def generar_codigo_encriptado(palabra, fecha_str, iteraciones):
+def generarCodigoEncriptado(palabra, fecha_str, iteraciones):
     # Convertir la cadena de fecha a un objeto datetime
     fecha_actual = datetime.datetime.strptime(fecha_str, "%Y-%m-%d")
     # Obtener año, mes y día
@@ -80,8 +80,8 @@ def generar_codigo_encriptado(palabra, fecha_str, iteraciones):
     return encriptar(palabra, iteraciones)
 
 # Ejemplo de uso
-palabra = "parqueaderola17"
-fecha_str = "2024-10-15"
-iteraciones = 5
-codigo_encriptado = generar_codigo_encriptado(palabra, fecha_str, iteraciones)
+palabra = "parqueaderola18"
+fecha_str = "2024-08-01"
+iteraciones = 1
+codigo_encriptado = generarCodigoEncriptado(palabra, fecha_str, iteraciones)
 print(codigo_encriptado)
