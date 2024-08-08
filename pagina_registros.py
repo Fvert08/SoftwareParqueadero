@@ -327,6 +327,15 @@ class PaginaRegistros(QWidget):
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_GuardarEdicion.clicked.connect(lambda: [
+            db_connection.editarRegistroMoto(
+            int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()), 
+            str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
+            str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
+            str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text())
+        ),
+        self.actualizarTablaRegistroMotos,
+        ])
         #Boton Limpiar Registro
         boton_LimpiarRegistro = QPushButton('LIMPIAR REGISTRO')
         boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -451,6 +460,15 @@ class PaginaRegistros(QWidget):
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaFijo.addWidget(boton_GuardarEdicion , 8, 7, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_GuardarEdicion.clicked.connect(lambda: [
+            db_connection.editarRegistroFijo(
+            int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()), 
+            str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
+            str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 2).text()),
+            str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 7).text())
+        ),
+        self.actualizarTablaFijos,
+        ])
         #Boton Limpiar Registro
         boton_Limpiar= QPushButton('LIMPIAR REGISTRO')
         boton_Limpiar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")

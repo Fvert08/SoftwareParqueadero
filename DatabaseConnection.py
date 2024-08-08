@@ -187,18 +187,18 @@ class DatabaseConnection:
         generarTicketRenovarMensualidad(str(datosBusquedarenovarMensualidad['id']),fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
     def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono):
-        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s,WHERE id = %s"
+        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s WHERE id = %s"
         params = (nuevaPlaca, nuevoNombre,nuevoTelefono,idRegistro)
         self.execute_query(query, params)
 
 
     def editarRegistroFijo(self, idRegistro, nuevaTipo,nuevaNota,nuevoValor):
-        query = "UPDATE Fijos SET Tipo = %s, Nota = %s, Valor= %s,WHERE id = %s"
+        query = "UPDATE Fijos SET Tipo = %s, Nota = %s, Valor= %s WHERE id = %s"
         params = (nuevaTipo, nuevaNota,nuevoValor,idRegistro)
         self.execute_query(query, params)
 
     def editarRegistroMoto(self, idRegistro, nuevaPlaca,nuevoCasco,nuevoTipo):
-        query = "UPDATE registrosMoto SET Placa = %s, Cascos = %s, Tipo= %s,WHERE id = %s"
+        query = "UPDATE registrosMoto SET Placa = %s, Cascos = %s, Tipo= %s WHERE id = %s"
         params = (nuevaPlaca, nuevoCasco,nuevoTipo,idRegistro)
         self.execute_query(query, params)
 
