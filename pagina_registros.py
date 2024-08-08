@@ -312,6 +312,16 @@ class PaginaRegistros(QWidget):
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        #Boton Reimprimir Registro
+        boton_ReimprimirRegistro= QPushButton('REIMPRIMIR REGISTRO')
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1,
+                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        #Boton Eliminar Registro
+        boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
+        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1,
+                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -425,6 +435,16 @@ class PaginaRegistros(QWidget):
         boton_Buscar = QPushButton('BUSCAR')
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaFijo.addWidget(boton_Buscar , 8, 2, 1, 1,
+                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        #Boton Reimprimir Registro
+        boton_ReimprimirRegistro= QPushButton('REIMPRIMIR REGISTRO')
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_TablaFijo.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1,
+                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        #Boton Eliminar Registro
+        boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
+        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_TablaFijo.addWidget(boton_EliminarRegistro , 8, 6, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
@@ -543,6 +563,11 @@ class PaginaRegistros(QWidget):
         boton_Buscar = QPushButton('BUSCAR')
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaMensualidades.addWidget(boton_Buscar , 8, 2, 1, 1,
+                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        #Boton Reimprimir Registro
+        boton_ReimprimirRegistro= QPushButton('REIMPRIMIR REGISTRO')
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_TablaMensualidades.addWidget(boton_ReimprimirRegistro , 8, 6, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')

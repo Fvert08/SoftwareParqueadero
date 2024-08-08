@@ -19,7 +19,6 @@ class MiVentana(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
         self.setStyleSheet("background-color: #151419;")
