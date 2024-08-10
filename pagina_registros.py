@@ -18,7 +18,11 @@ class PaginaRegistros(QWidget):
     def actualizarTablaMensualidades(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
-        datosTablaMensualides = db_connection.cargarTableMensualidades()
+        if self.combobox_FiltrarRegistrosMensualidad.currentText() !="Todo":
+            datosTablaMensualides= db_connection.cargarTableRegistrosMensualidadFiltrada(self.combobox_FiltrarRegistrosMensualidad.currentText(),self.textbox_FiltrarRegistrosMensualidad.text()) 
+        else :
+            datosTablaMensualides = db_connection.cargarTableMensualidades()
+        
         self.tabla_Mensualidades.setRowCount(len(datosTablaMensualides))
         for row_idx, registro in enumerate(datosTablaMensualides):
             item_id = QTableWidgetItem(str(registro['id']))
@@ -62,7 +66,10 @@ class PaginaRegistros(QWidget):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
-        datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
+        if self.combobox_FiltroRegistroMoto.currentText() !="Todo":
+            datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotosFiltrada(self.combobox_FiltroRegistroMoto.currentText(),self.textbox_FiltroRegistroMoto.text()) 
+        else :
+            datosTablaRegistroMotos= db_connection.cargarTableRegistrosMotos()
         self.tablaRegistrosMotos.setRowCount(len(datosTablaRegistroMotos))
         for row_idx, registro in enumerate(datosTablaRegistroMotos):
             item_id = QTableWidgetItem(str(registro['id']))
@@ -109,7 +116,11 @@ class PaginaRegistros(QWidget):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         # Abre la conexión a la base de datos
-        datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
+        if self.combobox_filtroRegistroFijos.currentText() !="Todo":
+            datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijosFiltrada(self.combobox_filtroRegistroFijos.currentText(),self.textbox_FiltroRegistroFijo.text()) 
+        else :
+            datosTablaRegistroFijos= db_connection.cargarTableRegistrosFijos()
+        
         self.tablaRegistrosFijos.setRowCount(len(datosTablaRegistroFijos))
 
         for row_idx, registro in enumerate(datosTablaRegistroFijos):
@@ -295,26 +306,28 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
+        #Botones del filtro
+        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
+        self.combobox_FiltroRegistroMoto = QComboBox()
+        self.combobox_FiltroRegistroMoto.addItems(['Todo', "ID" ,'Casillero', 'Placa', 'Tipo'])
+        self.combobox_FiltroRegistroMoto.setFixedWidth(130)
+        self.combobox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
+        layout_TablaRegistros.addWidget(self.combobox_FiltroRegistroMoto, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
+        
+        self.textbox_FiltroRegistroMoto = QLineEdit()
+        self.textbox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_FiltroRegistroMoto.setFixedWidth(250)
+        layout_TablaRegistros.addWidget(self.textbox_FiltroRegistroMoto , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
         # Rellenar la tabla
         self.actualizarTablaRegistroMotos()
-        #--
-        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
-        combobox_Tipo = QComboBox()
-        combobox_Tipo.addItems(['Placa', 'ID', 'Casillero'])
-        combobox_Tipo.setFixedWidth(130)
-        combobox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaRegistros.addWidget(combobox_Tipo, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
-        
-        textbox_Tipo  = QLineEdit()
-        textbox_Tipo .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Tipo .setFixedWidth(250)
-        layout_TablaRegistros.addWidget(textbox_Tipo , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
-
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar.clicked.connect(lambda: [
+            self.actualizarTablaRegistroMotos()
+            ])
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
         boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -346,7 +359,7 @@ class PaginaRegistros(QWidget):
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text())
         ),
-        self.actualizarTablaRegistroMotos(),
+        self.actualizarTablaRegistroMotos("Todo","0"),
         generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
@@ -447,27 +460,32 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        # Rellenar la tabla
-        self.actualizarTablaFijos()
         #agregar la tabla
         layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)
 
-        combobox_Tipo = QComboBox()
-        combobox_Tipo.addItems(['ID'])
-        combobox_Tipo.setFixedWidth(130)
-        combobox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaFijo.addWidget(combobox_Tipo, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
+        self.combobox_filtroRegistroFijos= QComboBox()
+        self.combobox_filtroRegistroFijos.addItems(['Todo','ID','Tipo','Valor'])
+        self.combobox_filtroRegistroFijos.setFixedWidth(130)
+        self.combobox_filtroRegistroFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
+        layout_TablaFijo.addWidget(self.combobox_filtroRegistroFijos, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
         
-        textbox_Tipo  = QLineEdit()
-        textbox_Tipo .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Tipo .setFixedWidth(250)
-        layout_TablaFijo.addWidget(textbox_Tipo , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
+        self.textbox_FiltroRegistroFijo  = QLineEdit()
+        self.textbox_FiltroRegistroFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_FiltroRegistroFijo .setFixedWidth(250)
+        layout_TablaFijo.addWidget( self.textbox_FiltroRegistroFijo , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
 
+
+        # Rellenar la tabla
+        self.actualizarTablaFijos()
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaFijo.addWidget(boton_Buscar , 8, 2, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar.clicked.connect(lambda: [
+            self.actualizarTablaFijos()
+            ])
+
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
         boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -603,20 +621,23 @@ class PaginaRegistros(QWidget):
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
         layout_TablaMensualidades.addWidget(self.tabla_Mensualidades, 1, 0, 7, 9)
 
+        
+
+        self.combobox_FiltrarRegistrosMensualidad = QComboBox()
+        self.combobox_FiltrarRegistrosMensualidad.addItems(['Todo', 'ID','Nombre','Telefono'])
+        self.combobox_FiltrarRegistrosMensualidad.setFixedWidth(130)
+        self.combobox_FiltrarRegistrosMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
+        layout_TablaMensualidades.addWidget(self.combobox_FiltrarRegistrosMensualidad, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
+        
+        self.textbox_FiltrarRegistrosMensualidad  = QLineEdit()
+        self.textbox_FiltrarRegistrosMensualidad .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_FiltrarRegistrosMensualidad .setFixedWidth(200)
+        layout_TablaMensualidades.addWidget(self.textbox_FiltrarRegistrosMensualidad , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
+        
+        
+        
         # Rellenar la tabla
         self.actualizarTablaMensualidades()
-
-        combobox_Tipo = QComboBox()
-        combobox_Tipo.addItems(['Placa', 'ID'])
-        combobox_Tipo.setFixedWidth(130)
-        combobox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaMensualidades.addWidget(combobox_Tipo, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
-        
-        textbox_Tipo  = QLineEdit()
-        textbox_Tipo .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Tipo .setFixedWidth(200)
-        layout_TablaMensualidades.addWidget(textbox_Tipo , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
-
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")

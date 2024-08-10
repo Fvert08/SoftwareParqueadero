@@ -244,6 +244,37 @@ class DatabaseConnection:
         query = "SELECT * FROM registrosMoto;"
         return self.executeQueryReturnAll(query)
     
+    def cargarTableRegistrosMotosFiltrada(self,filtro,busqueda):
+        if filtro == "ID":
+            query = "SELECT * FROM registrosMoto WHERE id = %s;"
+        elif filtro == "Casillero":
+            query = "SELECT * FROM registrosMoto WHERE Casillero = %s;"
+        elif filtro == "Placa":
+            query = "SELECT * FROM registrosMoto WHERE Placa = %s;"
+        elif filtro == "Tipo":
+            query = "SELECT * FROM registrosMoto WHERE Tipo = %s;"
+        params = (busqueda,)
+        return self.executeQueryReturnAll(query,params)
+    def cargarTableRegistrosFijosFiltrada(self,filtro,busqueda):
+        if filtro == "ID":
+            query = "SELECT * FROM Fijos WHERE id = %s;"
+        elif filtro == "Tipo":
+            query = "SELECT * FROM Fijos WHERE Tipo = %s;"
+        elif filtro == "Valor":
+            query = "SELECT * FROM Fijos WHERE Valor = %s;"
+        params = (busqueda,)
+        return self.executeQueryReturnAll(query,params)
+    
+    def cargarTableRegistrosMensualidadFiltrada(self,filtro,busqueda):
+        if filtro == "ID":
+            query = "SELECT * FROM Mensualidades WHERE id = %s;"
+        elif filtro == "Nombre":
+            query = "SELECT * FROM Mensualidades WHERE Nombre = %s;"
+        elif filtro == "Telefono":
+            query = "SELECT * FROM Mensualidades WHERE Telefono = %s;"
+        params = (busqueda,)
+        return self.executeQueryReturnAll(query,params)
+    
     def cargarTableCasillero(self):
         query = "SELECT * FROM Casillero;"
         return self.executeQueryReturnAll(query)

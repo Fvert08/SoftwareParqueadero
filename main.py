@@ -152,9 +152,6 @@ class MiVentana(QWidget):
         else:
             self.botonRegistros.setChecked(True)
             self.ultimo_boton_seleccionado = self.botonRegistros
-
-
-
         #Conexiones de señales entre páginas
         self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
         self.pagina_tickets.senalActualizarTablaRegistroMotos.connect(self.pagina_registros.actualizarTablaRegistroMotos) # Actualizar la tabla de ingresos motos
