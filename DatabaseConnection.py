@@ -299,7 +299,10 @@ class DatabaseConnection:
         query = "DELETE FROM Casillero WHERE id = %s"
         params = (idCasillero,)
         self.execute_query(query, params)
-
+    def eliminarMensualidad(self, idMensualidad):
+        query = "DELETE FROM Mensualidades WHERE id = %s"
+        params = (idMensualidad,)
+        self.execute_query(query, params)
     def casillerosDisponibles(self, pc):
         query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s"
         params = ("DISPONIBLE", pc)
