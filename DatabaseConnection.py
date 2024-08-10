@@ -186,6 +186,22 @@ class DatabaseConnection:
         datosBusquedarenovarMensualidad= db_connection.buscarMensualidadPorId(idRegistroMensualidad)
         generarTicketRenovarMensualidad(str(datosBusquedarenovarMensualidad['id']),fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
+    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono):
+        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s WHERE id = %s"
+        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,idRegistro)
+        self.execute_query(query, params)
+
+
+    def editarRegistroFijo(self, idRegistro, nuevaTipo,nuevaNota,nuevoValor):
+        query = "UPDATE Fijos SET Tipo = %s, Nota = %s, Valor= %s WHERE id = %s"
+        params = (nuevaTipo, nuevaNota,nuevoValor,idRegistro)
+        self.execute_query(query, params)
+
+    def editarRegistroMoto(self, idRegistro, nuevaPlaca,nuevoCasco,nuevoTipo):
+        query = "UPDATE registrosMoto SET Placa = %s, Cascos = %s, Tipo= %s WHERE id = %s"
+        params = (nuevaPlaca, nuevoCasco,nuevoTipo,idRegistro)
+        self.execute_query(query, params)
+
     def buscarMotoPorId(self, idRegistro):
         query = "SELECT * FROM registrosMoto WHERE id = %s"
         params = (idRegistro,)
@@ -283,7 +299,10 @@ class DatabaseConnection:
         query = "DELETE FROM Casillero WHERE id = %s"
         params = (idCasillero,)
         self.execute_query(query, params)
-
+    def eliminarMensualidad(self, idMensualidad):
+        query = "DELETE FROM Mensualidades WHERE id = %s"
+        params = (idMensualidad,)
+        self.execute_query(query, params)
     def casillerosDisponibles(self, pc):
         query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s"
         params = ("DISPONIBLE", pc)

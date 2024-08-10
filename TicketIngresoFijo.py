@@ -54,7 +54,7 @@ def generarTicketIngresoFijo(codigo, Fecha, Hora,Tipo,Nota,Valor):
     d.text((80, 960), f"Hora: {Hora}", font=font_bold, fill='black')
     d.text((80, 1040), f"Tipo: {Tipo}", font=font_bold, fill='black')
     d.text((80, 1120), f"Nota: {Nota}", font=font_bold, fill='black')
-    d.text((80, 1200), f"Valor: {Valor}", font=font_bold, fill='black')
+    d.text((80, 1200), f"Valor: ${int(Valor):,.0f}", font=font, fill='black')
     
     # Generar código de barras
     cod_barra = barcode.get_barcode_class('code128')
