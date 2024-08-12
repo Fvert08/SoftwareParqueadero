@@ -265,6 +265,17 @@ class DatabaseConnection:
         params = (busqueda,)
         return self.executeQueryReturnAll(query,params)
     
+    def obtenerSiguienteIDFijos(self):
+        query = """
+        SELECT GREATEST(
+        (SELECT IFNULL(MAX(id), 0) + 1 FROM Fijos),
+        (SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = 'Fijos')
+        ) AS siguiente_id;
+        """
+        result = self.executeQueryReturnAll(query)
+        return result[0]['siguiente_id'] if result else None
+
+
     def cargarTableRegistrosMensualidadFiltrada(self,filtro,busqueda):
         if filtro == "ID":
             query = "SELECT * FROM Mensualidades WHERE id = %s;"
