@@ -14,6 +14,7 @@ class PaginaTickets(QWidget):
     senalActualizarTablaRegistroMotos = pyqtSignal()
     senalActualizarTablaRegistroFijos = pyqtSignal()
     senalActualizarTablaRegistroMensualidades = pyqtSignal()
+    senalActualizarTexboxCodigoFijos = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -718,11 +719,12 @@ class PaginaTickets(QWidget):
         label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsIngresoFijo.addWidget(label_codigo, 1, 2, 1, 1, alignment=Qt.AlignCenter)
         # Text box Codigo
-        textbox_codigo = QLineEdit()
-        textbox_codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_codigo.setFixedWidth(240)
-        textbox_codigo.setReadOnly(True)
-        layout_ticketsIngresoFijo.addWidget(textbox_codigo, 1, 3, 1, 1, alignment=Qt.AlignCenter)
+        self.textbox_codigoFijos = QLineEdit()
+        self.textbox_codigoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_codigoFijos.setFixedWidth(240)
+        self.textbox_codigoFijos.setReadOnly(True)
+        layout_ticketsIngresoFijo.addWidget(self.textbox_codigoFijos, 1, 3, 1, 1, alignment=Qt.AlignCenter)
+        self.actualizarCodigoFijos()
     #---Fila 2
         # Crear el label "Tipo" y la textbox
         label_tipo = QLabel('Tipo')
@@ -783,6 +785,8 @@ class PaginaTickets(QWidget):
         combobox_Tipo.setCurrentIndex(0),
         textbox_Nota.clear(),
         textbox_Valor.clear(),
+        self.textbox_codigoFijos.clear(),
+        self.actualizarCodigoFijos(),
         self.senalActualizarTablaRegistroFijos.emit(),
     ])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
@@ -1257,3 +1261,6 @@ class PaginaTickets(QWidget):
         page_ticketsRenovarMensualidad.setLayout(layout_ticketsRenovarMensualidad)
         #Se agrega al stack
         self.stacked_widgetTickets.addWidget(page_ticketsRenovarMensualidad)
+    def actualizarCodigoFijos (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        self.textbox_codigoFijos.setText(str(db_connection.obtenerSiguienteIDFijos()))

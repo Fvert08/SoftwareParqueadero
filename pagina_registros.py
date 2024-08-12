@@ -634,8 +634,6 @@ class PaginaRegistros(QWidget):
         self.textbox_FiltrarRegistrosMensualidad .setFixedWidth(200)
         layout_TablaMensualidades.addWidget(self.textbox_FiltrarRegistrosMensualidad , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
         
-        
-        
         # Rellenar la tabla
         self.actualizarTablaMensualidades()
         #Boton Buscar 
