@@ -643,6 +643,10 @@ class PaginaRegistros(QWidget):
         boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_TablaMensualidades.addWidget(boton_Buscar , 8, 2, 1, 1,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar.clicked.connect(lambda: [
+            self.actualizarTablaMensualidades()
+            ])
+        
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR REGISTRO')
         boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
