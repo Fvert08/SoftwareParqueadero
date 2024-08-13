@@ -350,7 +350,15 @@ class DatabaseConnection:
         params = ("DISPONIBLE", pc)
         result = self.executeQueryReturnAll(query, params)
         return result[0]['count'] if result else 0
-
+    def contarMensualidadesActivas(self):
+        query = """
+        SELECT COUNT(*) as count 
+        FROM Mensualidades 
+        WHERE fechaUltimoPago >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        """
+        result = self.executeQueryReturnAll(query,)
+        return result[0]['count'] if result else 0
+    
     def casilleroAsignado(self, pc):
         query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC LIMIT 1"
         params = (pc,)

@@ -15,6 +15,7 @@ class PaginaTickets(QWidget):
     senalActualizarTablaRegistroFijos = pyqtSignal()
     senalActualizarTablaRegistroMensualidades = pyqtSignal()
     senalActualizarTexboxCodigoFijos = pyqtSignal()
+    senalActualizarTextboxMensualidadesVigentes = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -156,6 +157,9 @@ class PaginaTickets(QWidget):
             self.botonImprimirRegistroMoto.setDisabled(True)
         else:
             self.botonImprimirRegistroMoto.setEnabled(True)
+    def actualizarMensualidadesVigentes (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        self.textbox_MensualidadesVigentes.setText(str(db_connection.contarMensualidadesActivas()))
     def initUI(self):
         #----Paginas
         #Pagina del menú
@@ -1063,7 +1067,18 @@ class PaginaTickets(QWidget):
         textbox_Telefono.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_Telefono.setFixedWidth(200)
         layout_ticketsIngresarMensualidad.addWidget(textbox_Telefono, 3, 4, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignTop)
-
+        #Mensualidades Vigentes
+        titulo_MensualidadesVigentes = QLabel('Mensualidades\nVigentes')
+        # Centrar el texto en el QLabel
+        titulo_MensualidadesVigentes.setAlignment(Qt.AlignCenter)
+        titulo_MensualidadesVigentes .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_ticketsIngresarMensualidad.addWidget(titulo_MensualidadesVigentes  ,6, 0, 2, 7, alignment= Qt.AlignCenter |Qt.AlignLeft)
+        
+        self.textbox_MensualidadesVigentes = QLineEdit()
+        self.textbox_MensualidadesVigentes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_MensualidadesVigentes.setFixedWidth(60)
+        layout_ticketsIngresarMensualidad.addWidget(self.textbox_MensualidadesVigentes, 6, 3, 2, 1, alignment=Qt.AlignLeft |Qt.AlignCenter)
+        self.actualizarMensualidadesVigentes()
         #Boton Imprimir
         boton_imprimir = QPushButton('IMPRIMIR')
         boton_imprimir.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
@@ -1078,20 +1093,9 @@ class PaginaTickets(QWidget):
         textbox_Placa.clear(),
         textbox_Nombre.clear(),
         textbox_Telefono.clear(),
-        self.senalActualizarTablaRegistroMensualidades.emit()#Se emite la señal para actualizar la tabla de mensualidades
+        self.senalActualizarTablaRegistroMensualidades.emit(),#Se emite la señal para actualizar la tabla de mensualidades
+        self.actualizarMensualidadesVigentes()
     ])
-        #Mensualidades Vigentes
-        titulo_MensualidadesVigentes = QLabel('Mensualidades\nVigentes')
-        # Centrar el texto en el QLabel
-        titulo_MensualidadesVigentes.setAlignment(Qt.AlignCenter)
-        titulo_MensualidadesVigentes .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_ticketsIngresarMensualidad.addWidget(titulo_MensualidadesVigentes  ,6, 0, 2, 7, alignment= Qt.AlignCenter |Qt.AlignLeft)
-        
-        textbox_MensualidadesVigentes = QLineEdit()
-        textbox_MensualidadesVigentes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_MensualidadesVigentes.setFixedWidth(60)
-        layout_ticketsIngresarMensualidad.addWidget(textbox_MensualidadesVigentes, 6, 3, 2, 1, alignment=Qt.AlignLeft |Qt.AlignCenter)
-
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresarMensualidad.setRowStretch(0, 0)
         layout_ticketsIngresarMensualidad.setRowStretch(1, 1)
@@ -1256,7 +1260,8 @@ class PaginaTickets(QWidget):
         self.textboxHoraUPagoRenovarMensualidad.clear(),
         self.textboxTotalAPagarRenovarMensualidad.clear(),
         self.senalActualizarTablaRegistroMensualidades.emit(),
-        self.botonRenovarMensualidad.setDisabled(True)
+        self.botonRenovarMensualidad.setDisabled(True),
+        self.senalActualizarTextboxMensualidadesVigentes.emit()
     ])
         
         

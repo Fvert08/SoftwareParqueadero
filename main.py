@@ -161,6 +161,7 @@ class MiVentana(QWidget):
         self.pagina_reportes.senalActualizarTablaReportes.connect(self.pagina_reportes.actualizarTablaRegistros)#conectar señal para actualizar las tablas de reportes
         self.pagina_configuracion.senalActualizarTextboxesSuscripcion.connect(self.pagina_configuracion.actualizarTextboxesSuscripcion)
         self.pagina_tickets.senalActualizarTexboxCodigoFijos.connect(self.pagina_tickets.actualizarCodigoFijos)
+        self.pagina_tickets.senalActualizarTextboxMensualidadesVigentes.connect(self.pagina_tickets.actualizarMensualidadesVigentes)
     def cambiar_color(self):
         sender = self.sender()
         boton_actual = self.sender()
@@ -189,6 +190,7 @@ class MiVentana(QWidget):
         elif sender.text() == "Generar Tickets":
             self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.emit()#Se actualizan las text boxes de registro moto
             self.pagina_tickets.senalActualizarTexboxCodigoFijos.emit()
+            self.pagina_tickets.senalActualizarTextboxMensualidadesVigentes.emit()
             self.stacked_widget.setCurrentIndex(2)
         elif sender.text() == "Gestionar casilleros":
             self.pagina_tickets.senalActualizarTablasCasilleros.emit()#Se actualizan las tablas de casilleros
