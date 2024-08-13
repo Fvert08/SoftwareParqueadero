@@ -358,7 +358,10 @@ class DatabaseConnection:
         """
         result = self.executeQueryReturnAll(query,)
         return result[0]['count'] if result else 0
-    
+    def obtenerIdsRegPc(self):
+        query = "SELECT id FROM regPC"
+        result = self.executeQueryReturnAll(query)
+        return [row['id'] for row in result] if result else []
     def casilleroAsignado(self, pc):
         query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC LIMIT 1"
         params = (pc,)

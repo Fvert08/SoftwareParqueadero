@@ -9,6 +9,7 @@ from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
 class PaginaCasilleros(QWidget):
     senalActualizarTextboxesTicketsRegistrosMotos = pyqtSignal()
+    senalActualizarComboboxPcs= pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -60,6 +61,14 @@ class PaginaCasilleros(QWidget):
         self.actualizarTablaCasillero()
         self.actualizarTablaCasilleroOrden()
         self.senalActualizarTextboxesTicketsRegistrosMotos.emit()
+    def actualizarComboboxpcs (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        ids = db_connection.obtenerIdsRegPc()
+        self.combobox_pcRegistro.clear()
+        self.combobox_pcCambiar.clear()
+        self.combobox_pcCambiar.addItems(map(str, ids))
+        self.combobox_pcRegistro.addItems(map(str, ids))
+
     def initUI(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -101,11 +110,10 @@ class PaginaCasilleros(QWidget):
         titulo_pc.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
         layout_tickets.addWidget(titulo_pc , 7, 2, 1, 1, alignment= Qt.AlignLeft |Qt.AlignBottom)
 
-        combobox_pc = QComboBox()
-        combobox_pc.addItems(['1', '2'])
-        combobox_pc.setFixedWidth(50)
-        combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
-        layout_tickets.addWidget(combobox_pc,7, 2, 1, 1, alignment=Qt.AlignRight |Qt.AlignBottom)
+        self.combobox_pcRegistro = QComboBox()
+        self.combobox_pcRegistro.setFixedWidth(50)
+        self.combobox_pcRegistro.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
+        layout_tickets.addWidget(self.combobox_pcRegistro,7, 2, 1, 1, alignment=Qt.AlignRight |Qt.AlignBottom)
 
         titulo_estado = QLabel('ESTADO')
         titulo_estado .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
@@ -123,13 +131,14 @@ class PaginaCasilleros(QWidget):
         boton_agregar.clicked.connect(lambda: [
             db_connection.registrarCasillero(
             textbox_numero.text(),
-            combobox_pc.currentText(),
+            self.combobox_pcRegistro.currentText(),
             combobox_Estado.currentText()
         ),
-        combobox_pc.setCurrentIndex(0),
+        self.combobox_pcRegistro.setCurrentIndex(0),
         combobox_Estado.setCurrentIndex(0),
         textbox_numero.clear(),
         self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarComboboxpcs()
     ])
         self.tabla_registrosCasillero = QTableWidget(self)
         self.tabla_registrosCasillero.setColumnCount(5)  # Definir el número de columnas
@@ -224,23 +233,23 @@ class PaginaCasilleros(QWidget):
         titulo_pcCambiar.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
         layout_tickets.addWidget(titulo_pcCambiar , 4, 4, 1, 1, alignment= Qt.AlignRight|Qt.AlignBottom)
 
-        combobox_pc = QComboBox()
-        combobox_pc.addItems(['1', '2'])
-        combobox_pc.setFixedWidth(50)
-        combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
-        layout_tickets.addWidget(combobox_pc,4, 5, 1, 1, alignment=Qt.AlignLeft |Qt.AlignBottom)
-
+        self.combobox_pcCambiar = QComboBox()
+        self.combobox_pcCambiar.setFixedWidth(50)
+        self.combobox_pcCambiar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
+        layout_tickets.addWidget(self.combobox_pcCambiar,4, 5, 1, 1, alignment=Qt.AlignLeft |Qt.AlignBottom)
+        self.actualizarComboboxpcs()
         boton_guardarPc = QPushButton('GUARDAR')
         boton_guardarPc.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
         layout_tickets.addWidget(boton_guardarPc,5, 4, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
-        # Conectar el botón de imprimir a la función registrarMoto
+        #Se guarda la edición
         boton_guardarPc.clicked.connect(lambda: [
             db_connection.cambiarPcCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
-            combobox_pc.currentText()
+            self.combobox_pcCambiar.currentText(),
         ),
-        self.actualizarTablasCasilleros()
+        self.actualizarTablasCasilleros(),
+        self.actualizarComboboxpcs()
     ])
 
 
