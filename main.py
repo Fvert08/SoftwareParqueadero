@@ -38,7 +38,6 @@ class MiVentana(QWidget):
             # Asegurarse de que ultimoPago sea un objeto date
             if isinstance(ultimoPago, str):
                 ultimoPago = datetime.strptime(ultimoPago, '%Y-%m-%d').date()
-            
             dias_restantes = 30 - (fechaActual - ultimoPago).days  # Calcular la diferencia en días
             return dias_restantes
         
@@ -163,6 +162,7 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTexboxCodigoFijos.connect(self.pagina_tickets.actualizarCodigoFijos)
         self.pagina_tickets.senalActualizarTextboxMensualidadesVigentes.connect(self.pagina_tickets.actualizarMensualidadesVigentes)
         self.pagina_casilleros.senalActualizarComboboxPcs.connect(self.pagina_casilleros.actualizarComboboxpcs)
+        self.pagina_configuracion.senalActualizarTablaPCs.connect(self.pagina_configuracion.actualizarTablaPCAgregados)
     def cambiar_color(self):
         sender = self.sender()
         boton_actual = self.sender()
@@ -202,6 +202,7 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(6)
         elif sender.text() == "Configuracion":
             self.stacked_widget.setCurrentIndex(8)
+            self.pagina_configuracion.senalActualizarTablaPCs.emit()
             self.pagina_configuracion.senalActualizarTextboxesSuscripcion.emit()
         elif sender.text() == "Creditos":
             self.stacked_widget.setCurrentIndex(10)

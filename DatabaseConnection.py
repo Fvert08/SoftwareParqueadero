@@ -233,6 +233,13 @@ class DatabaseConnection:
         """
         params = (Numero, Pc, self.posicionDisponible(), Estado)
         self.execute_query(query, params)
+    def registrarPC(self, id, Descipcion):
+        query = """
+        INSERT INTO regPC (id, Descripcion)
+        VALUES (%s, %s)
+        """
+        params = (id, Descipcion)
+        self.execute_query(query, params)
 
     def buscarFijoPorId(self, idRegistroFijo):
         query = "SELECT * FROM Fijos WHERE id = %s"
