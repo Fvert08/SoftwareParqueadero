@@ -19,6 +19,8 @@ class PaginaTickets(QWidget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+        self.casilleros_disponibles = []
+        self.indice_actual = 0
 
     def calcularTiempoTranscurrido (self,horaIngreso,fechaIngreso,fechaHoraARestar):
           # Convertir timedelta a un objeto time
@@ -146,6 +148,7 @@ class PaginaTickets(QWidget):
             print("No se encontraron registros")
 
     def actualizarTextboxCasilleros (self):
+        self.casilleros_disponibles=[]
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
         self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
@@ -315,7 +318,17 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.setCurrentIndex(0)
         #se agrega toda la pagina al stack principal de la app
         self.stacked_widget.addWidget(page_principalTickets)
-
+    def siguienteCasilleroDisponible(self, pc):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        if not self.casilleros_disponibles:       
+            self.casilleros_disponibles = db_connection.listacasillerosDisponibles(pc)
+        if not self.casilleros_disponibles:
+            self.casilleros_disponibles = []
+            return None
+        # Obtener el casillero actual y avanzar al siguiente
+        casillero_actual = self.casilleros_disponibles[self.indice_actual]['id']
+        self.indice_actual = (self.indice_actual + 1) % len(self.casilleros_disponibles)
+        return casillero_actual
     def pantallaIngresoMotos (self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -407,7 +420,10 @@ class PaginaTickets(QWidget):
         """)
         layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 4, 3, 1, 1,
                                 alignment=Qt.AlignCenter | Qt.AlignRight)
-
+        # Conectar el botón de imprimir a la función para buscar el siguiente disponible
+        boton_cambiarcasillero.clicked.connect(lambda: [
+            self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(1)))
+    ])
         # Crear el label "Casilleros disponibles" y el combobox
         label_casillerosDis = QLabel('Casilleros disponibles:', page_tickets)
         label_casillerosDis.setStyleSheet("color: #FFFFFF;font-size: 30px;")
@@ -446,15 +462,16 @@ class PaginaTickets(QWidget):
             textbox_placa.text(),
             combobox_cascos.currentText(),
             combobox_Tiempo.currentText(),
-            self.textbox_casillerosDis.text()
+            self.textbox_casillerosDis.text(),
         ),
+        
         textbox_placa.clear(),
         combobox_cascos.setCurrentIndex(0),
         combobox_Tiempo.setCurrentIndex(0),
         db_connection.cambiarEstadoCasillero(self.textbox_casillero.text(),"DISPONIBLE"),
         self.actualizarTextboxCasilleros(),
         self.senalActualizarTablasCasilleros.emit(),
-        self.senalActualizarTablaRegistroMotos.emit()
+        self.senalActualizarTablaRegistroMotos.emit(),
     ])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresoMotos.setRowStretch(0, 0)
@@ -672,7 +689,7 @@ class PaginaTickets(QWidget):
         self.textboxTotalAPagarSacarMoto.clear(),
         self.senalActualizarTablasCasilleros.emit(),
         self.senalActualizarTablaRegistroMotos.emit(),
-        self.boton_facturar.setDisabled(True)
+        self.boton_facturar.setDisabled(True),
     ])
         layout_ticketsSalidaMotos.addWidget(self.boton_facturar, 8, 6, 2, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)

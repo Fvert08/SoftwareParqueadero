@@ -356,7 +356,12 @@ class DatabaseConnection:
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
         return result[0]['id'] if result else None
-    
+    def listacasillerosDisponibles(self, pc):
+        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC"
+        params = (pc,)
+        result = self.executeQueryReturnAll(query, params)
+        return result
+
     def posicionDisponible(self):
         query = "SELECT COALESCE(MAX(Posicion) + 1, 1) AS siguientePosicion FROM Casillero"
         result = self.executeQueryReturnAll(query)
