@@ -6,9 +6,10 @@ from config import DB_CONFIG
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMessageBox, QWidget
 from datetime import datetime
-from TicketSalidaMotos import generarTicketSalidaMoto
-from TicketSalidaFijo import generarTicketSalidaFijo
-from TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from generarTickets.TicketSalidaMotos import generarTicketSalidaMoto
+from generarTickets.TicketSalidaFijo import generarTicketSalidaFijo
+from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from leerTxt import leer_archivo
 class PaginaTickets(QWidget):
     senalActualizarTablasCasilleros= pyqtSignal()
     senalActualizarTablaRegistroMotos = pyqtSignal()
@@ -151,8 +152,8 @@ class PaginaTickets(QWidget):
     def actualizarTextboxCasilleros (self):
         self.casilleros_disponibles=[]
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
-        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1))),
-        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt')))),
+        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt'))))
         if self.textbox_casillerosDis.text() == "0": #Si no hay casilleros disponibles desactivar el boton imprimir
             self.botonImprimirRegistroMoto.setDisabled(True)
         else:
@@ -224,7 +225,7 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        boton_IngresarM.setIcon(QIcon('IngresoMoto.png'))  # Establecer el icono
+        boton_IngresarM.setIcon(QIcon('imagenes/IngresoMoto.png'))  # Establecer el icono
         boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
         boton_IngresarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(0))
@@ -246,7 +247,7 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        boton_SacarM.setIcon(QIcon('SalidaMoto.png'))  # Establecer el icono
+        boton_SacarM.setIcon(QIcon('imagenes/SalidaMoto.png'))  # Establecer el icono
         boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
         boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(1))
@@ -268,7 +269,7 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        boton_IngresarF.setIcon(QIcon('IngresoFijo.png'))  # Establecer el icono
+        boton_IngresarF.setIcon(QIcon('imagenes/IngresoFijo.png'))  # Establecer el icono
         boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarF, 2, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
         boton_IngresarF.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(2))
@@ -289,7 +290,7 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        boton_SacarF.setIcon(QIcon('SalidaFijo.png'))  # Establecer el icono
+        boton_SacarF.setIcon(QIcon('imagenes/SalidaFijo.png'))  # Establecer el icono
         boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarF, 2, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
         boton_SacarF.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(3))
@@ -297,7 +298,7 @@ class PaginaTickets(QWidget):
         #Crea un boton para ingresar a generar ticket ingresar Mensualidad
         boton_IngresarMensualidad = QPushButton()
         boton_IngresarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
-        boton_IngresarMensualidad.setIcon(QIcon('Mesingreso.png'))  # Establecer el icono
+        boton_IngresarMensualidad.setIcon(QIcon('imagenes/Mesingreso.png'))  # Establecer el icono
         boton_IngresarMensualidad.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarMensualidad, 3, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
         boton_IngresarMensualidad.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(4))
@@ -305,7 +306,7 @@ class PaginaTickets(QWidget):
         #Crea un boton para ingresar a generar ticket sacar Mensualidad
         boton_SacarMensualidad = QPushButton()
         boton_SacarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
-        boton_SacarMensualidad.setIcon(QIcon('Mesrenovar.png'))  # Establecer el icono
+        boton_SacarMensualidad.setIcon(QIcon('imagenes/Mesrenovar.png'))  # Establecer el icono
         boton_SacarMensualidad.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarMensualidad,   3, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
         boton_SacarMensualidad.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(5))

@@ -46,7 +46,7 @@ class MiVentana(QWidget):
         label_Logo = QLabel(self)
         
         # Crear un QPixmap con la ruta de la imagen
-        pixmapLogo = QPixmap('LogoJDEV.png')
+        pixmapLogo = QPixmap('imagenes/LogoJDEV.png')
         
         # Escalar el QPixmap al tamaño deseado (30x30 píxeles) manteniendo la proporción
         scaled_pixmapLogo = pixmapLogo.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -75,42 +75,42 @@ class MiVentana(QWidget):
 
         self.botonRegistros = QPushButton('Registro de ingresos', self)
         self.botonRegistros.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-        self.botonRegistros.setIcon(QIcon('registrosSel.png'))
+        self.botonRegistros.setIcon(QIcon('imagenes/registrosSel.png'))
         self.botonRegistros.setCheckable(True)
         self.botonRegistros.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonRegistros, alignment=Qt.AlignCenter)
 
         self.botontickets = QPushButton('Generar Tickets', self)
         self.botontickets.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-        self.botontickets.setIcon(QIcon('ticketMotos.png'))
+        self.botontickets.setIcon(QIcon('imagenes/ticketMotos.png'))
         self.botontickets.setCheckable(True)
         self.botontickets.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botontickets, alignment=Qt.AlignCenter)
 
         self.botonGestionarCasilleros = QPushButton('Gestionar casilleros', self)
         self.botonGestionarCasilleros.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-        self.botonGestionarCasilleros.setIcon(QIcon('gestionCasilleros.png'))
+        self.botonGestionarCasilleros.setIcon(QIcon('imagenes/gestionCasilleros.png'))
         self.botonGestionarCasilleros.setCheckable(True)
         self.botonGestionarCasilleros.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonGestionarCasilleros, alignment=Qt.AlignCenter)
 
         self.botonReportes = QPushButton('Gestión de reportes', self)
         self.botonReportes.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-        self.botonReportes.setIcon(QIcon('reportes.png'))
+        self.botonReportes.setIcon(QIcon('imagenes/reportes.png'))
         self.botonReportes.setCheckable(True)
         self.botonReportes.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonReportes, alignment=Qt.AlignCenter)
 
         self.botonConfiguracion = QPushButton('Configuracion', self)
         self.botonConfiguracion.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-        self.botonConfiguracion.setIcon(QIcon('Configuracion.png'))
+        self.botonConfiguracion.setIcon(QIcon('imagenes/Configuracion.png'))
         self.botonConfiguracion.setCheckable(True)
         self.botonConfiguracion.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonConfiguracion, alignment=Qt.AlignCenter)
 
         self.botonConCreditos = QPushButton('Creditos', self)
         self.botonConCreditos.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-        self.botonConCreditos.setIcon(QIcon('LogoJDev.png'))
+        self.botonConCreditos.setIcon(QIcon('imagenes/LogoJDev.png'))
         self.botonConCreditos.setCheckable(True)
         self.botonConCreditos.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonConCreditos, alignment=Qt.AlignCenter)

@@ -328,7 +328,7 @@ class PaginaConfiguracion(QWidget):
         # Crea un boton para ingresar a generar ticket ingresar moto
         boton_OcultarContraseña = QPushButton()
         boton_OcultarContraseña.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
-        boton_OcultarContraseña.setIcon(QIcon('OcultarContraseña.png'))  # Establecer el icono
+        boton_OcultarContraseña.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
         boton_OcultarContraseña.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
         layout_Conexion.addWidget(boton_OcultarContraseña, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignBottom)
         #Falta Integrar Ocultar

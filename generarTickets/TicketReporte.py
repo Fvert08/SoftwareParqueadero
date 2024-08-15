@@ -3,12 +3,18 @@ import os
 import win32print
 import win32ui
 from PIL import ImageWin
+def mm_to_pixels(mm, dpi):
+    return int((mm / 25.4) * dpi)
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar,Placa,Casillero):
-    width, height = 1720, 2080  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+def generarTicketReporteCompleto(codigo,Tipo,Fecha, Hora,FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos):
+    
+    # Obtener la ruta del directorio actual
     directorio_actual = os.path.dirname(os.path.abspath(__file__))
-    ruta_logo = os.path.join(directorio_actual, "Logo.png")
-    ruta_guardado = os.path.join(directorio_actual, "TicketSalidaMoto.png")
+
+    ruta_logo = os.path.join(directorio_actual, "..","imagenes","Logo.png")
+    ruta_guardado = os.path.join(directorio_actual, "..","Tickets","TicketReporteCompleto.png")
+    # Dimensiones típicas de un recibo POS, cuadruplicadas para mejorar calidad
+    width, height = 1720, 2720 # Cuadruplicar el tamaño original para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -39,34 +45,42 @@ def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,Tiem
     # Datos del Ticket
     font = ImageFont.truetype("arial.ttf", 120)
     d.text((80, 640), f"-------------------------------------------------", font=font_bold, fill='black')
-    d.text((360, 736), f"TICKET DE SALIDA", font=font_bold, fill='black')
+    d.text((360, 736), f"TICKET DE REPORTE", font=font_bold, fill='black')
     d.text((80, 800), f"------------------------------------------------", font=font_bold, fill='black')
     font = ImageFont.truetype("arial.ttf", 96)
-    d.text((640, 880), f"INGRESO", font=font_bold, fill='black')
-    d.text((80, 1040), f"Fecha: {FechaIngreso}", font=font_bold, fill='black')
-    d.text((80, 1120), f"Hora: {HoraIngreso}", font=font_bold, fill='black')
-    d.text((80, 1200), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((640, 1280), f"SALIDA", font=font_bold, fill='black')
-    d.text((80, 1440), f"Fecha: {FechaSalida}", font=font_bold, fill='black')
-    d.text((80, 1520), f"Hora: {HoraSalida}", font=font_bold, fill='black')
-    d.text((80, 1600), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((320, 1680), f"Tiempo total: {TiempoTotal}", font=font_bold, fill='black')
-    d.text((80, 1760), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((320, 1840), f"Total: ${int(TotalAPagar):,.0f}", font=font, fill='black')
-    d.text((80, 1920), f"------------------------------------------------", font=font_bold, fill='black')
-    # Información restante
-    font = ImageFont.truetype("arial.ttf", 68)
-    d.text((80, 2000), f"Placa: {Placa}    |", font=font, fill='black')
-    d.text((720, 2000), f"Casillero: {Casillero}", font=font, fill='black')
+    d.text((80, 880), f"Numero de reporte: {codigo}", font=font_bold, fill='black')
+    d.text((80, 960), f"Fecha de generación: {Fecha}", font=font_bold, fill='black')
+    d.text((80, 1040), f"Hora de generación: {Hora}", font=font_bold, fill='black')
+    d.text((80, 1120), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((80, 1200), f"Tipo: {Tipo}", font=font_bold, fill='black')
+    d.text((80, 1280), f"Fecha inicio: {FechaInicio}", font=font_bold, fill='black')
+    d.text((80, 1360), f"Fecha fin: {FechaFin}", font=font_bold, fill='black')
+    d.text((80, 1440), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((80, 1520), f"Motos hora: {registrosMotosHora}", font=font_bold, fill='black')
+    d.text((80, 1600), f"Total: ${int(dineroTotalMotosHora):,.0f}", font=font, fill='black')
+
+    d.text((80, 1760), f"Motos dia: {registrosMotosDia}", font=font_bold, fill='black')
+    d.text((80, 1840), f"Total: ${int(dineroTotalMotosDia):,.0f}", font=font, fill='black')
+
+    d.text((80, 2000), f"Motos Mes: {registrosMotosMes}", font=font_bold, fill='black')
+    d.text((80, 2080), f"Total: ${int(dineroTotalMotosMes):,.0f}", font=font, fill='black')
+
+
+    d.text((80, 2240), f"Fijos: {registrosFijos}", font=font_bold, fill='black')
+    d.text((80, 2320), f"Total: ${int(dineroTotalFijos):,.0f}", font=font, fill='black')
+
+    d.text((80, 2480), f"Registros: {int(registrosMotosHora)+int(registrosMotosDia)+int(registrosMotosMes)+int(registrosFijos)} ", font=font_bold, fill='black')
+    d.text((80, 2560), f"Total: ${int(dineroTotalMotosHora)+int(dineroTotalMotosDia)+int(dineroTotalMotosMes)+int(dineroTotalFijos):,.0f}", font=font, fill='black')
+
+    d.text((80, 2640), f"------------------------------------------------", font=font_bold, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
     imprimirTicket(ruta_guardado)
-    print(f"Recibo de salida generado")
+    print(f"Ticket Reporte Completo generado")
 
-def mm_to_pixels(mm, dpi):
-    return int((mm / 25.4) * dpi)
+
+
 # Función para imprimir el recibo
-
 def imprimirTicket(ruta_archivo):
     try:
         # Obtener el nombre de la impresora predeterminada
@@ -82,7 +96,7 @@ def imprimirTicket(ruta_archivo):
         hPrinter = win32print.OpenPrinter(impresora_predeterminada)
         try:
             # Crear un trabajo de impresión
-            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketSalidaMoto", None, "RAW"))
+            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketReporteCompleto", None, "RAW"))
             try:
                 win32print.StartPagePrinter(hPrinter)
                 
@@ -96,7 +110,7 @@ def imprimirTicket(ruta_archivo):
                 hDC.CreatePrinterDC(impresora_predeterminada)
                 
                 # Ajustar el tamaño de la imagen al tamaño del papel
-                hDC.StartDoc("TicketSalidaMoto")
+                hDC.StartDoc("TicketReporteCompleto")
                 hDC.StartPage()
                 dib.draw(hDC.GetHandleOutput(), (0, 0, bmp.size[0], bmp.size[1]))
                 hDC.EndPage()
@@ -110,3 +124,21 @@ def imprimirTicket(ruta_archivo):
         print("Impresión enviada correctamente.")
     except Exception as e:
         print(f"Error al intentar imprimir: {e}")
+# Ejemplo de uso
+Tipo = "Todo"
+FechaInicio="13-07-2024"
+FechaFin = "13-07-2024"
+registrosMotosHora="40"
+dineroTotalMotosHora= "400000"
+registrosMotosDia="30"
+dineroTotalMotosDia="30000"
+registrosMotosMes="20"
+dineroTotalMotosMes="2000"
+registrosFijos="10"
+dineroTotalFijos="10000"
+Fecha = "13-07-2024"
+Hora = "10:17:00"
+codigo = "4"
+
+
+#generarTicketReporteCompleto(codigo,Tipo, FechaInicio, FechaFin,registrosMotosHora,dineroTotalMotosHora,registrosMotosDia,dineroTotalMotosDia, registrosMotosMes,dineroTotalMotosMes,registrosFijos,dineroTotalFijos ,Fecha, Hora)

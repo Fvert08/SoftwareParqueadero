@@ -1,11 +1,11 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
-from TicketIngresoMoto import generarTicketIngresoMoto
-from TicketIngresoFijo import generarTicketIngresoFijo
-from TicketIngresoMensualidad import generarTicketIngresoMensualidad
-from TicketRenovarMensualidad import generarTicketRenovarMensualidad
-from TicketReporte import generarTicketReporteCompleto
+from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
+from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
+from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
+from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from generarTickets.TicketReporte import generarTicketReporteCompleto
 from config import DB_CONFIG
 class DatabaseConnection:
     _instance = None

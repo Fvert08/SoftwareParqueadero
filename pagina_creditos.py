@@ -65,7 +65,7 @@ class PaginaCreditos(QWidget):
         label_Logo = QLabel(self)
         
         # Crear un QPixmap con la ruta de la imagen
-        pixmapLogo = QPixmap('LogoJDEV.png')
+        pixmapLogo = QPixmap('imagenes/LogoJDEV.png')
         
         # Escalar el QPixmap al tamaño deseado (30x30 píxeles) manteniendo la proporción
         scaled_pixmapLogo = pixmapLogo.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
