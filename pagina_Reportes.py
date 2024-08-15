@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVB
 from PyQt5.QtCore import Qt
 from config import DB_CONFIG
 from DatabaseConnection import DatabaseConnection
-from TicketReporte import generarTicketReporteCompleto
+from generarTickets.TicketReporte import generarTicketReporteCompleto
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
 class PaginaReportes(QWidget):

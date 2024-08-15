@@ -6,9 +6,9 @@ from DatabaseConnection import DatabaseConnection
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from config import DB_CONFIG
-from TicketIngresoMoto import generarTicketIngresoMoto
-from TicketIngresoMensualidad import generarTicketIngresoMensualidad
-from TicketIngresoFijo import generarTicketIngresoFijo
+from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
+from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
+from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
 class PaginaRegistros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()

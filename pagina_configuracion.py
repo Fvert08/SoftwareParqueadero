@@ -14,13 +14,14 @@ from PyQt5.QtCore import pyqtSignal
 
 class PaginaConfiguracion(QWidget):
     senalActualizarTextboxesSuscripcion = pyqtSignal()
+    senalActualizarTablaPCs= pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
 
 
-    def actualizarTablaUsuarios(self,tabla_Usuarios):
+    def actualizarTablaUsuarios(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaUsuarios = db_connection.cargarTableUsuarios()
@@ -29,21 +30,21 @@ class PaginaConfiguracion(QWidget):
             
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_Usuarios.setItem(row_idx, 0, item_id)
+            self.tabla_Usuarios.setItem(row_idx, 0, item_id)
             
             item_Usuario = QTableWidgetItem(str(registro['Usuario']))
             item_Usuario.setTextAlignment(Qt.AlignCenter)
-            tabla_Usuarios.setItem(row_idx, 1, item_Usuario)
+            self.tabla_Usuarios.setItem(row_idx, 1, item_Usuario)
             
             item_Contrasena = QTableWidgetItem(str(registro['Contrasena']))
             item_Contrasena.setTextAlignment(Qt.AlignCenter)
-            tabla_Usuarios.setItem(row_idx, 2, item_Contrasena)
+            self.tabla_Usuarios.setItem(row_idx, 2, item_Contrasena)
 
             item_Tipo = QTableWidgetItem(str(registro['Tipo']))
             item_Tipo.setTextAlignment(Qt.AlignCenter)
-            tabla_Usuarios.setItem(row_idx, 3, item_Tipo)
+            self.tabla_Usuarios.setItem(row_idx, 3, item_Tipo)
 
-    def actualizarTablaPCAgregados(self,tabla_PCAgregados):
+    def actualizarTablaPCAgregados(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         datosTablaPCAgregados = db_connection.cargarTablePCAgregados()
@@ -52,17 +53,17 @@ class PaginaConfiguracion(QWidget):
             
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
-            tabla_PCAgregados.setItem(row_idx, 0, item_id)
+            self.tabla_PCAgregados.setItem(row_idx, 0, item_id)
             
             item_Descripcion = QTableWidgetItem(str(registro['Descripcion']))
             item_Descripcion.setTextAlignment(Qt.AlignCenter)
-            tabla_PCAgregados.setItem(row_idx, 1, item_Descripcion)
+            self.tabla_PCAgregados.setItem(row_idx, 1, item_Descripcion)
 
             pc_value = registro['id']
             cantidad = db_connection.contarTablePCAgregados(pc_value) 
             item_ContarPc = QTableWidgetItem(str(cantidad))
             item_ContarPc.setTextAlignment(Qt.AlignCenter)
-            tabla_PCAgregados.setItem(row_idx, 2, item_ContarPc)
+            self.tabla_PCAgregados.setItem(row_idx, 2, item_ContarPc)
 
     def initUI(self):
         #----Paginas
@@ -216,7 +217,7 @@ class PaginaConfiguracion(QWidget):
         layout_Usuarios.addWidget(self.tabla_Usuarios, 2, 0, 4, 4)
 
         # Rellenar la tabla
-        self.actualizarTablaUsuarios(self.tabla_Usuarios)
+        self.actualizarTablaUsuarios()
 
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
@@ -327,7 +328,7 @@ class PaginaConfiguracion(QWidget):
         # Crea un boton para ingresar a generar ticket ingresar moto
         boton_OcultarContraseña = QPushButton()
         boton_OcultarContraseña.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
-        boton_OcultarContraseña.setIcon(QIcon('OcultarContraseña.png'))  # Establecer el icono
+        boton_OcultarContraseña.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
         boton_OcultarContraseña.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
         layout_Conexion.addWidget(boton_OcultarContraseña, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignBottom)
         #Falta Integrar Ocultar
@@ -396,33 +397,47 @@ class PaginaConfiguracion(QWidget):
         self.tabla_PCAgregados.verticalHeader().setVisible(False)
         self.tabla_PCAgregados.setHorizontalHeaderLabels(['ID', 'DESCRIPCIÓN', 'CASILLEROS\nASOCIADOS'])
         self.tabla_PCAgregados.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+            QTableWidget {
+                background-color: #222126;
+                color: white;
+                border: 1px solid #222126;
+                alternate-background-color: #131216; /* Color de fila alternativa */
+            }
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+            QTableWidget::item {
+                background-color: #151419; /* Color de fondo de las celdas */
+                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
+            }
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+            QTableWidget::item:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
+            }
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+            QTableWidget::item:selected {
+                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
+                color: white; /* Color del texto de la celda seleccionada */
+            }
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
+            QHeaderView::section {
+                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+                border: none; /* Sin borde */
+                padding: 4px; /* Ajuste del relleno */
+            }
+
+            QHeaderView::section:hover {
+                background-color: #2a292e; /* Color de fondo al pasar el mouse */
+            }
+
+            QHeaderView::section:selected {
+                background-color: white; /* Color de fondo al seleccionar */
+                color: white; /* Color del texto de las cabeceras de las columnas */
+            }
+
+            QLineEdit {
+                color: white; /* Color del texto del QLineEdit durante la edición */
+            }
+        """)
         #seleccionar toda la fila
         self.tabla_PCAgregados.setSelectionBehavior(QAbstractItemView.SelectRows)
 
@@ -432,7 +447,7 @@ class PaginaConfiguracion(QWidget):
         layout_PC.addWidget(self.tabla_PCAgregados, 2, 0, 4, 4)
 
         # Rellenar la tabla
-        self.actualizarTablaPCAgregados(self.tabla_PCAgregados)
+        self.actualizarTablaPCAgregados()
 
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
@@ -473,6 +488,15 @@ class PaginaConfiguracion(QWidget):
         boton_Guardar.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
         layout_PC.addWidget(boton_Guardar, 4, 4, 1, 3,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
+        boton_Guardar.clicked.connect(lambda: [
+            db_connection.registrarPC(
+            textbox_ID.text(),
+            textbox_Descripcion.text()
+        ),
+        textbox_ID.clear(),
+        textbox_Descripcion.clear(),
+        self.actualizarTablaPCAgregados()
+    ])
         #Cambiar Pc
         titulo_CambiarPC= QLabel('CAMBIAR PC ACTUAL')
         titulo_CambiarPC.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")

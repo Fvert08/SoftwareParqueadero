@@ -1,4 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
+import barcode
+from barcode.writer import ImageWriter
 import os
 import win32print
 import win32ui
@@ -6,13 +8,14 @@ from PIL import ImageWin
 def mm_to_pixels(mm, dpi):
     return int((mm / 25.4) * dpi)
 # Función para generar y guardar el recibo como imagen con dimensiones de POS y logo
-def generarTicketSalidaFijo(Tipo, Nota,FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,TiempoTotal,TotalAPagar):
+def generarTicketRenovarMensualidad(codigo,Fecha, Hora,Nombre,Placa,Telefono,FechaVigencia):
     # Obtener la ruta del directorio actual
     directorio_actual = os.path.dirname(os.path.abspath(__file__))
-
-    ruta_logo = os.path.join(directorio_actual, "Logo.png")
-    ruta_guardado = os.path.join(directorio_actual, "TicketSalidaFijo.png")
-    width, height = 1720, 2320  # Cuadruplicar el tamaño original para mejorar la calidad de impresión
+    ruta_logo = os.path.join(directorio_actual,"..", "imagenes","Logo.png")
+    ruta_guardado = os.path.join(directorio_actual,"..", "Tickets","TicketRenovarMensualidad.png")
+    codigo_barras = str(codigo)
+    # Dimensiones típicas de un recibo POS, aumentadas para mejorar calidad
+    width, height = 1720, 2300  # Duplicar el tamaño original nuevamente para mejorar la calidad de impresión
     img = Image.new('RGB', (width, height), color='white')
     d = ImageDraw.Draw(img)
 
@@ -24,7 +27,7 @@ def generarTicketSalidaFijo(Tipo, Nota,FechaIngreso,FechaSalida,HoraIngreso,Hora
     img.paste(logo, (80, 80))
 
     # Configurar fuentes
-    font = ImageFont.truetype("arial.ttf", 80)  # Cuadruplicar tamaño de fuente
+    font = ImageFont.truetype("arial.ttf", 80)  # Duplicar tamaño de fuente nuevamente
     font_bold = ImageFont.truetype("arialbd.ttf", 96)
     
     # Datos del parqueadero
@@ -43,29 +46,42 @@ def generarTicketSalidaFijo(Tipo, Nota,FechaIngreso,FechaSalida,HoraIngreso,Hora
     # Datos del Ticket
     font = ImageFont.truetype("arial.ttf", 120)
     d.text((80, 640), f"-------------------------------------------------", font=font_bold, fill='black')
-    d.text((360, 736), f"TICKET DE SALIDA", font=font_bold, fill='black')
-    d.text((80, 800), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((200, 736), f"TICKET RENOVAR MENSUALIDAD", font=font_bold, fill='black')
+    d.text((80, 800), f"-------------------------------------------------", font=font_bold, fill='black')
+    
     font = ImageFont.truetype("arial.ttf", 96)
-    d.text((640, 880), f"INGRESO", font=font_bold, fill='black')
-    d.text((80, 1040), f"Fecha: {FechaIngreso}", font=font_bold, fill='black')
-    d.text((80, 1120), f"Hora: {HoraIngreso}", font=font_bold, fill='black')
-    d.text((80, 1200), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((640, 1280), f"SALIDA", font=font_bold, fill='black')
-    d.text((80, 1440), f"Fecha: {FechaSalida}", font=font_bold, fill='black')
-    d.text((80, 1520), f"Hora: {HoraSalida}", font=font_bold, fill='black')
-    d.text((80, 1600), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((320, 1680), f"Tiempo total: {TiempoTotal}", font=font_bold, fill='black')
-    d.text((80, 1760), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((320, 1840), f"Total: ${int(TotalAPagar):,.0f}", font=font, fill='black')
-    d.text((80, 1920), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((80, 2000), f"Tipo: {Tipo}", font=font_bold, fill='black')
-    d.text((80, 2160), f"Nota: {Nota}", font=font_bold, fill='black')
-    d.text((80, 2240), f"------------------------------------------------", font=font_bold, fill='black')
+    d.text((80, 880), f"Fecha: {Fecha}", font=font_bold, fill='black')
+    d.text((80, 960), f"Hora: {Hora}", font=font_bold, fill='black')
+    d.text((80, 1040), f"Nombre: {Nombre}", font=font_bold, fill='black')
+    d.text((80, 1120), f"Placa: {Placa}", font=font_bold, fill='black')
+    d.text((80, 1200), f"Telefono: {Telefono}", font=font_bold, fill='black')
+    d.text((80, 1280), f"Vigencia desde: {FechaVigencia}", font=font_bold, fill='black')
+    
+    # Generar código de barras
+    cod_barra = barcode.get_barcode_class('code128')
+    codigo = cod_barra(codigo_barras, writer=ImageWriter())
+    # Configurar la resolución del código de barras
+    barcode_opts = {'module_height': 60.0, 'module_width': 1.6, 'font_size': 40, 'text_distance': 20.0, 'quiet_zone': 4.0}
+    ruta_codigo_barras = os.path.join(directorio_actual, "..", "Tickets", "codigo_barras")
+    codigo.save(ruta_codigo_barras, options=barcode_opts)
+    # Cargar y colocar el código de barras en la imagen
+    ruta_abrir_codigo_barras =os.path.join(directorio_actual, "..", "Tickets", "codigo_barras.png")
+    codigo_barra = Image.open(ruta_abrir_codigo_barras)
+    codigo_barra = codigo_barra.resize((1600, 800), Image.LANCZOS)
+    img.paste(codigo_barra, (40, 1440))
+
+    
+
+
+    # Información restante
+    font = ImageFont.truetype("arial.ttf", 56)
+    d.text((380, 2140), f"Lunes a sabado: De 6 a.m. a 10 p.m.", font=font, fill='black')
+    d.text((360, 2220), f"Domingos y festivos: de 7 a.m. a 6 p.m.", font=font, fill='black')
     # Guardar la imagen en la ruta especificada
     img.save(ruta_guardado)
-    print(f"Recibo de salida generado")
-    # Imprimir el recibo
+    print(f"Recibo nueva mensualidad generado y guardado en: {ruta_guardado}")
     imprimirTicket(ruta_guardado)
+
 # Función para imprimir el recibo
 def imprimirTicket(ruta_archivo):
     try:
@@ -82,7 +98,7 @@ def imprimirTicket(ruta_archivo):
         hPrinter = win32print.OpenPrinter(impresora_predeterminada)
         try:
             # Crear un trabajo de impresión
-            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketSalidaFijo", None, "RAW"))
+            hJob = win32print.StartDocPrinter(hPrinter, 1, ("TicketRenovarMensualidad", None, "RAW"))
             try:
                 win32print.StartPagePrinter(hPrinter)
                 
@@ -96,7 +112,7 @@ def imprimirTicket(ruta_archivo):
                 hDC.CreatePrinterDC(impresora_predeterminada)
                 
                 # Ajustar el tamaño de la imagen al tamaño del papel
-                hDC.StartDoc("TicketSalidaFijo")
+                hDC.StartDoc("TicketRenovarMensualidad")
                 hDC.StartPage()
                 dib.draw(hDC.GetHandleOutput(), (0, 0, bmp.size[0], bmp.size[1]))
                 hDC.EndPage()

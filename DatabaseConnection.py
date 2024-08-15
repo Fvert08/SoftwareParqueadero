@@ -1,11 +1,11 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
-from TicketIngresoMoto import generarTicketIngresoMoto
-from TicketIngresoFijo import generarTicketIngresoFijo
-from TicketIngresoMensualidad import generarTicketIngresoMensualidad
-from TicketRenovarMensualidad import generarTicketRenovarMensualidad
-from TicketReporte import generarTicketReporteCompleto
+from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
+from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
+from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
+from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from generarTickets.TicketReporte import generarTicketReporteCompleto
 from config import DB_CONFIG
 class DatabaseConnection:
     _instance = None
@@ -232,6 +232,13 @@ class DatabaseConnection:
         VALUES (%s, %s, %s,%s)
         """
         params = (Numero, Pc, self.posicionDisponible(), Estado)
+        self.execute_query(query, params)
+    def registrarPC(self, id, Descipcion):
+        query = """
+        INSERT INTO regPC (id, Descripcion)
+        VALUES (%s, %s)
+        """
+        params = (id, Descipcion)
         self.execute_query(query, params)
 
     def buscarFijoPorId(self, idRegistroFijo):
