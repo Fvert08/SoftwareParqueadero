@@ -11,6 +11,7 @@ from FileEnCo import generarCodigoEncriptado
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
+from leerTxt import escribir_archivo
 
 class PaginaConfiguracion(QWidget):
     senalActualizarTextboxesSuscripcion = pyqtSignal()
@@ -20,6 +21,11 @@ class PaginaConfiguracion(QWidget):
         self.stacked_widget = stacked_widget
         self.initUI()
 
+    def actualizarComboboxpcs (self):
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+        ids = db_connection.obtenerIdsRegPc()
+        self.combobox_pc.clear()
+        self.combobox_pc.addItems(map(str, ids))
 
     def actualizarTablaUsuarios(self):
         # Crear la instancia de DatabaseConnection
@@ -495,6 +501,7 @@ class PaginaConfiguracion(QWidget):
         ),
         textbox_ID.clear(),
         textbox_Descripcion.clear(),
+        self.actualizarComboboxpcs(),
         self.actualizarTablaPCAgregados()
     ])
         #Cambiar Pc
@@ -502,16 +509,20 @@ class PaginaConfiguracion(QWidget):
         titulo_CambiarPC.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_PC.addWidget(titulo_CambiarPC,5, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
 
-        combobox_pc = QComboBox()
-        combobox_pc.addItems(['1', '2'])
-        combobox_pc.setFixedWidth(50)
-        combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 35px;")
-        layout_PC.addWidget(combobox_pc,5, 4, 2, 3, alignment=Qt.AlignCenter|Qt.AlignHCenter)
-
+        self.combobox_pc = QComboBox()
+        self.combobox_pc.setFixedWidth(50)
+        self.combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 35px;")
+        layout_PC.addWidget(self.combobox_pc,5, 4, 2, 3, alignment=Qt.AlignCenter|Qt.AlignHCenter)
+        self.actualizarComboboxpcs()
         boton_Cambiar = QPushButton('CAMBIAR')
         boton_Cambiar.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
         layout_PC.addWidget(boton_Cambiar, 5, 4, 2, 3,
                                 alignment=Qt.AlignBottom| Qt.AlignCenter)
+        #Se guarda la edición
+        boton_Cambiar.clicked.connect(lambda: [
+        escribir_archivo('config','PcActual.txt', self.combobox_pc.currentText()),
+        self.actualizarComboboxpcs()
+    ])
         #Fila-Tamaño
         layout_PC.setRowStretch(0, 0)
         layout_PC.setRowStretch(1, 1)
