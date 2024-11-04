@@ -137,7 +137,7 @@ class PaginaCasilleros(QWidget):
         self.combobox_pcRegistro.setCurrentIndex(0),
         combobox_Estado.setCurrentIndex(0),
         textbox_numero.clear(),
-        self.actualizarTablaCasillero(self.tabla_registrosCasillero),
+        self.actualizarTablaCasillero(),
         self.actualizarComboboxpcs()
     ])
         self.tabla_registrosCasillero = QTableWidget(self)
