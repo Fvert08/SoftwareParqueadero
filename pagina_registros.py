@@ -359,7 +359,7 @@ class PaginaRegistros(QWidget):
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text())
         ),
-        self.actualizarTablaRegistroMotos("Todo","0"),
+        self.actualizarTablaRegistroMotos(),
         generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
