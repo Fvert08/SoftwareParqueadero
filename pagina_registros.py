@@ -245,13 +245,13 @@ class PaginaRegistros(QWidget):
         # Crear el título y añadirlo a la sección izquierda
         titulo_Registros = QLabel('REGISTROS')
         titulo_Registros.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_TablaRegistros.addWidget(titulo_Registros, 0, 0, 1, 9, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_TablaRegistros.addWidget(titulo_Registros, 0, 0, 1, 9,alignment=Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_TablaRegistros.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
+        layout_TablaRegistros.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tablaRegistrosMotos = QTableWidget(self)
         self.tablaRegistrosMotos.setColumnCount(10)  # Definir el número de columnas
@@ -306,33 +306,29 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
+        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 2, 0, 6, 9)
         #Botones del filtro
-        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
         self.combobox_FiltroRegistroMoto = QComboBox()
         self.combobox_FiltroRegistroMoto.addItems(['Todo', "ID" ,'Casillero', 'Placa', 'Tipo'])
-        self.combobox_FiltroRegistroMoto.setFixedWidth(130)
-        self.combobox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaRegistros.addWidget(self.combobox_FiltroRegistroMoto, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
+        self.combobox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_TablaRegistros.addWidget(self.combobox_FiltroRegistroMoto, 8, 0, 1, 1)
         
         self.textbox_FiltroRegistroMoto = QLineEdit()
-        self.textbox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textbox_FiltroRegistroMoto.setFixedWidth(250)
-        layout_TablaRegistros.addWidget(self.textbox_FiltroRegistroMoto , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
+        self.textbox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_TablaRegistros.addWidget(self.textbox_FiltroRegistroMoto , 8, 1, 1, 1)
         # Rellenar la tabla
         self.actualizarTablaRegistroMotos()
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px")
+        layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaRegistroMotos()
             ])
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;  border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
             generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
@@ -344,14 +340,12 @@ class PaginaRegistros(QWidget):
         )])
         #Boton Eliminar Registro
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
-        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
             db_connection.editarRegistroMoto(
             int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()), 
@@ -371,19 +365,12 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Limpiar Registro
         boton_LimpiarRegistro = QPushButton('LIMPIAR REGISTRO')
-        boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
-        #Fila-Tamaño
-        layout_TablaRegistros.setRowStretch(0, 0)
-        layout_TablaRegistros.setRowStretch(1, 1)
-        layout_TablaRegistros.setRowStretch(2, 1)
-        layout_TablaRegistros.setRowStretch(3, 1)
-        layout_TablaRegistros.setRowStretch(4, 1)
-        layout_TablaRegistros.setRowStretch(5, 1)
-        layout_TablaRegistros.setRowStretch(6, 1)
-        layout_TablaRegistros.setRowStretch(7, 2)
+        boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1)
+        #Hace que la fila 2 crezca 6 partes y la fila 8 crezca 1 parte
+        layout_TablaRegistros.setRowStretch(2, 6)
         layout_TablaRegistros.setRowStretch(8, 1)
+
         #Se agrega el layout a la pagina
         page_TablaRegistros.setLayout(layout_TablaRegistros)
         #se agrega la pagina al stack
