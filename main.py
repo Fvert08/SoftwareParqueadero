@@ -22,14 +22,20 @@ class MiVentana(QWidget):
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
         self.setStyleSheet("background-color: #151419;")
-        # Obtener el tamaño de la pantalla del usuario
+
+        # Obtener el tamaño de la pantalla correctamente
         screen = QApplication.primaryScreen()
         screen_size = screen.size()
         self.width = screen_size.width()
         self.height = screen_size.height()
-        self.setWindowState(Qt.WindowMaximized)
-        self.setMaximumSize(self.width, self.height)  # tamaño máximo igual al tamaño de la pantalla
+
+        self.resize(self.width, self.height)  # Ajusta el tamaño inicial, pero no lo bloquea
+        self.setMinimumSize(800, 600)  # Evita que sea demasiado pequeña
+        self.setWindowState(Qt.WindowMaximized)  # Maximiza, pero permite cambiar tamaño
+
         self.Pagina_principal()
+
+
     def diasSuscripcion (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         ultimoPago = db_connection.consultarUltimaSuscripcion()
