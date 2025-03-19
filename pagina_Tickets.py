@@ -194,20 +194,12 @@ class PaginaTickets(QWidget):
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('Menú')
         titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_ticketsmenu.addWidget(titulo_menu, 0, 1, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(titulo_menu, 0, 1, 1, 2, Qt.AlignCenter)
         linea_horizontal2 = QFrame()
         linea_horizontal2.setFrameShape(QFrame.HLine)
         linea_horizontal2.setLineWidth(1)
         linea_horizontal2.setStyleSheet("color: #FFFFFF;")
-        layout_ticketsmenu.addWidget(linea_horizontal2, 0, 1, 1, 2, alignment=Qt.AlignBottom)
-
-        layout_ticketsmenu.setRowStretch(0, 0)
-        layout_ticketsmenu.setRowStretch(1, 1)
-        layout_ticketsmenu.setRowStretch(2, 1)
-        layout_ticketsmenu.setRowStretch(3, 1)
-        layout_ticketsmenu.setRowStretch(4, 1)
-        layout_ticketsmenu.setRowStretch(5, 1)
-        layout_ticketsmenu.setRowStretch(6, 1)
+        layout_ticketsmenu.addWidget(linea_horizontal2, 1, 1, 1, 2)
 
         # Crea un boton para ingresar a generar ticket ingresar moto
         boton_IngresarM = QPushButton()
@@ -227,7 +219,7 @@ class PaginaTickets(QWidget):
         """)
         boton_IngresarM.setIcon(QIcon('imagenes/IngresoMoto.png'))  # Establecer el icono
         boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_IngresarM, 1, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(boton_IngresarM, 2, 1, 1, 1)
         boton_IngresarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(0))
 
 
@@ -249,7 +241,7 @@ class PaginaTickets(QWidget):
         """)
         boton_SacarM.setIcon(QIcon('imagenes/SalidaMoto.png'))  # Establecer el icono
         boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_SacarM, 1, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(boton_SacarM, 2, 2, 1, 1)
         boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(1))
 
 
@@ -271,7 +263,7 @@ class PaginaTickets(QWidget):
         """)
         boton_IngresarF.setIcon(QIcon('imagenes/IngresoFijo.png'))  # Establecer el icono
         boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_IngresarF, 2, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(boton_IngresarF, 3, 1, 1, 1)
         boton_IngresarF.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(2))
 
         # Crea un boton para ingresar a generar ticket sacar Fijo
@@ -292,7 +284,7 @@ class PaginaTickets(QWidget):
         """)
         boton_SacarF.setIcon(QIcon('imagenes/SalidaFijo.png'))  # Establecer el icono
         boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_SacarF, 2, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(boton_SacarF, 3, 2, 1, 1)
         boton_SacarF.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(3))
         
         #Crea un boton para ingresar a generar ticket ingresar Mensualidad
@@ -300,7 +292,7 @@ class PaginaTickets(QWidget):
         boton_IngresarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
         boton_IngresarMensualidad.setIcon(QIcon('imagenes/Mesingreso.png'))  # Establecer el icono
         boton_IngresarMensualidad.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_IngresarMensualidad, 3, 1, 1, 1, alignment=Qt.AlignTop | Qt.AlignRight | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(boton_IngresarMensualidad, 4, 1, 1, 1)
         boton_IngresarMensualidad.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(4))
 
         #Crea un boton para ingresar a generar ticket sacar Mensualidad
@@ -308,7 +300,7 @@ class PaginaTickets(QWidget):
         boton_SacarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
         boton_SacarMensualidad.setIcon(QIcon('imagenes/Mesrenovar.png'))  # Establecer el icono
         boton_SacarMensualidad.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
-        layout_ticketsmenu.addWidget(boton_SacarMensualidad,   3, 2, 1, 1, alignment=Qt.AlignTop | Qt.AlignLeft | Qt.AlignCenter)
+        layout_ticketsmenu.addWidget(boton_SacarMensualidad,   4, 2, 1, 1)
         boton_SacarMensualidad.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(5))
 
         #Se agrega el layout del menú a la página del menú
@@ -334,6 +326,7 @@ class PaginaTickets(QWidget):
         casillero_actual = self.casilleros_disponibles[self.indice_actual]['id']
         self.indice_actual = (self.indice_actual + 1) % len(self.casilleros_disponibles)
         return casillero_actual
+    
     def pantallaIngresoMotos (self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -344,67 +337,59 @@ class PaginaTickets(QWidget):
         #------------------------Ingreso de motos------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_tickets = QLabel('REGISTRAR INGRESO MOTO')
-        titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_ticketsIngresoMotos.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
+        titulo_tickets.setStyleSheet("color: #888888;font-size: 25px; font-weight: bold;")
+        layout_ticketsIngresoMotos.addWidget(titulo_tickets, 0, 0, 1, 4, Qt.AlignCenter|Qt.AlignTop)
 
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_ticketsIngresoMotos.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        layout_ticketsIngresoMotos.addWidget(linea_horizontal1, 1, 0, 1, 4)
 
         # Crear el label "Placa" y la textbox
         label_placa = QLabel('Placa:')
         label_placa.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoMotos.addWidget(label_placa, 1, 2, 1, 1, alignment=Qt.AlignCenter | Qt.AlignRight)
+        layout_ticketsIngresoMotos.addWidget(label_placa, 3, 1, 1, 1,Qt.AlignRight)
 
         textbox_placa = QLineEdit()
         textbox_placa.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_placa.setFixedWidth(240)
-        layout_ticketsIngresoMotos.addWidget(textbox_placa, 1, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
+        layout_ticketsIngresoMotos.addWidget(textbox_placa, 3, 2, 1, 1,Qt.AlignLeft)
 
         # Crear el label "Cascos" y el combobox
         label_cascos = QLabel('Cascos:')
         label_cascos.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoMotos.addWidget(label_cascos, 2, 2, 1, 1, alignment=Qt.AlignCenter | Qt.AlignRight)
+        layout_ticketsIngresoMotos.addWidget(label_cascos, 5, 1, 1, 1,Qt.AlignRight)
 
         combobox_cascos = QComboBox()
         combobox_cascos.addItems(['0', '1', '2'])
         combobox_cascos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
-        combobox_cascos.setFixedWidth(60)
-        layout_ticketsIngresoMotos.addWidget(combobox_cascos, 2, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
+        layout_ticketsIngresoMotos.addWidget(combobox_cascos, 5, 2, 1, 1,Qt.AlignLeft)
 
         # Crear el label "Tiempo" y el combobox
         label_Tiempo = QLabel('Tiempo:')
         label_Tiempo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoMotos.addWidget(label_Tiempo, 3, 2, 1, 1, alignment=Qt.AlignCenter | Qt.AlignRight)
+        layout_ticketsIngresoMotos.addWidget(label_Tiempo, 7, 1, 1, 1,Qt.AlignRight)
 
         combobox_Tiempo = QComboBox()
         combobox_Tiempo.addItems(['Hora', 'Dia'])
         combobox_Tiempo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
-        combobox_Tiempo.setFixedWidth(120)
-        layout_ticketsIngresoMotos.addWidget(combobox_Tiempo, 3, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
+        layout_ticketsIngresoMotos.addWidget(combobox_Tiempo, 7, 2, 1, 1,Qt.AlignLeft)
 
         # Crea una checkbox para confirmar que se eligio dia o mes  en "combobox_Tiempo"
         checkbox_opcion = QCheckBox('Confirmar', page_tickets)
         checkbox_opcion.setStyleSheet("color: #FFFFFF; font-size: 20px;")
         checkbox_opcion.setChecked(False)  # Opcional: Puedes establecer si la casilla está marcada por defecto o no
-        layout_ticketsIngresoMotos.addWidget(checkbox_opcion, 3, 3, 1, 1,
-                                alignment= Qt.AlignCenter |Qt.AlignRight)
+        layout_ticketsIngresoMotos.addWidget(checkbox_opcion, 7, 3, 1, 1,Qt.AlignLeft)
         # Crear el label "Casillero" y el combobox
         label_casillero = QLabel('Casillero:', page_tickets)
         label_casillero.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoMotos.addWidget(label_casillero, 4, 2, 1, 1,
-                                alignment=Qt.AlignCenter | Qt.AlignRight)  # Alineamiento arriba y a la izquierda
+        layout_ticketsIngresoMotos.addWidget(label_casillero, 9, 1, 1, 1,Qt.AlignRight)  # Alineamiento arriba y a la izquierda
         self.textbox_casillero = QLineEdit(page_tickets)
         self.textbox_casillero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textbox_casillero.setReadOnly(True)
-        self.textbox_casillero.setFixedWidth(100)  # Establecer el ancho fijo
-        self.textbox_casillero.setFixedHeight(50)
         self.textbox_casillero.setText ("1")
-        layout_ticketsIngresoMotos.addWidget(self.textbox_casillero, 4, 3, 1, 1,
-                                alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
+        layout_ticketsIngresoMotos.addWidget(self.textbox_casillero, 9, 2, 1, 1,Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1)))
 
         # Crea un boton para cambiar al siguiente casillero disponible
@@ -423,8 +408,7 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 4, 3, 1, 1,
-                                alignment=Qt.AlignCenter | Qt.AlignRight)
+        layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 9, 3, 1, 1)
         # Conectar el botón de imprimir a la función para buscar el siguiente disponible
         boton_cambiarcasillero.clicked.connect(lambda: [
             self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(1)))
@@ -432,17 +416,13 @@ class PaginaTickets(QWidget):
         # Crear el label "Casilleros disponibles" y el combobox
         label_casillerosDis = QLabel('Casilleros disponibles:', page_tickets)
         label_casillerosDis.setStyleSheet("color: #FFFFFF;font-size: 30px;")
-        layout_ticketsIngresoMotos.addWidget(label_casillerosDis, 5, 2, 1, 1,
-                                alignment=Qt.AlignCenter | Qt.AlignRight)  # Alineamiento arriba y a la izquierda
+        layout_ticketsIngresoMotos.addWidget(label_casillerosDis, 11, 1, 1, 1,Qt.AlignRight)  # Alineamiento arriba y a la izquierda
         #Crear Textbox "Casilleros disponibles" 
         self.textbox_casillerosDis = QLineEdit(page_tickets)
         self.textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textbox_casillerosDis.setReadOnly(True)
-        self.textbox_casillerosDis.setFixedWidth(70)  # Establecer el ancho fijo
-        self.textbox_casillerosDis.setFixedHeight(50)
         self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
-        layout_ticketsIngresoMotos.addWidget(self.textbox_casillerosDis, 5, 3, 1, 1,
-                                alignment=Qt.AlignCenter | Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
+        layout_ticketsIngresoMotos.addWidget(self.textbox_casillerosDis, 11, 2, 1, 1,Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
         self.botonImprimirRegistroMoto = QPushButton('Imprimir', page_tickets)
         self.botonImprimirRegistroMoto.setStyleSheet("""
@@ -459,8 +439,7 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 6, 3, 1, 1,
-                                alignment=Qt.AlignTop | Qt.AlignLeft)
+        layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 13, 2, 1, 1)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirRegistroMoto.clicked.connect(lambda: [
             db_connection.registrarMoto(
@@ -478,15 +457,15 @@ class PaginaTickets(QWidget):
         self.senalActualizarTablasCasilleros.emit(),
         self.senalActualizarTablaRegistroMotos.emit(),
     ])
-        # Establecer las proporciones de las filas en la cuadricula
-        layout_ticketsIngresoMotos.setRowStretch(0, 0)
-        layout_ticketsIngresoMotos.setRowStretch(1, 1)
+        layout_ticketsIngresoMotos.setRowStretch(8, 1)
         layout_ticketsIngresoMotos.setRowStretch(2, 1)
-        layout_ticketsIngresoMotos.setRowStretch(3, 1)
         layout_ticketsIngresoMotos.setRowStretch(4, 1)
-        layout_ticketsIngresoMotos.setRowStretch(5, 1)
         layout_ticketsIngresoMotos.setRowStretch(6, 1)
-        #Se agrega el layout a la pagina
+        layout_ticketsIngresoMotos.setRowStretch(8, 1)
+        layout_ticketsIngresoMotos.setRowStretch(10, 1)
+        layout_ticketsIngresoMotos.setRowStretch(12, 1)
+       
+
         page_tickets.setLayout(layout_ticketsIngresoMotos)
         #se agrega la pagina al stack
         self.stacked_widgetTickets.addWidget(page_tickets)
