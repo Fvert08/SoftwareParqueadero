@@ -141,7 +141,7 @@ class DatabaseConnection:
     def registrarSalidaMoto(self, idRegistro,totalPagado):
         fecha_salida = datetime.now().strftime('%Y-%m-%d')
         hora_salida = datetime.now().strftime('%H:%M:%S')
-        query = "UPDATE registrosMoto SET fechaSalida = %s, horaSalida = %s, Total = %s WHERE id = %s"
+        query = "UPDATE registrosmoto SET fechaSalida = %s, horaSalida = %s, Total = %s WHERE id = %s"
         params = (fecha_salida, hora_salida, totalPagado, idRegistro)
         self.execute_query(query, params)
 
@@ -407,7 +407,7 @@ class DatabaseConnection:
         params = (str(posicionCasillero),)
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = %s"
-        
+        params = (str (posicionCasillero), str(posicionCasillero + 1))
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
         params = (str(posicionCasillero+1),)
