@@ -649,14 +649,14 @@ class PaginaTickets(QWidget):
         self.boton_facturar.clicked.connect(lambda: [
             db_connection.registrarSalidaMoto(
             self.textboxCodigoSacarMoto.text(),
-            self.textboxTotalAPagarSacarMoto.text()
+            float( self.textboxTotalAPagarSacarMoto.text().replace("$", "").strip())
         ),
         generarTicketSalidaMoto(self.textboxFIngresoSacarMoto.text(),
                                 self.textboxFSalidaSacarMoto.text(),
                                 self.textboxHIngresoSacarMoto.text(),
                                 self.textboxHSalidaSacarMoto.text(),
                                 self.textboxTiempoTotalSacarMoto.text(),
-                                self.textboxTotalAPagarSacarMoto.text(),
+                                float( self.textboxTotalAPagarSacarMoto.text().replace("$", "").strip()),
                                 self.textboxPlacaSacarMoto.text(),
                                 self.textboxCasilleroSacarMoto.text()),
         db_connection.cambiarEstadoCasillero(self.textboxCasilleroSacarMoto.text(),"OCUPADO"),
