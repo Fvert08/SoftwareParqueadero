@@ -221,8 +221,11 @@ class PaginaCasilleros(QWidget):
         boton_eliminar.clicked.connect(lambda: [
             db_connection.eliminarCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+            int(self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 2).text()),
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text()
         ),
-        self.actualizarTablaCasillero()
+        self.actualizarTablaCasillero(),
+        self.actualizarTablaCasilleroOrden()
     ])
         #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')

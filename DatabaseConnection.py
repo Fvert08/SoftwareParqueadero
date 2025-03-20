@@ -97,7 +97,15 @@ class DatabaseConnection:
             return None
         finally:
             cursor.close()  # Cerrar el cursor después de usarlo
-        
+
+    def obterernuno(self, query, params=None):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, params)
+                return cursor.fetchone()  # Devuelve una sola fila como una tupla o None si no hay resultados
+        except Exception as e:
+            return None
+
     def registrarMoto(self, placa, cascos, tiempo, casillero):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
         hora_ingreso = datetime.now().strftime('%H:%M:%S')
@@ -227,12 +235,33 @@ class DatabaseConnection:
         return dict(result[0]) if result else None
 
     def registrarCasillero(self, Numero, Pc, Estado):
-        query = """
-        INSERT INTO Casillero (id, Pc, Posicion, Estado)
-        VALUES (%s, %s, %s,%s)
-        """
-        params = (Numero, Pc, self.posicionDisponible(), Estado)
-        self.execute_query(query, params)
+        # Verificar si el casillero con ese ID ya existe
+        query_check = "SELECT Eliminado FROM Casillero WHERE id = %s"
+        params_check = (Numero,)
+        resultado = self.obterernuno(query_check, params_check)
+
+        if resultado:
+            # Si el casillero existe, revisar el estado de "Eliminado"
+            eliminado = resultado[0]  # Extraer el valor de "Eliminado"
+
+            if eliminado == 1:
+                # Si está eliminado, actualizarlo a 0 en vez de insertar uno nuevo
+                query_update = "UPDATE Casillero SET Eliminado = 0, Pc = %s, Estado = %s,Posicion=%s WHERE id = %s"
+                params_update = (Pc, Estado,self.posicionDisponible(), Numero)
+                self.execute_query(query_update, params_update)
+            else:
+                # Si ya existe y no está eliminado, mostrar mensaje
+                print(f"Error: El casillero con ID {Numero} ya existe y está activo.")
+        else:
+            # Si no existe, insertar un nuevo registro
+            query_insert = """
+            INSERT INTO Casillero (id, Pc, Posicion, Estado, Eliminado)
+            VALUES (%s, %s, %s, %s, 0)
+            """
+            params_insert = (Numero, Pc, self.posicionDisponible(), Estado)
+            self.execute_query(query_insert, params_insert)
+
+
     def registrarPC(self, id, Descipcion):
         query = """
         INSERT INTO regPC (id, Descripcion)
@@ -294,11 +323,11 @@ class DatabaseConnection:
         return self.executeQueryReturnAll(query,params)
     
     def cargarTableCasillero(self):
-        query = "SELECT * FROM Casillero;"
+        query = "SELECT * FROM Casillero WHERE Eliminado=0;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableCasilleroOrden(self):
-        query = "SELECT * FROM Casillero ORDER BY Posicion ASC ;"
+        query = "SELECT * FROM Casillero WHERE Eliminado = 0 ORDER BY Posicion ASC;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableRegistrosFijos(self):
@@ -344,18 +373,38 @@ class DatabaseConnection:
         params = (nuevoPc, idCasillero)
         self.execute_query(query, params)
 
-    def eliminarCasillero(self, idCasillero):
-        query = "DELETE FROM Casillero WHERE id = %s"
-        params = (idCasillero,)
-        self.execute_query(query, params)
+    def eliminarCasillero(self, idCasillero, posicion, estado):
+        if estado == "DISPONIBLE":
+            # Marcar el casillero como eliminado
+            query = "UPDATE casillero SET Eliminado = 1 WHERE id = %s"
+            params = (idCasillero,)
+            self.execute_query(query, params)
+
+            # Reorganizar las posiciones de los casilleros restantes
+            query_update = """
+            UPDATE casillero 
+            SET Posicion = Posicion - 1 
+            WHERE Posicion > %s AND Eliminado = 0
+            """
+            params_update = (posicion,)
+            self.execute_query(query_update, params_update)
+        else:
+            print("No se puede eliminar un casillero ocupado.")
+
+                
+
     def eliminarMensualidad(self, idMensualidad):
         query = "DELETE FROM Mensualidades WHERE id = %s"
         params = (idMensualidad,)
         self.execute_query(query, params)
     def casillerosDisponibles(self, pc):
-        query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s"
+        query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s AND Eliminado = 0"
         params = ("DISPONIBLE", pc)
         result = self.executeQueryReturnAll(query, params)
+        return result[0]['count'] if result else 0
+    def todosCasillerosDisponibles(self):
+        query = "SELECT COUNT(*) as count FROM casillero WHERE Eliminado = 0"
+        result = self.executeQueryReturnAll(query)
         return result[0]['count'] if result else 0
     def contarMensualidadesActivas(self):
         query = """
@@ -370,18 +419,18 @@ class DatabaseConnection:
         result = self.executeQueryReturnAll(query)
         return [row['id'] for row in result] if result else []
     def casilleroAsignado(self, pc):
-        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC LIMIT 1"
+        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' AND Eliminado = 0 ORDER BY Posicion ASC LIMIT 1"
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
         return result[0]['id'] if result else None
     def listacasillerosDisponibles(self, pc):
-        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC"
+        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' AND Eliminado = 0  ORDER BY Posicion ASC"
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
         return result
 
     def posicionDisponible(self):
-        query = "SELECT COALESCE(MAX(Posicion) + 1, 1) AS siguientePosicion FROM Casillero"
+        query = "SELECT COALESCE(MAX(Posicion) + 1, 1) AS siguientePosicion FROM Casillero WHERE Eliminado = 0"
         result = self.executeQueryReturnAll(query)
         return result[0]['siguientePosicion'] if result else 1
     
