@@ -173,7 +173,7 @@ class PaginaReportes(QWidget):
         layout_reportes.addWidget(boton_reimprimir, 10, 4, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignRight)
         boton_reimprimir.clicked.connect(lambda: [
-            generarTicketReporteCompleto(
+             self.tabla_registros.selectedItems() and generarTicketReporteCompleto(
             self.tabla_registros.item(self.tabla_registros.currentRow(), 0).text(),
             "COPIA",
             self.tabla_registros.item(self.tabla_registros.currentRow(), 1).text(),

@@ -207,7 +207,7 @@ class PaginaCasilleros(QWidget):
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_desocupar.clicked.connect(lambda: [
-            db_connection.cambiarEstadoCasillero(
+             self.tabla_registrosCasillero.selectedItems() and db_connection.cambiarEstadoCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
         ),
@@ -221,7 +221,7 @@ class PaginaCasilleros(QWidget):
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
         #---
         boton_eliminar.clicked.connect(lambda: [
-            db_connection.eliminarCasillero(
+            self.tabla_registrosCasillero.selectedItems() and db_connection.eliminarCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             int(self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 2).text()),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text()
@@ -250,7 +250,7 @@ class PaginaCasilleros(QWidget):
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         #Se guarda la edición
         boton_guardarPc.clicked.connect(lambda: [
-            db_connection.cambiarPcCasillero(
+            self.tabla_registrosCasillero.currentRow() != -1 and db_connection.cambiarPcCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.combobox_pcCambiar.currentText(),
         ),
@@ -324,11 +324,11 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(boton_subir, 2, 9, 2, 1,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         boton_subir.clicked.connect(lambda: [
-            db_connection.subirPosicionCasillero(
+            self.tablaOrdenDeLlenado.selectedItems() and db_connection.subirPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
         self.actualizarTablasCasilleros(),
-        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
+          self.tablaOrdenDeLlenado.selectedItems() and self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
         
         ])
 
@@ -337,11 +337,11 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(boton_bajar, 2, 9, 2, 1,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_bajar.clicked.connect(lambda: [
-            db_connection.bajarPosicionCasillero(
+             self.tablaOrdenDeLlenado.selectedItems() and db_connection.bajarPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
         self.actualizarTablasCasilleros(),
-        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
+        self.tablaOrdenDeLlenado.selectedItems() and self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
         ])
   
         page_casilleros.setLayout(layout_tickets)
