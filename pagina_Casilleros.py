@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
@@ -104,6 +105,7 @@ class PaginaCasilleros(QWidget):
         textbox_numero = QLineEdit()
         textbox_numero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_numero.setFixedWidth(130)
+        textbox_numero.setValidator(QIntValidator())
         layout_tickets.addWidget(textbox_numero, 7, 1, 1, 1, alignment=Qt.AlignCenter |Qt.AlignBottom)
 
         titulo_pc = QLabel('PC')

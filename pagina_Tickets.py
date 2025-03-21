@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5.QtCore import Qt,QSize
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
@@ -498,6 +498,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoSacarMoto = QLineEdit()
         self.textboxCodigoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoSacarMoto.setFixedWidth(200)
+        self.textboxCodigoSacarMoto.setValidator(QIntValidator())
         layout_ticketsSalidaMotos.addWidget(self.textboxCodigoSacarMoto, 1, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
         #-----
         # Crear el label "Placa" y la textbox
@@ -508,6 +509,7 @@ class PaginaTickets(QWidget):
         self.textboxPlacaSacarMoto = QLineEdit()
         self.textboxPlacaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxPlacaSacarMoto.setFixedWidth(200)
+        self.textboxPlacaSacarMoto.setValidator(QIntValidator()) # Valida que solo pueda ingresar enteros 
         layout_ticketsSalidaMotos.addWidget(self.textboxPlacaSacarMoto, 2, 3, 1, 1, alignment=Qt.AlignTop| Qt.AlignLeft)
         #----
         # Crea un boton para buscar
@@ -752,6 +754,7 @@ class PaginaTickets(QWidget):
         # Text box Codigo
         textbox_Valor = QLineEdit()
         textbox_Valor.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Valor.setValidator(QIntValidator()) # Valida que solo pueda ingresar enteros 
         layout_ticketsIngresoFijo.addWidget(textbox_Valor, 5, 3, 1, 1, alignment=Qt.AlignCenter)
     #---Fila 5
         # Boton para imprimir
@@ -824,6 +827,7 @@ class PaginaTickets(QWidget):
         # Text box Codigo
         self.textboxCodigoFijo = QLineEdit()
         self.textboxCodigoFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxCodigoFijo.setValidator(QIntValidator())
         layout_ticketsSacarFijo.addWidget(self.textboxCodigoFijo, 1, 2, 2, 2, alignment=Qt.AlignCenter)
         # Boton para buscar
         botonBuscarFijos = QPushButton('Buscar')
@@ -1032,6 +1036,7 @@ class PaginaTickets(QWidget):
         textbox_Telefono = QLineEdit()
         textbox_Telefono.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_Telefono.setFixedWidth(200)
+        textbox_Telefono.setValidator(QIntValidator())
         layout_ticketsIngresarMensualidad.addWidget(textbox_Telefono, 3, 4, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignTop)
         #Mensualidades Vigentes
         titulo_MensualidadesVigentes = QLabel('Mensualidades\nVigentes')
@@ -1102,6 +1107,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoRenovarMensualidad = QLineEdit()
         self.textboxCodigoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoRenovarMensualidad.setFixedWidth(150)
+        self.textboxCodigoRenovarMensualidad.setValidator(QIntValidator())
         layout_ticketsRenovarMensualidad.addWidget(self.textboxCodigoRenovarMensualidad, 1, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignBottom)
         #Placa
         titulo_Placa = QLabel('PLACA')
