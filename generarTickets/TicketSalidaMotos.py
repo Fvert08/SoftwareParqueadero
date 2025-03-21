@@ -52,7 +52,7 @@ def generarTicketSalidaMoto(FechaIngreso,FechaSalida,HoraIngreso,HoraSalida,Tiem
     d.text((80, 1600), f"------------------------------------------------", font=font_bold, fill='black')
     d.text((320, 1680), f"Tiempo total: {TiempoTotal}", font=font_bold, fill='black')
     d.text((80, 1760), f"------------------------------------------------", font=font_bold, fill='black')
-    d.text((320, 1840), f"Total: ${int(TotalAPagar):,.0f}", font=font, fill='black')
+    d.text((320, 1840), f"Total: ${float(TotalAPagar):,.0f}", font=font, fill='black')
     d.text((80, 1920), f"------------------------------------------------", font=font_bold, fill='black')
     # Información restante
     font = ImageFont.truetype("arial.ttf", 68)
