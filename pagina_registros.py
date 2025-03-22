@@ -9,6 +9,7 @@ from config import DB_CONFIG
 from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
 from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
 from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
+from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
 class PaginaRegistros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -635,15 +636,18 @@ class PaginaRegistros(QWidget):
             int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text())
+            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
+            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
         ),
         self.actualizarTablaMensualidades(),
-         self.tabla_Mensualidades.selectedItems() and generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 4).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 5).text()),
+         self.tabla_Mensualidades.selectedItems() and generarTicketRenovarMensualidad(
+                                        int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 6).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 7).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text())
         )
         ])
 

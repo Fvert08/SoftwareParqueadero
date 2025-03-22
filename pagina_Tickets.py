@@ -1061,6 +1061,7 @@ class PaginaTickets(QWidget):
         self.textbox_MensualidadesVigentes = QLineEdit()
         self.textbox_MensualidadesVigentes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textbox_MensualidadesVigentes.setFixedWidth(60)
+        self.textbox_MensualidadesVigentes.setReadOnly(True)
         layout_ticketsIngresarMensualidad.addWidget(self.textbox_MensualidadesVigentes, 6, 3, 1, 1, alignment=Qt.AlignCenter |Qt.AlignLeft)
         self.actualizarMensualidadesVigentes()
         #Boton Imprimir
@@ -1070,7 +1071,8 @@ class PaginaTickets(QWidget):
         # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
              QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
-            if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else  [db_connection.registrarMensualidad(
+            if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else  [
+                db_connection.registrarMensualidad(
             textbox_Placa.text(),
             textbox_Nombre.text(),
             textbox_Telefono.text(),
@@ -1144,8 +1146,9 @@ class PaginaTickets(QWidget):
         
         self.textboxNombreRenovarMensualidad = QLineEdit()
         self.textboxNombreRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxNombreRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxNombreRenovarMensualidad, 5, 1, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignCenter)
-
+        
         #Fecha de Ingreso
         titulo_FechaIngreso = QLabel('FECHA\nINGRESO')
         # Centrar el texto horizontal y verticalmente
@@ -1155,6 +1158,7 @@ class PaginaTickets(QWidget):
         
         self.textboxFechaIngresoRenovarMensualidad = QLineEdit()
         self.textboxFechaIngresoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxFechaIngresoRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxFechaIngresoRenovarMensualidad, 7, 1, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
         #Fecha U Pago
@@ -1165,6 +1169,7 @@ class PaginaTickets(QWidget):
         
         self.textboxFechaUPagoRenovarMensualidad = QLineEdit()
         self.textboxFechaUPagoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxFechaUPagoRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxFechaUPagoRenovarMensualidad, 9, 1, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         
         #Fecha Renovacion
@@ -1175,6 +1180,7 @@ class PaginaTickets(QWidget):
         
         self.textboxFechaRenovacionRenovarMensualidad = QLineEdit()
         self.textboxFechaRenovacionRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxFechaRenovacionRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxFechaRenovacionRenovarMensualidad, 11, 1, 1, 3, alignment=Qt.AlignCenter |Qt.AlignHCenter)  
 
         #Telefono
@@ -1184,6 +1190,7 @@ class PaginaTickets(QWidget):
         
         self.textboxTelefonoRenovarMensualidad = QLineEdit()
         self.textboxTelefonoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxTelefonoRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxTelefonoRenovarMensualidad, 5, 3, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
         #Hora de Ingreso
@@ -1194,6 +1201,7 @@ class PaginaTickets(QWidget):
         
         self.textboxHoraIngresoRenovarMensualidad = QLineEdit()
         self.textboxHoraIngresoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxHoraIngresoRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxHoraIngresoRenovarMensualidad, 7, 3, 1, 1, alignment=Qt.AlignCenter |Qt.AlignHCenter)
 
         #Hora U Pago
@@ -1204,6 +1212,7 @@ class PaginaTickets(QWidget):
         
         self.textboxHoraUPagoRenovarMensualidad = QLineEdit()
         self.textboxHoraUPagoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxHoraUPagoRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxHoraUPagoRenovarMensualidad, 9, 3, 1, 1, alignment=Qt.AlignCenter |Qt.AlignHCenter)
 
         #Total a pagar
@@ -1213,6 +1222,7 @@ class PaginaTickets(QWidget):
         
         self.textboxTotalAPagarRenovarMensualidad = QLineEdit()
         self.textboxTotalAPagarRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxTotalAPagarRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxTotalAPagarRenovarMensualidad, 7, 5, 1, 1, alignment=Qt.AlignCenter |Qt.AlignHCenter)
         
         #Boton Renovar
