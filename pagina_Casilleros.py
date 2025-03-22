@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
@@ -104,6 +105,7 @@ class PaginaCasilleros(QWidget):
         textbox_numero = QLineEdit()
         textbox_numero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_numero.setFixedWidth(130)
+        textbox_numero.setValidator(QIntValidator())
         layout_tickets.addWidget(textbox_numero, 7, 1, 1, 1, alignment=Qt.AlignCenter |Qt.AlignBottom)
 
         titulo_pc = QLabel('PC')
@@ -205,7 +207,7 @@ class PaginaCasilleros(QWidget):
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_desocupar.clicked.connect(lambda: [
-            db_connection.cambiarEstadoCasillero(
+             self.tabla_registrosCasillero.selectedItems() and db_connection.cambiarEstadoCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
         ),
@@ -219,7 +221,7 @@ class PaginaCasilleros(QWidget):
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
         #---
         boton_eliminar.clicked.connect(lambda: [
-            db_connection.eliminarCasillero(
+            self.tabla_registrosCasillero.selectedItems() and db_connection.eliminarCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             int(self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 2).text()),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text()
@@ -248,7 +250,7 @@ class PaginaCasilleros(QWidget):
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         #Se guarda la edición
         boton_guardarPc.clicked.connect(lambda: [
-            db_connection.cambiarPcCasillero(
+            self.tabla_registrosCasillero.currentRow() != -1 and db_connection.cambiarPcCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.combobox_pcCambiar.currentText(),
         ),
@@ -322,11 +324,11 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(boton_subir, 2, 9, 2, 1,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         boton_subir.clicked.connect(lambda: [
-            db_connection.subirPosicionCasillero(
+            self.tablaOrdenDeLlenado.selectedItems() and db_connection.subirPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
         self.actualizarTablasCasilleros(),
-        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
+          self.tablaOrdenDeLlenado.selectedItems() and self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
         
         ])
 
@@ -335,11 +337,11 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(boton_bajar, 2, 9, 2, 1,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_bajar.clicked.connect(lambda: [
-            db_connection.bajarPosicionCasillero(
+             self.tablaOrdenDeLlenado.selectedItems() and db_connection.bajarPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
         self.actualizarTablasCasilleros(),
-        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
+        self.tablaOrdenDeLlenado.selectedItems() and self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
         ])
   
         page_casilleros.setLayout(layout_tickets)
