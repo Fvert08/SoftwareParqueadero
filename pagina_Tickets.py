@@ -442,21 +442,36 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 13, 2, 1, 1)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirRegistroMoto.clicked.connect(lambda: [
-            db_connection.registrarMoto(
-            textbox_placa.text(),
-            combobox_cascos.currentText(),
-            combobox_Tiempo.currentText(),
-            self.textbox_casillerosDis.text(),
-        ),
-        
-        textbox_placa.clear(),
-        combobox_cascos.setCurrentIndex(0),
-        combobox_Tiempo.setCurrentIndex(0),
-        db_connection.cambiarEstadoCasillero(self.textbox_casillero.text(),"DISPONIBLE"),
-        self.actualizarTextboxCasilleros(),
-        self.senalActualizarTablasCasilleros.emit(),
-        self.senalActualizarTablaRegistroMotos.emit(),
-    ])
+            # Validaciones
+            QMessageBox.warning(None, "Advertencia", "Debe ingresar una placa.") 
+            if not textbox_placa.text().strip() else 
+            QMessageBox.warning(None, "Advertencia", "Debe seleccionar la opción en la casilla si el tiempo es 'Día'.") 
+            if combobox_Tiempo.currentText() == "Dia" and not checkbox_opcion.isChecked() else [
+
+                # Registrar moto
+                db_connection.registrarMoto(
+                    textbox_placa.text(),
+                    combobox_cascos.currentText(),
+                    combobox_Tiempo.currentText(),
+                    self.textbox_casillerosDis.text(),
+                ),
+
+                # Limpiar campos
+                textbox_placa.clear(),
+                combobox_cascos.setCurrentIndex(0),
+                combobox_Tiempo.setCurrentIndex(0),
+                checkbox_opcion.setChecked(False),  # <-- Aquí se deselecciona la checkbox
+
+                # Cambiar estado del casillero
+                db_connection.cambiarEstadoCasillero(self.textbox_casillerosDis.text(), "DISPONIBLE"),
+
+                # Actualizar UI
+                self.actualizarTextboxCasilleros(),
+                self.senalActualizarTablasCasilleros.emit(),
+                self.senalActualizarTablaRegistroMotos.emit(),
+            ]
+        ])
+
         layout_ticketsIngresoMotos.setRowStretch(8, 1)
         layout_ticketsIngresoMotos.setRowStretch(2, 1)
         layout_ticketsIngresoMotos.setRowStretch(4, 1)
@@ -777,6 +792,9 @@ class PaginaTickets(QWidget):
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_Imprimir.clicked.connect(lambda: [
+         # Validaciones
+            QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
+            if not textbox_Nota.text().strip() or not textbox_Valor.text().strip() else  [
             db_connection.registrarFijo(
             combobox_Tipo.currentText(),
             textbox_Nota.text(),
@@ -788,7 +806,7 @@ class PaginaTickets(QWidget):
         self.textbox_codigoFijos.clear(),
         self.actualizarCodigoFijos(),
         self.senalActualizarTablaRegistroFijos.emit(),
-    ])
+            ]])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)
         layout_ticketsIngresoFijo.setRowStretch(2, 1)
@@ -1056,7 +1074,8 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresarMensualidad.addWidget(boton_imprimir,3, 0, 2, 7,alignment=Qt.AlignHCenter |Qt.AlignCenter)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
-            db_connection.registrarMensualidad(
+             QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
+            if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else  [db_connection.registrarMensualidad(
             textbox_Placa.text(),
             textbox_Nombre.text(),
             textbox_Telefono.text(),
@@ -1066,7 +1085,7 @@ class PaginaTickets(QWidget):
         textbox_Telefono.clear(),
         self.senalActualizarTablaRegistroMensualidades.emit(),#Se emite la señal para actualizar la tabla de mensualidades
         self.actualizarMensualidadesVigentes()
-    ])
+    ]])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresarMensualidad.setRowStretch(0, 0)
         layout_ticketsIngresarMensualidad.setRowStretch(1, 1)
