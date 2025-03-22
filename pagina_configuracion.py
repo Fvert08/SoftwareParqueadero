@@ -353,6 +353,7 @@ class PaginaConfiguracion(QWidget):
         textbox_UsuarioActual = QLineEdit()
         textbox_UsuarioActual.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_UsuarioActual.setFixedWidth(180)
+        textbox_UsuarioActual.setReadOnly(True)
         layout_Conexion.addWidget(textbox_UsuarioActual, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignBottom)
 
         titulo_EstadoActual= QLabel('ESTADO ACTUAL')
@@ -362,6 +363,7 @@ class PaginaConfiguracion(QWidget):
         textbox_EstadoActual = QLineEdit()
         textbox_EstadoActual.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
         textbox_EstadoActual.setFixedWidth(180)
+        textbox_EstadoActual.setReadOnly(True)
         layout_Conexion.addWidget(textbox_EstadoActual, 6, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
         #Fila-Tamaño
         layout_Conexion.setRowStretch(0, 0)
@@ -474,6 +476,7 @@ class PaginaConfiguracion(QWidget):
         textbox_PCActual = QLineEdit()
         textbox_PCActual.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_PCActual.setFixedWidth(50)
+        textbox_PCActual.setReadOnly(True)
         layout_PC.addWidget(textbox_PCActual, 6, 0, 1, 2, alignment=Qt.AlignBottom | Qt.AlignRight)
         #Parte derecha de la Tabla 
         titulo_ID= QLabel('ID')
@@ -627,6 +630,7 @@ class PaginaConfiguracion(QWidget):
         self.textboxEstadoActualSuscripcion = QLineEdit()
         self.textboxEstadoActualSuscripcion.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
         self.textboxEstadoActualSuscripcion.setFixedWidth(180)
+        self.textboxEstadoActualSuscripcion.setReadOnly(True)
         layout_Suscripcion.addWidget(self.textboxEstadoActualSuscripcion, 4, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
 
 
@@ -637,6 +641,7 @@ class PaginaConfiguracion(QWidget):
         self.textboxDiasRestantesSuscripcion = QLineEdit()
         self.textboxDiasRestantesSuscripcion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxDiasRestantesSuscripcion.setFixedWidth(180)
+        self.textboxDiasRestantesSuscripcion.setReadOnly(True)
         layout_Suscripcion.addWidget(self.textboxDiasRestantesSuscripcion, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
         self.actualizarTextboxesSuscripcion() #Actualizar etxboxes
         #Fila-Tamaño
