@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5.QtCore import Qt,QSize
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
@@ -442,21 +442,36 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 13, 2, 1, 1)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirRegistroMoto.clicked.connect(lambda: [
-            db_connection.registrarMoto(
-            textbox_placa.text(),
-            combobox_cascos.currentText(),
-            combobox_Tiempo.currentText(),
-            self.textbox_casillerosDis.text(),
-        ),
-        
-        textbox_placa.clear(),
-        combobox_cascos.setCurrentIndex(0),
-        combobox_Tiempo.setCurrentIndex(0),
-        db_connection.cambiarEstadoCasillero(self.textbox_casillero.text(),"DISPONIBLE"),
-        self.actualizarTextboxCasilleros(),
-        self.senalActualizarTablasCasilleros.emit(),
-        self.senalActualizarTablaRegistroMotos.emit(),
-    ])
+            # Validaciones
+            QMessageBox.warning(None, "Advertencia", "Debe ingresar una placa.") 
+            if not textbox_placa.text().strip() else 
+            QMessageBox.warning(None, "Advertencia", "Debe seleccionar la opción en la casilla si el tiempo es 'Día'.") 
+            if combobox_Tiempo.currentText() == "Dia" and not checkbox_opcion.isChecked() else [
+
+                # Registrar moto
+                db_connection.registrarMoto(
+                    textbox_placa.text(),
+                    combobox_cascos.currentText(),
+                    combobox_Tiempo.currentText(),
+                    self.textbox_casillerosDis.text(),
+                ),
+
+                # Limpiar campos
+                textbox_placa.clear(),
+                combobox_cascos.setCurrentIndex(0),
+                combobox_Tiempo.setCurrentIndex(0),
+                checkbox_opcion.setChecked(False),  # <-- Aquí se deselecciona la checkbox
+
+                # Cambiar estado del casillero
+                db_connection.cambiarEstadoCasillero(self.textbox_casillerosDis.text(), "DISPONIBLE"),
+
+                # Actualizar UI
+                self.actualizarTextboxCasilleros(),
+                self.senalActualizarTablasCasilleros.emit(),
+                self.senalActualizarTablaRegistroMotos.emit(),
+            ]
+        ])
+
         layout_ticketsIngresoMotos.setRowStretch(8, 1)
         layout_ticketsIngresoMotos.setRowStretch(2, 1)
         layout_ticketsIngresoMotos.setRowStretch(4, 1)
@@ -498,6 +513,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoSacarMoto = QLineEdit()
         self.textboxCodigoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoSacarMoto.setFixedWidth(200)
+        self.textboxCodigoSacarMoto.setValidator(QIntValidator())
         layout_ticketsSalidaMotos.addWidget(self.textboxCodigoSacarMoto, 1, 3, 1, 1, alignment=Qt.AlignCenter | Qt.AlignLeft)
         #-----
         # Crear el label "Placa" y la textbox
@@ -508,6 +524,7 @@ class PaginaTickets(QWidget):
         self.textboxPlacaSacarMoto = QLineEdit()
         self.textboxPlacaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxPlacaSacarMoto.setFixedWidth(200)
+        self.textboxPlacaSacarMoto.setValidator(QIntValidator()) # Valida que solo pueda ingresar enteros 
         layout_ticketsSalidaMotos.addWidget(self.textboxPlacaSacarMoto, 2, 3, 1, 1, alignment=Qt.AlignTop| Qt.AlignLeft)
         #----
         # Crea un boton para buscar
@@ -713,50 +730,47 @@ class PaginaTickets(QWidget):
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_ticketsIngresoFijo.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        layout_ticketsIngresoFijo.addWidget(linea_horizontal1, 1, 0, 1, 7)
     #---Fila 1
         # Crear el label "Codigo" y la textbox
         label_codigo = QLabel('Codigo')
         label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoFijo.addWidget(label_codigo, 1, 2, 1, 1, alignment=Qt.AlignCenter)
-        # Text box Codigo
+        layout_ticketsIngresoFijo.addWidget(label_codigo, 2, 2, 1, 1)
+        # Text box Codigo 
         self.textbox_codigoFijos = QLineEdit()
         self.textbox_codigoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textbox_codigoFijos.setFixedWidth(240)
         self.textbox_codigoFijos.setReadOnly(True)
-        layout_ticketsIngresoFijo.addWidget(self.textbox_codigoFijos, 1, 3, 1, 1, alignment=Qt.AlignCenter)
+        layout_ticketsIngresoFijo.addWidget(self.textbox_codigoFijos, 2, 3, 1, 1, alignment=Qt.AlignCenter)
         self.actualizarCodigoFijos()
     #---Fila 2
         # Crear el label "Tipo" y la textbox
         label_tipo = QLabel('Tipo')
         label_tipo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoFijo.addWidget(label_tipo, 2, 2, 1, 1, alignment=Qt.AlignCenter)
+        layout_ticketsIngresoFijo.addWidget(label_tipo, 3, 2, 1, 1, alignment=Qt.AlignCenter)
         # combobox box Tipo
         combobox_Tipo = QComboBox()
         combobox_Tipo.addItems(['Puesto', 'Carretilla', 'Otro'])
-        combobox_Tipo.setFixedWidth(240)
         combobox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
-        layout_ticketsIngresoFijo.addWidget(combobox_Tipo, 2, 3, 1, 1, alignment=Qt.AlignCenter)
+        layout_ticketsIngresoFijo.addWidget(combobox_Tipo, 3, 3, 1, 1, alignment=Qt.AlignCenter)
     #---Fila 3
         # Crear el label "Nota" y la textbox
         label_Nota = QLabel('Nota')
         label_Nota.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoFijo.addWidget(label_Nota, 3, 2, 1, 1, alignment=Qt.AlignCenter)
+        layout_ticketsIngresoFijo.addWidget(label_Nota, 4, 2, 1, 1, alignment=Qt.AlignCenter)
         # Text box Codigo
         textbox_Nota = QLineEdit()
         textbox_Nota.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Nota.setFixedWidth(240)
-        layout_ticketsIngresoFijo.addWidget(textbox_Nota, 3, 3, 1, 1, alignment=Qt.AlignCenter)
+        layout_ticketsIngresoFijo.addWidget(textbox_Nota, 4, 3, 1, 1, alignment=Qt.AlignCenter)
     #---Fila 4
         # Crear el label "Valor" y la textbox
         label_Valor = QLabel('Valor')
         label_Valor.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsIngresoFijo.addWidget(label_Valor, 4, 2, 1, 1, alignment=Qt.AlignCenter)
+        layout_ticketsIngresoFijo.addWidget(label_Valor, 5, 2, 1, 1, alignment=Qt.AlignCenter)
         # Text box Codigo
         textbox_Valor = QLineEdit()
         textbox_Valor.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Valor.setFixedWidth(240)
-        layout_ticketsIngresoFijo.addWidget(textbox_Valor, 4, 3, 1, 1, alignment=Qt.AlignCenter)
+        textbox_Valor.setValidator(QIntValidator()) # Valida que solo pueda ingresar enteros 
+        layout_ticketsIngresoFijo.addWidget(textbox_Valor, 5, 3, 1, 1, alignment=Qt.AlignCenter)
     #---Fila 5
         # Boton para imprimir
         boton_Imprimir = QPushButton('Imprimir')
@@ -774,10 +788,13 @@ class PaginaTickets(QWidget):
                 border: 2px solid #555555;
             }
         """)
-        layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 5, 3, 1, 1,
+        layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_Imprimir.clicked.connect(lambda: [
+         # Validaciones
+            QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
+            if not textbox_Nota.text().strip() or not textbox_Valor.text().strip() else  [
             db_connection.registrarFijo(
             combobox_Tipo.currentText(),
             textbox_Nota.text(),
@@ -789,14 +806,14 @@ class PaginaTickets(QWidget):
         self.textbox_codigoFijos.clear(),
         self.actualizarCodigoFijos(),
         self.senalActualizarTablaRegistroFijos.emit(),
-    ])
+            ]])
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)
         layout_ticketsIngresoFijo.setRowStretch(2, 1)
         layout_ticketsIngresoFijo.setRowStretch(3, 1)
         layout_ticketsIngresoFijo.setRowStretch(4, 1)
         layout_ticketsIngresoFijo.setRowStretch(5, 1)
-
+        layout_ticketsIngresoFijo.setRowStretch(6, 1)
         #Se agrega el layout a la pagina
         page_ticketsIngresoFijo.setLayout(layout_ticketsIngresoFijo)
         #Se agrega al stack
@@ -823,13 +840,13 @@ class PaginaTickets(QWidget):
     #---Buscar
         # Crear el label "Codigo" y la textbox
         label_codigo = QLabel('Codigo')
-        label_codigo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_codigo, 1, 1, 1, 2, alignment=Qt.AlignCenter)
+        label_codigo.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_codigo, 1, 1, 2, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         # Text box Codigo
         self.textboxCodigoFijo = QLineEdit()
         self.textboxCodigoFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxCodigoFijo.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(self.textboxCodigoFijo, 1, 2, 1, 2, alignment=Qt.AlignCenter)
+        self.textboxCodigoFijo.setValidator(QIntValidator())
+        layout_ticketsSacarFijo.addWidget(self.textboxCodigoFijo, 1, 2, 2, 2, alignment=Qt.AlignCenter)
         # Boton para buscar
         botonBuscarFijos = QPushButton('Buscar')
         botonBuscarFijos.setStyleSheet("""
@@ -848,91 +865,83 @@ class PaginaTickets(QWidget):
         """)
         botonBuscarFijos.clicked.connect(lambda: [
             self.cargarBusquedaSalidaFijo(),])
-        layout_ticketsSacarFijo.addWidget(botonBuscarFijos, 1, 5, 1, 2,
+        layout_ticketsSacarFijo.addWidget(botonBuscarFijos, 1, 5, 2, 1,
                                 alignment=Qt.AlignCenter)
     #---Mostrar
     #---Fila 1
         # Crear el label "Tipo" y la textbox
         label_Tipo = QLabel('Tipo')
-        label_Tipo.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_Tipo, 3, 1, 1, 2, alignment=Qt.AlignTop)
+        label_Tipo.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_Tipo, 3, 1, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box tipo
         self.textboxTipoFijos = QLineEdit()
         self.textboxTipoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxTipoFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxTipoFijos, 4, 1, 1, 1, alignment=Qt.AlignTop)
         self.textboxTipoFijos.setReadOnly(True)
         # Crear el label "Nota" y la textbox
         label_Nota = QLabel('Nota')
-        label_Nota.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_Nota, 3, 3, 1, 2, alignment=Qt.AlignTop)
+        label_Nota.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_Nota, 3, 3, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box Cascos
         self.textboxNotaFijos = QLineEdit()
         self.textboxNotaFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxNotaFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxNotaFijos, 4, 3, 1, 1, alignment= Qt.AlignTop)
         self.textboxNotaFijos.setReadOnly(True)
      #---Fila 2
         # Crear el label "Fecha ingreso" y la textbox
         label_FIngreso = QLabel('Fecha ingreso')
-        label_FIngreso.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_FIngreso, 5, 1, 1, 2, alignment=Qt.AlignTop)
+        label_FIngreso.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_FIngreso, 5, 1, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box casillero
         self.textboxFIngresoFijos = QLineEdit()
         self.textboxFIngresoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxFIngresoFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxFIngresoFijos, 6, 1, 1, 1, alignment=Qt.AlignTop)
         self.textboxFIngresoFijos.setReadOnly(True)
         # Crear el label "Hora ingreso" y la textbox
         label_HIngreso = QLabel('Hora ingreso')
-        label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_HIngreso, 5, 3, 1, 2, alignment=Qt.AlignTop)
+        label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_HIngreso, 5, 3, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box Cascos
         self.textboxHIngresoFijos = QLineEdit()
         self.textboxHIngresoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxHIngresoFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxHIngresoFijos, 6, 3, 1, 1, alignment= Qt.AlignTop)
         self.textboxHIngresoFijos.setReadOnly(True)
     #---Fila 3
         # Crear el label "Fecha salida" y la textbox
         label_FSalida= QLabel('Fecha salida')
-        label_FSalida.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_FSalida, 7, 1, 1, 2, alignment=Qt.AlignTop)
+        label_FSalida.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_FSalida, 7, 1, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box casillero
         self.textboxFSalidaFijos = QLineEdit()
         self.textboxFSalidaFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxFSalidaFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxFSalidaFijos, 8, 1, 1, 1, alignment=Qt.AlignTop)
         self.textboxFSalidaFijos.setReadOnly(True)
         # Crear el label "Hora salida" y la textbox
         label_HSalida = QLabel('Hora salida')
-        label_HSalida.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_HSalida, 7, 3, 1, 2, alignment=Qt.AlignTop)
+        label_HSalida.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_HSalida, 7, 3, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box Cascos
         self.textboxHSalidaFijos = QLineEdit()
         self.textboxHSalidaFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxHSalidaFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxHSalidaFijos, 8, 3, 1, 1, alignment= Qt.AlignTop)
         self.textboxHSalidaFijos.setReadOnly(True)
     #---Fila 4
         # Crear el label "Tiempo total" y la textbox
         label_TiempoTotal = QLabel('Tiempo total')
-        label_TiempoTotal.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_TiempoTotal, 9, 1, 1, 2, alignment=Qt.AlignTop)
+        label_TiempoTotal.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_TiempoTotal, 3, 5, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box tiempo total
         self.textboxTiempoTotalFijos = QLineEdit()
         self.textboxTiempoTotalFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxTiempoTotalFijos.setFixedWidth(240)
-        layout_ticketsSacarFijo.addWidget(self.textboxTiempoTotalFijos, 10, 1, 1, 1, alignment= Qt.AlignTop)
+        layout_ticketsSacarFijo.addWidget(self.textboxTiempoTotalFijos, 4, 5, 1, 1, alignment= Qt.AlignTop)
         self.textboxTiempoTotalFijos.setReadOnly(True)
         # Crear el label "Total a pagar" y la textbox
         label_TotalApagar= QLabel('Total a pagar')
-        label_TotalApagar.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_ticketsSacarFijo.addWidget(label_TotalApagar, 5, 5, 1, 2, alignment=Qt.AlignTop)
+        label_TotalApagar.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_ticketsSacarFijo.addWidget(label_TotalApagar, 5, 5, 1, 1, alignment=Qt.AlignBottom| Qt.AlignHCenter)
         # Text box total a pagar
         self.textboxTotalApagarFijos = QLineEdit()
         self.textboxTotalApagarFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxTotalApagarFijos.setFixedWidth(240)
         layout_ticketsSacarFijo.addWidget(self.textboxTotalApagarFijos, 6, 5, 1, 1, alignment=Qt.AlignTop)
         self.textboxTotalApagarFijos.setReadOnly(True)
         # Crea un boton para facturar
@@ -980,8 +989,8 @@ class PaginaTickets(QWidget):
         self.botonfacturarFijos.setDisabled(True)
     ])
 
-        layout_ticketsSacarFijo.addWidget(self.botonfacturarFijos, 7, 5, 1, 2,
-                                alignment=Qt.AlignTop| Qt.AlignCenter)
+        layout_ticketsSacarFijo.addWidget(self.botonfacturarFijos, 7, 5, 1, 1,
+                                alignment=Qt.AlignTop| Qt.AlignHCenter)
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsSacarFijo.setRowStretch(0, 0)
         layout_ticketsSacarFijo.setRowStretch(1, 1)
@@ -992,8 +1001,7 @@ class PaginaTickets(QWidget):
         layout_ticketsSacarFijo.setRowStretch(6, 1)
         layout_ticketsSacarFijo.setRowStretch(7, 1)  
         layout_ticketsSacarFijo.setRowStretch(8, 1)
-        layout_ticketsSacarFijo.setRowStretch(9, 1)
-        layout_ticketsSacarFijo.setRowStretch(10, 1)  
+
         #Se agrega el layout a la pagina
         page_ticketsSacarFijo.setLayout(layout_ticketsSacarFijo)
         #Se agrega al stack
@@ -1046,6 +1054,7 @@ class PaginaTickets(QWidget):
         textbox_Telefono = QLineEdit()
         textbox_Telefono.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_Telefono.setFixedWidth(200)
+        textbox_Telefono.setValidator(QIntValidator())
         layout_ticketsIngresarMensualidad.addWidget(textbox_Telefono, 3, 4, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignTop)
         #Mensualidades Vigentes
         titulo_MensualidadesVigentes = QLabel('Mensualidades\nVigentes')
@@ -1065,7 +1074,8 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresarMensualidad.addWidget(boton_imprimir,3, 0, 2, 7,alignment=Qt.AlignHCenter |Qt.AlignCenter)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
-            db_connection.registrarMensualidad(
+             QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
+            if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else  [db_connection.registrarMensualidad(
             textbox_Placa.text(),
             textbox_Nombre.text(),
             textbox_Telefono.text(),
@@ -1075,7 +1085,7 @@ class PaginaTickets(QWidget):
         textbox_Telefono.clear(),
         self.senalActualizarTablaRegistroMensualidades.emit(),#Se emite la señal para actualizar la tabla de mensualidades
         self.actualizarMensualidadesVigentes()
-    ])
+    ]])
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresarMensualidad.setRowStretch(0, 0)
         layout_ticketsIngresarMensualidad.setRowStretch(1, 1)
@@ -1116,6 +1126,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoRenovarMensualidad = QLineEdit()
         self.textboxCodigoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoRenovarMensualidad.setFixedWidth(150)
+        self.textboxCodigoRenovarMensualidad.setValidator(QIntValidator())
         layout_ticketsRenovarMensualidad.addWidget(self.textboxCodigoRenovarMensualidad, 1, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignBottom)
         #Placa
         titulo_Placa = QLabel('PLACA')

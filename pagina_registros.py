@@ -330,7 +330,7 @@ class PaginaRegistros(QWidget):
         boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;  border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
-            generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
+            self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
@@ -347,14 +347,14 @@ class PaginaRegistros(QWidget):
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
-            db_connection.editarRegistroMoto(
+             self.tablaRegistrosMotos.selectedItems() and db_connection.editarRegistroMoto(
             int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()), 
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text())
         ),
         self.actualizarTablaRegistroMotos(),
-        generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
+         self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
@@ -475,7 +475,7 @@ class PaginaRegistros(QWidget):
         boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
-            generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
+             self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 3).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 4).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
@@ -493,14 +493,14 @@ class PaginaRegistros(QWidget):
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
-            db_connection.editarRegistroFijo(
+             self.tablaRegistrosFijos.selectedItems() and db_connection.editarRegistroFijo(
             int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()), 
             str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
             str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 2).text()),
             str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 7).text())
         ),
         self.actualizarTablaFijos(),
-        generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
+         self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 3).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 4).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
@@ -619,7 +619,7 @@ class PaginaRegistros(QWidget):
         boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaMensualidades.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
-            generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+            self.tabla_Mensualidades.selectedItems() and generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 4).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 5).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
@@ -631,14 +631,14 @@ class PaginaRegistros(QWidget):
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaMensualidades.addWidget(boton_GuardarEdicion , 8, 6, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
-            db_connection.editarRegistroMensualidad(
+             self.tabla_Mensualidades.selectedItems() and db_connection.editarRegistroMensualidad(
             int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text())
         ),
         self.actualizarTablaMensualidades(),
-        generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+         self.tabla_Mensualidades.selectedItems() and generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 4).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 5).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
@@ -652,7 +652,7 @@ class PaginaRegistros(QWidget):
         boton_Eliminar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaMensualidades.addWidget(boton_Eliminar, 8, 7, 1, 1)
         boton_Eliminar.clicked.connect(lambda: [
-            db_connection.eliminarMensualidad(
+            self.tablaRegistrosFijos.currentRow() != -1 and db_connection.eliminarMensualidad(
             int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
         ),
         self.actualizarTablaMensualidades()

@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame, QStackedWidget, QComboBox, QLineEdit, QGridLayout, QCheckBox, QTableWidget, QHBoxLayout, QTableWidgetItem, QHeaderView
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtCore import QDate, Qt
 import sys
@@ -243,6 +244,7 @@ class PaginaConfiguracion(QWidget):
         textbox_ID = QLineEdit()
         textbox_ID.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_ID.setFixedWidth(250)
+        textbox_ID.setValidator(QIntValidator())
         layout_Usuarios.addWidget(textbox_ID, 2, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_Usuario = QLabel('USUARIO')
@@ -480,6 +482,7 @@ class PaginaConfiguracion(QWidget):
         textbox_ID = QLineEdit()
         textbox_ID.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_ID.setFixedWidth(220)
+        textbox_ID.setValidator(QIntValidator())
         layout_PC.addWidget(textbox_ID, 2, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignBottom)
         
         titulo_Descripcion= QLabel('DESCRIPCION')
