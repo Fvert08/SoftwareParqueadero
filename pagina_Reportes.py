@@ -79,7 +79,8 @@ class PaginaReportes(QWidget):
             item_DineroTotalMotosFijos = QTableWidgetItem(str(registro['totalFijos']))
             item_DineroTotalMotosFijos.setTextAlignment(Qt.AlignCenter)
             self.tabla_registros.setItem(row_idx, 13, item_DineroTotalMotosFijos)
-
+    def actualizarFechaHasta(self, date=None):
+        self.date_hasta.setMinimumDate( self.date_desde.date())
     def initUI(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -198,33 +199,35 @@ class PaginaReportes(QWidget):
         label_desde.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_reportes.addWidget(label_desde, 6, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
        # Date desde
-        date_desde = QDateEdit()
-        date_desde.setFixedWidth(240)
-        date_desde.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 40px;")
-        date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
-        date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
-        date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
-        date_desde.setDisplayFormat("yyyy-MM-dd")
-        calendarDesde_widget = date_desde.calendarWidget()
+        self.date_desde = QDateEdit()
+        self.date_desde.setFixedWidth(240)
+        self.date_desde.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 40px;")
+        self.date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
+        self.date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
+        self.date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        self.date_desde.setDisplayFormat("yyyy-MM-dd")
+        calendarDesde_widget = self.date_desde.calendarWidget()
         calendarDesde_widget.setStyleSheet("font-size: 20px;") 
         calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
-        layout_reportes.addWidget(date_desde, 7, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_reportes.addWidget(self.date_desde, 7, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        self.date_desde.dateChanged.connect(self.actualizarFechaHasta)
         # Crear el label "Hasta" y la textbox
         label_hasta = QLabel('Hasta')
         label_hasta.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_reportes.addWidget(label_hasta, 8, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
        # Date hasta
-        date_hasta = QDateEdit()
-        date_hasta.setFixedWidth(240)
-        date_hasta.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 40px;")
-        date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
-        date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
-        date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
-        date_hasta.setDisplayFormat("yyyy-MM-dd")
-        calendarhasta_widget = date_hasta.calendarWidget()
+        self.date_hasta = QDateEdit()
+        self.date_hasta.setFixedWidth(240)
+        self.date_hasta.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 40px;")
+        self.date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
+        self.date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
+        self.date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        self.date_hasta.setMinimumDate(self.date_desde.date())
+        self.date_hasta.setDisplayFormat("yyyy-MM-dd")
+        calendarhasta_widget = self.date_hasta.calendarWidget()
         calendarhasta_widget.setStyleSheet("font-size: 20px;") 
         calendarhasta_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
-        layout_reportes.addWidget(date_hasta, 9, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_reportes.addWidget(self.date_hasta, 9, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
         page_reportes.setLayout(layout_reportes)
         self.stacked_widget.addWidget(page_reportes)
 
@@ -237,12 +240,12 @@ class PaginaReportes(QWidget):
          # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
             db_connection.consultarReporte(
-                date_desde.text(),
-                date_hasta.text(),
+                self.date_desde.text(),
+                self.date_hasta.text(),
                 "ORIGINAL"
         ),
-            date_desde.setMaximumDate(QDate.currentDate()),
-            date_hasta.setDate(QDate.currentDate()),
+            self.date_desde.setMaximumDate(QDate.currentDate()),
+            self.date_hasta.setDate(QDate.currentDate()),
             self.actualizarTablaRegistros()
 
         #self.senalActualizarTablaRegistroMotos.emit()
