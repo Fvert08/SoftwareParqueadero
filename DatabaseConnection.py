@@ -194,9 +194,9 @@ class DatabaseConnection:
         datosBusquedarenovarMensualidad= db_connection.buscarMensualidadPorId(idRegistroMensualidad)
         generarTicketRenovarMensualidad(str(datosBusquedarenovarMensualidad['id']),fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
-    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono):
-        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s WHERE id = %s"
-        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,idRegistro)
+    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono,nuevaFechaRenovacion):
+        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s, fechaRenovacion=%s WHERE id = %s"
+        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,nuevaFechaRenovacion, idRegistro)
         self.execute_query(query, params)
 
 
