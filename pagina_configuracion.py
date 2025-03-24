@@ -396,11 +396,11 @@ class PaginaConfiguracion(QWidget):
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_PC.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        layout_PC.addWidget(linea_horizontal1, 1, 0, 1, 7)
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcAgregados= QLabel('PC´S AGREGADOS')
         titulo_PcAgregados.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_PC.addWidget(titulo_PcAgregados, 1, 0, 1, 4, alignment=Qt.AlignBottom | Qt.AlignCenter)
+        layout_PC.addWidget(titulo_PcAgregados, 2, 0, 1, 4, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         #Tabla
         self.tabla_PCAgregados = QTableWidget(self)
         self.tabla_PCAgregados.setColumnCount(3)  # Definir el número de columnas
@@ -454,7 +454,7 @@ class PaginaConfiguracion(QWidget):
         header = self.tabla_PCAgregados.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_PC.addWidget(self.tabla_PCAgregados, 2, 0, 4, 4)
+        layout_PC.addWidget(self.tabla_PCAgregados, 3, 0, 4, 4)
 
         # Rellenar la tabla
         self.actualizarTablaPCAgregados()
@@ -462,43 +462,42 @@ class PaginaConfiguracion(QWidget):
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
         boton_editar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_PC.addWidget(boton_editar , 6, 0, 1, 2,
-                                alignment=Qt.AlignTop| Qt.AlignCenter)
+        layout_PC.addWidget(boton_editar , 7, 0, 1, 2,
+                                alignment=Qt.AlignHCenter| Qt.AlignCenter)
         
         boton_eliminar = QPushButton('ELIMINAR')
         boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_PC.addWidget(boton_eliminar, 6, 2, 1, 2,
-                                alignment=Qt.AlignTop| Qt.AlignCenter)
+        layout_PC.addWidget(boton_eliminar, 7, 2, 1, 2,
+                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcActual= QLabel('PC ACTUAL')
         titulo_PcActual.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_PC.addWidget(titulo_PcActual, 6, 0, 1, 2, alignment=Qt.AlignBottom | Qt.AlignLeft)
+        layout_PC.addWidget(titulo_PcActual, 8, 0, 1, 1, alignment=Qt.AlignCenter| Qt.AlignLeft)
         textbox_PCActual = QLineEdit()
         textbox_PCActual.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_PCActual.setFixedWidth(50)
         textbox_PCActual.setReadOnly(True)
-        layout_PC.addWidget(textbox_PCActual, 6, 0, 1, 2, alignment=Qt.AlignBottom | Qt.AlignRight)
+        layout_PC.addWidget(textbox_PCActual, 8, 1, 1, 1, alignment=Qt.AlignCenter| Qt.AlignRight)
         #Parte derecha de la Tabla 
         titulo_ID= QLabel('ID')
         titulo_ID.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_PC.addWidget(titulo_ID, 2, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
+        layout_PC.addWidget(titulo_ID, 3, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
         textbox_ID = QLineEdit()
         textbox_ID.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_ID.setFixedWidth(220)
         textbox_ID.setValidator(QIntValidator())
-        layout_PC.addWidget(textbox_ID, 2, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignBottom)
+        layout_PC.addWidget(textbox_ID, 4, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
         
         titulo_Descripcion= QLabel('DESCRIPCION')
         titulo_Descripcion.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_PC.addWidget(titulo_Descripcion,3, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
+        layout_PC.addWidget(titulo_Descripcion,5, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
+
         textbox_Descripcion = QLineEdit()
         textbox_Descripcion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Descripcion.setFixedWidth(220)
-        layout_PC.addWidget(textbox_Descripcion, 3, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignBottom)
+        layout_PC.addWidget(textbox_Descripcion, 6, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
 
         boton_Guardar = QPushButton('Guardar')
         boton_Guardar.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
-        layout_PC.addWidget(boton_Guardar, 4, 4, 1, 3,
+        layout_PC.addWidget(boton_Guardar, 7, 4, 1, 3,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         boton_Guardar.clicked.connect(lambda: [
             db_connection.registrarPC(
@@ -511,19 +510,19 @@ class PaginaConfiguracion(QWidget):
         self.actualizarTablaPCAgregados()
     ])
         #Cambiar Pc
-        titulo_CambiarPC= QLabel('CAMBIAR PC ACTUAL')
+        titulo_CambiarPC= QLabel('CAMBIAR PC\nACTUAL')
+        titulo_CambiarPC.setAlignment(Qt.AlignCenter)
         titulo_CambiarPC.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_PC.addWidget(titulo_CambiarPC,5, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
+        layout_PC.addWidget(titulo_CambiarPC,8, 2, 1, 3, alignment=Qt.AlignCenter | Qt.AlignRight)
 
         self.combobox_pc = QComboBox()
-        self.combobox_pc.setFixedWidth(50)
-        self.combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 35px;")
-        layout_PC.addWidget(self.combobox_pc,5, 4, 2, 3, alignment=Qt.AlignCenter|Qt.AlignHCenter)
+        self.combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
+        layout_PC.addWidget(self.combobox_pc,8,5, 1, 1, alignment=Qt.AlignCenter|Qt.AlignHCenter)
         self.actualizarComboboxpcs()
         boton_Cambiar = QPushButton('CAMBIAR')
         boton_Cambiar.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
-        layout_PC.addWidget(boton_Cambiar, 5, 4, 2, 3,
-                                alignment=Qt.AlignBottom| Qt.AlignCenter)
+        layout_PC.addWidget(boton_Cambiar, 8, 6, 1, 1,
+                                alignment=Qt.AlignHCenter| Qt.AlignCenter)
         #Se guarda la edición
         boton_Cambiar.clicked.connect(lambda: [
         escribir_archivo('config','PcActual.txt', self.combobox_pc.currentText()),
@@ -537,7 +536,8 @@ class PaginaConfiguracion(QWidget):
         layout_PC.setRowStretch(4, 1)
         layout_PC.setRowStretch(5, 1)
         layout_PC.setRowStretch(6, 1)
-
+        layout_PC.setRowStretch(7, 1)
+        layout_PC.setRowStretch(8, 1)
         #Se agrega el layout a la pagina
         page_PC.setLayout(layout_PC)
         #se agrega la pagina al stack
