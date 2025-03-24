@@ -600,20 +600,19 @@ class PaginaConfiguracion(QWidget):
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_Suscripcion.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        layout_Suscripcion.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_Codigo = QLabel('CÓDIGO')
         titulo_Codigo .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Suscripcion.addWidget(titulo_Codigo  , 1, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
+        layout_Suscripcion.addWidget(titulo_Codigo  , 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         
         textbox_Codigo = QLineEdit()
         textbox_Codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Codigo.setFixedWidth(250)
-        layout_Suscripcion.addWidget(textbox_Codigo, 1, 0, 2, 7, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        layout_Suscripcion.addWidget(textbox_Codigo,3, 0, 2, 7, alignment=Qt.AlignHCenter |Qt.AlignTop)
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
         boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
-        layout_Suscripcion.addWidget(boton_validar,2, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignBottom)
+        layout_Suscripcion.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
          # Conectar el botón de imprimir a la función registrarMoto
         boton_validar.clicked.connect(lambda: [
             self.verificarCodigoMensualidad(
@@ -625,24 +624,22 @@ class PaginaConfiguracion(QWidget):
 
         titulo_EstadoActual= QLabel('ESTADO ACTUAL')
         titulo_EstadoActual .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Suscripcion.addWidget(titulo_EstadoActual  , 4, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignRight)
+        layout_Suscripcion.addWidget(titulo_EstadoActual  , 6, 3, 1, 1, alignment= Qt.AlignCenter |Qt.AlignCenter)
 
         self.textboxEstadoActualSuscripcion = QLineEdit()
         self.textboxEstadoActualSuscripcion.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxEstadoActualSuscripcion.setFixedWidth(180)
         self.textboxEstadoActualSuscripcion.setReadOnly(True)
-        layout_Suscripcion.addWidget(self.textboxEstadoActualSuscripcion, 4, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
+        layout_Suscripcion.addWidget(self.textboxEstadoActualSuscripcion, 6, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
 
 
         tituloDiasRestantesSuscripción = QLabel('DIAS RESTANTES')
         tituloDiasRestantesSuscripción .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Suscripcion.addWidget(tituloDiasRestantesSuscripción  , 5, 0, 1, 4, alignment= Qt.AlignTop |Qt.AlignRight)
+        layout_Suscripcion.addWidget(tituloDiasRestantesSuscripción  , 7, 3, 1, 1, alignment= Qt.AlignTop |Qt.AlignCenter)
 
         self.textboxDiasRestantesSuscripcion = QLineEdit()
         self.textboxDiasRestantesSuscripcion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxDiasRestantesSuscripcion.setFixedWidth(180)
         self.textboxDiasRestantesSuscripcion.setReadOnly(True)
-        layout_Suscripcion.addWidget(self.textboxDiasRestantesSuscripcion, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
+        layout_Suscripcion.addWidget(self.textboxDiasRestantesSuscripcion, 7, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
         self.actualizarTextboxesSuscripcion() #Actualizar etxboxes
         #Fila-Tamaño
         layout_Suscripcion.setRowStretch(0, 0)
@@ -652,6 +649,8 @@ class PaginaConfiguracion(QWidget):
         layout_Suscripcion.setRowStretch(4, 1)
         layout_Suscripcion.setRowStretch(5, 1)
         layout_Suscripcion.setRowStretch(6, 1)
+        layout_Suscripcion.setRowStretch(7, 1)
+        layout_Suscripcion.setRowStretch(8, 1)
 
         #Se agrega el layout a la pagina
         page_Suscripcion.setLayout(layout_Suscripcion)
