@@ -81,7 +81,7 @@ def generarCodigoEncriptado(palabra, fecha_str, iteraciones):
 
 # Ejemplo de uso
 palabra = "parqueaderola18"
-fecha_str = "2024-04-11"
-iteraciones = 1
+fecha_str = "2025-03-24"
+iteraciones = 24 # dia actual
 codigo_encriptado = generarCodigoEncriptado(palabra, fecha_str, iteraciones)
 print(codigo_encriptado)

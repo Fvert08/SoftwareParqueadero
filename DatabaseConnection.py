@@ -587,7 +587,7 @@ class DatabaseConnection:
     def registrarSuscripcion(self):
             fechaActual = datetime.now().strftime('%Y-%m-%d')
             query = """
-            INSERT INTO Suscripcion (FA)
+            INSERT INTO suscripcion (FA)
             VALUES (%s)
             """
             params = (fechaActual,)
