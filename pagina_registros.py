@@ -101,17 +101,25 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 6, item_hora_ingreso)
 
-            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            # Fecha de salida: Si es None, se pone ""
+            fecha_salida = registro.get('fechaSalida')
+            fecha_salida_str = fecha_salida.strftime('%Y-%m-%d') if isinstance(fecha_salida, (datetime, date)) else (str(fecha_salida) if fecha_salida else "")
+            item_fecha_salida = QTableWidgetItem(fecha_salida_str)
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 7, item_fecha_salida)
 
-            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            # Hora de salida: Si es None, se pone ""
+            hora_salida = registro.get('horaSalida', "")
+            item_hora_salida = QTableWidgetItem(str(hora_salida) if hora_salida else "")
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 8, item_hora_salida)
 
-            item_total = QTableWidgetItem(str(registro.get('Total', '')))
+            # Total: Si es None, se pone ""
+            total = registro.get('Total', "")
+            item_total = QTableWidgetItem(str(total) if total else "")
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
+
 
     def actualizarTablaFijos(self):
          # Crear la instancia de DatabaseConnection
@@ -145,13 +153,19 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 4, item_hora_ingreso)
 
-            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            # Fecha de salida: Si es None, se pone ""
+            fecha_salida = registro.get('fechaSalida')
+            fecha_salida_str = fecha_salida.strftime('%Y-%m-%d') if isinstance(fecha_salida, (datetime, date)) else (str(fecha_salida) if fecha_salida else "")
+            item_fecha_salida = QTableWidgetItem(fecha_salida_str)
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 5, item_fecha_salida)
 
-            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            # Hora de salida: Si es None, se pone ""
+            hora_salida = registro.get('horaSalida', "")
+            item_hora_salida = QTableWidgetItem(str(hora_salida) if hora_salida else "")
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 6, item_hora_salida)
+
 
             item_total = QTableWidgetItem(str(registro.get('Valor', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
