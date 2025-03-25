@@ -355,6 +355,7 @@ class PaginaTickets(QWidget):
         textbox_placa = QLineEdit()
         textbox_placa.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsIngresoMotos.addWidget(textbox_placa, 3, 2, 1, 1,Qt.AlignLeft)
+        textbox_placa.textChanged.connect(lambda: textbox_placa.setText(textbox_placa.text().upper()))
 
         # Crear el label "Cascos" y el combobox
         label_cascos = QLabel('Cascos:')
@@ -412,7 +413,7 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 9, 3, 1, 1)
         # Conectar el botón de imprimir a la función para buscar el siguiente disponible
         boton_cambiarcasillero.clicked.connect(lambda: [
-            self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(1)))
+            self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(leer_archivo('config','PcActual.txt'))))
     ])
         # Crear el label "Casilleros disponibles" y el combobox
         label_casillerosDis = QLabel('Casilleros disponibles:', page_tickets)
@@ -423,7 +424,7 @@ class PaginaTickets(QWidget):
         self.textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textbox_casillerosDis.setReadOnly(True)
         self.textbox_casillerosDis.setFixedWidth(60)
-        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt'))))
         layout_ticketsIngresoMotos.addWidget(self.textbox_casillerosDis, 11, 2, 1, 1,Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
         self.botonImprimirRegistroMoto = QPushButton('Imprimir', page_tickets)
@@ -447,6 +448,8 @@ class PaginaTickets(QWidget):
             # Validaciones
             QMessageBox.warning(None, "Advertencia", "Debe ingresar una placa.") 
             if not textbox_placa.text().strip() else 
+            QMessageBox.warning(None, "Advertencia", "Esta placa aun tiene un registro activo.") 
+            if db_connection.validarPlacaActiva(textbox_placa.text()) else 
             QMessageBox.warning(None, "Advertencia", "Debe seleccionar la opción en la casilla si el tiempo es 'Día'.") 
             if combobox_Tiempo.currentText() == "Dia" and not checkbox_opcion.isChecked() else [
 
@@ -521,11 +524,11 @@ class PaginaTickets(QWidget):
         label_placa = QLabel('Placa:')
         label_placa.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsSalidaMotos.addWidget(label_placa, 3, 1, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
-        # Text box codigo
+        # Text box placa
         self.textboxPlacaSacarMoto = QLineEdit()
         self.textboxPlacaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textboxPlacaSacarMoto.setValidator(QIntValidator()) # Valida que solo pueda ingresar enteros 
         layout_ticketsSalidaMotos.addWidget(self.textboxPlacaSacarMoto, 3, 3, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
+        self.textboxPlacaSacarMoto.textChanged.connect(lambda:  self.textboxPlacaSacarMoto.setText( self.textboxPlacaSacarMoto.text().upper()))
         #----
         # Crea un boton para buscar
         boton_buscar = QPushButton('Buscar')
@@ -977,6 +980,7 @@ class PaginaTickets(QWidget):
         self.textboxTotalApagarFijos.clear(),
         self.textboxHIngresoFijos.clear(),
         self.textboxFSalidaFijos.clear(),
+        self.textboxTiempoTotalFijos.clear(),
         self.senalActualizarTablaRegistroFijos.emit(),
         self.botonfacturarFijos.setDisabled(True)
     ])
@@ -1026,6 +1030,7 @@ class PaginaTickets(QWidget):
         textbox_Placa = QLineEdit()
         textbox_Placa.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsIngresarMensualidad.addWidget(textbox_Placa, 2, 3, 1, 1, alignment=Qt.AlignCenter)
+        textbox_Placa.textChanged.connect(lambda: textbox_Placa.setText(textbox_Placa.text().upper()))
 
         #Nombre
         titulo_Nombre = QLabel('NOMBRE')
@@ -1063,8 +1068,10 @@ class PaginaTickets(QWidget):
         # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
              QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
-            if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else  [
-                db_connection.registrarMensualidad(
+            if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else
+                QMessageBox.warning(None, "Advertencia", "Esta placa ya esta registrada en mensualidades.") 
+            if db_connection.validarPlacaActivaMensualidad(textbox_Placa.text()) else [
+            db_connection.registrarMensualidad(
             textbox_Placa.text(),
             textbox_Nombre.text(),
             textbox_Telefono.text(),
