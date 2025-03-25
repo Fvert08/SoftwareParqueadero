@@ -977,6 +977,7 @@ class PaginaTickets(QWidget):
         self.textboxTotalApagarFijos.clear(),
         self.textboxHIngresoFijos.clear(),
         self.textboxFSalidaFijos.clear(),
+        self.textboxTiempoTotalFijos.clear(),
         self.senalActualizarTablaRegistroFijos.emit(),
         self.botonfacturarFijos.setDisabled(True)
     ])
