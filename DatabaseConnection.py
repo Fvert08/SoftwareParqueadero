@@ -375,6 +375,22 @@ class DatabaseConnection:
             params = ('OCUPADO', idCasillero)
         self.execute_query(query, params)
 
+    def obtenerPlacaPorCasillero(self, casillero):
+        query = """
+        SELECT placa 
+        FROM registrosmoto 
+        WHERE Casillero = %s 
+        AND fechaSalida IS NULL
+        ORDER BY id DESC
+        LIMIT 1 
+        """
+        cursor = self.connection.cursor()
+        cursor.execute(query, (casillero,))
+        resultado = cursor.fetchone()  # Obtiene una sola fila
+        return resultado[0] if resultado else None  # Retorna la placa si existe, o None si no hay coincidencias
+
+
+
     def cambiarPcCasillero(self, idCasillero, nuevoPc):
         query = "UPDATE Casillero SET Pc = %s WHERE id = %s"
         params = (nuevoPc, idCasillero)
