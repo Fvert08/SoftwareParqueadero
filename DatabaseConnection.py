@@ -393,6 +393,16 @@ class DatabaseConnection:
         else:
             print("No se puede eliminar un casillero ocupado.")
 
+    def validarPlacaActiva(self, placa):
+        query = "SELECT COUNT(*) as count FROM registrosmoto WHERE placa = %s AND fechaSalida IS NULL"
+        result = self.executeQueryReturnAll(query, (placa,))
+        return result[0]['count'] > 0 if result else False  # Retorna True si hay al menos un registro
+    
+    def validarPlacaActivaMensualidad(self, placa):
+        query = "SELECT COUNT(*) as count FROM mensualidades WHERE Placa = %s"
+        result = self.executeQueryReturnAll(query, (placa,))
+        return result[0]['count'] > 0 if result else False  # Retorna True si hay al menos un registro
+    
     def eliminarMensualidad(self, idMensualidad): 
         query = "DELETE FROM Mensualidades WHERE id = %s"
         params = (idMensualidad,)
