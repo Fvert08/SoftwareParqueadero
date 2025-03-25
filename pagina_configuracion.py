@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
 from leerTxt import escribir_archivo
+from leerTxt import leer_archivo
 
 class PaginaConfiguracion(QWidget):
     senalActualizarTextboxesSuscripcion = pyqtSignal()
@@ -464,11 +465,40 @@ class PaginaConfiguracion(QWidget):
         boton_editar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_PC.addWidget(boton_editar , 7, 0, 1, 2,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
+        boton_editar.clicked.connect(lambda: [
+            # Validaciones
+            QMessageBox.warning(None, "Advertencia", "No hay registros seleccionados.") 
+            if not self.tabla_PCAgregados.selectedItems() else 
+            QMessageBox.warning(None, "Advertencia", "Este pc tiene casilleros asociados.") 
+            if str(self.tabla_PCAgregados.item(self.tabla_PCAgregados.currentRow(), 2).text()) != "0" else 
+            [
+                # Registrar moto
+                db_connection.editarRegistroPC(
+                    str(self.tabla_PCAgregados.item(self.tabla_PCAgregados.currentRow(), 0).text()),
+                    str(self.tabla_PCAgregados.item(self.tabla_PCAgregados.currentRow(), 1).text()),
+                ),
+                # Actualizar la tabla
+            ],self.actualizarTablaPCAgregados()
+        ])
         
         boton_eliminar = QPushButton('ELIMINAR')
         boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_PC.addWidget(boton_eliminar, 7, 2, 1, 2,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
+        boton_eliminar.clicked.connect(lambda: [
+            # Validaciones
+            QMessageBox.warning(None, "Advertencia", "No hay registros seleccionados.") 
+            if not self.tabla_PCAgregados.selectedItems() else 
+            QMessageBox.warning(None, "Advertencia", "Este pc tiene casilleros asociados.") 
+            if str(self.tabla_PCAgregados.item(self.tabla_PCAgregados.currentRow(), 2).text()) != "0" else 
+            [
+                # Registrar moto
+                db_connection.eliminarPc(
+                    str(self.tabla_PCAgregados.item(self.tabla_PCAgregados.currentRow(), 0).text()),
+                ),
+                # Actualizar la tabla
+            ],self.actualizarTablaPCAgregados()
+        ])
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcActual= QLabel('PC ACTUAL')
         titulo_PcActual.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
@@ -477,6 +507,8 @@ class PaginaConfiguracion(QWidget):
         textbox_PCActual.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         textbox_PCActual.setFixedWidth(50)
         textbox_PCActual.setReadOnly(True)
+        textbox_PCActual.setText(leer_archivo('config','PcActual.txt'))
+        
         layout_PC.addWidget(textbox_PCActual, 8, 1, 1, 1, alignment=Qt.AlignCenter| Qt.AlignRight)
         #Parte derecha de la Tabla 
         titulo_ID= QLabel('ID')
@@ -526,7 +558,8 @@ class PaginaConfiguracion(QWidget):
         #Se guarda la edición
         boton_Cambiar.clicked.connect(lambda: [
         escribir_archivo('config','PcActual.txt', self.combobox_pc.currentText()),
-        self.actualizarComboboxpcs()
+        self.actualizarComboboxpcs(),
+        textbox_PCActual.setText(leer_archivo('config','PcActual.txt'))
     ])
         #Fila-Tamaño
         layout_PC.setRowStretch(0, 0)

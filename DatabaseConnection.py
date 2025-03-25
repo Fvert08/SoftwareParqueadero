@@ -201,6 +201,11 @@ class DatabaseConnection:
         params = (nuevaPlaca, nuevoNombre,nuevoTelefono,nuevaFechaRenovacion, idRegistro)
         self.execute_query(query, params)
 
+    def editarRegistroPC(self, idRegistro, nuevadescrpcion):
+        query = "UPDATE regpc SET id = %s, Descripcion = %s WHERE id = %s"
+        params = (idRegistro, nuevadescrpcion,idRegistro)
+        self.execute_query(query, params)
+
 
     def editarRegistroFijo(self, idRegistro, nuevaTipo,nuevaNota,nuevoValor):
         query = "UPDATE Fijos SET Tipo = %s, Nota = %s, Valor= %s WHERE id = %s"
@@ -406,6 +411,10 @@ class DatabaseConnection:
     def eliminarMensualidad(self, idMensualidad): 
         query = "DELETE FROM Mensualidades WHERE id = %s"
         params = (idMensualidad,)
+        self.execute_query(query, params)
+    def eliminarPc(self, idPc): 
+        query = "DELETE FROM regpc WHERE id = %s"
+        params = (idPc,)
         self.execute_query(query, params)
 
     def eliminarRegistroMoto (self, idRegistro,fechaSalida):

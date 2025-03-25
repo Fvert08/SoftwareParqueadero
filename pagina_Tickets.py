@@ -413,7 +413,7 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 9, 3, 1, 1)
         # Conectar el botón de imprimir a la función para buscar el siguiente disponible
         boton_cambiarcasillero.clicked.connect(lambda: [
-            self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(1)))
+            self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(leer_archivo('config','PcActual.txt'))))
     ])
         # Crear el label "Casilleros disponibles" y el combobox
         label_casillerosDis = QLabel('Casilleros disponibles:', page_tickets)
@@ -424,7 +424,7 @@ class PaginaTickets(QWidget):
         self.textbox_casillerosDis.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textbox_casillerosDis.setReadOnly(True)
         self.textbox_casillerosDis.setFixedWidth(60)
-        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(1)))
+        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt'))))
         layout_ticketsIngresoMotos.addWidget(self.textbox_casillerosDis, 11, 2, 1, 1,Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
         # Crea un boton para Imprimir
         self.botonImprimirRegistroMoto = QPushButton('Imprimir', page_tickets)
