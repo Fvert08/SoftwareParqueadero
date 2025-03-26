@@ -119,6 +119,12 @@ class PaginaRegistros(QWidget):
             item_total = QTableWidgetItem(str(total) if total else "")
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
+        # Bloquear columnas que no se pueden editar
+        for row in range(self.tablaRegistrosMotos.rowCount()):
+            for col in [0, 1, 5, 6, 7, 8, 9]:  # Columnas a bloquear
+                item = self.tablaRegistrosMotos.item(row, col)
+                if item:  
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
 
     def actualizarTablaFijos(self):
@@ -166,10 +172,16 @@ class PaginaRegistros(QWidget):
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 6, item_hora_salida)
 
-
             item_total = QTableWidgetItem(str(registro.get('Valor', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 7, item_total)
+        # Bloquear columnas que no se pueden editar
+        for row in range(self.tablaRegistrosMotos.rowCount()):
+            for col in [0, 1, 3, 4, 5, 6, 7]:  # Columnas a bloquear
+                item = self.tablaRegistrosFijos.item(row, col)
+                if item:  
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
 
     def initUI(self):
        # Crear el widget de la página de registros

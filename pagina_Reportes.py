@@ -202,12 +202,14 @@ class PaginaReportes(QWidget):
         self.date_desde = QDateEdit()
         self.date_desde.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
+        self.date_desde.setFocusPolicy(Qt.NoFocus)  # Deshabilitar el foco
         self.date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
         self.date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
         self.date_desde.setDisplayFormat("yyyy-MM-dd")
         calendarDesde_widget = self.date_desde.calendarWidget()
         calendarDesde_widget.setStyleSheet("font-size: 30px;") 
         calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 30px; alternate-background-color: #131216;")
+        
         layout_reportes.addWidget(self.date_desde, 10, 1, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         self.date_desde.dateChanged.connect(self.actualizarFechaHasta)
         # Crear el label "Hasta" y la textbox
@@ -218,6 +220,7 @@ class PaginaReportes(QWidget):
         self.date_hasta = QDateEdit()
         self.date_hasta.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
+        self.date_hasta.setFocusPolicy(Qt.NoFocus)
         self.date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
         self.date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
         self.date_hasta.setMinimumDate(self.date_desde.date())
