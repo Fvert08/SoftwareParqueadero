@@ -91,8 +91,8 @@ class PaginaConfiguracion(QWidget):
         main_layoutConfiguracion = QHBoxLayout()
 
         #Se llaman las pantallas para cargarlas en el stack
-        self.pantallaUsuarios()
-        self.pantallaConexion()
+        self.pantallaValoresFacturacion()
+        self.pantallaValidarAcceso()
         self.pantallaPC()
         self.pantallaSuscripcion()
         
@@ -124,13 +124,13 @@ class PaginaConfiguracion(QWidget):
         layout_configuracion.setRowStretch(6, 1)
 
         # Crea un boton para cambiar a las configuraciones de Usuario
-        boton_Usuarios = QPushButton("USUARIOS")
+        boton_Usuarios = QPushButton("VALORES")
         boton_Usuarios.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_configuracion.addWidget(boton_Usuarios, 1, 1, 1, 1, alignment=Qt.AlignHCenter  | Qt.AlignCenter)
         boton_Usuarios.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(0))
 
         # Crea un boton para cambiar a las configuraciones de Conexión
-        boton_Conexion = QPushButton("CONEXIÓN")
+        boton_Conexion = QPushButton("VALIDAR")
         boton_Conexion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_configuracion.addWidget(boton_Conexion, 2, 1, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         boton_Conexion.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(1))
@@ -160,225 +160,125 @@ class PaginaConfiguracion(QWidget):
         #Se agrega al stack
         self.stacked_widget.addWidget(page_configuracion)
     
-    def pantallaUsuarios(self):
+    def pantallaValoresFacturacion(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         #Pagina de Usuarios
-        page_Usuarios = QWidget()
+        page_Valores = QWidget()
         #Layout de la Pagina de Usuarios
-        layout_Usuarios = QGridLayout()
+        layout_Valores = QGridLayout()
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
-        titulo_tickets = QLabel('USUARIO')
-        titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_Usuarios.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
+        titulo_CambiarValores = QLabel('VALORES DE FACTURACION')
+        titulo_CambiarValores.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_Valores.addWidget(titulo_CambiarValores, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_Usuarios.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        layout_Valores.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
-        titulo_usuariosAgregados = QLabel('USUARIOS AGREGADOS')
+        titulo_usuariosAgregados = QLabel('Valores')
         titulo_usuariosAgregados .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Usuarios.addWidget(titulo_usuariosAgregados  , 1, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignHCenter)
-        #Tabla
-        self.tabla_Usuarios = QTableWidget(self)
-        self.tabla_Usuarios.setColumnCount(4)  # Definir el número de columnas
-        self.tabla_Usuarios.verticalHeader().setVisible(False)
-        self.tabla_Usuarios.setHorizontalHeaderLabels(
-            ['ID', 'USUARIO', 'CONTRASEÑA', 'TIPO'])
-        self.tabla_Usuarios.setStyleSheet("""
-                    QTableWidget {
-                        background-color: #222126;
-                        color: white;
-                        border: 1px solid #222126;
-                        alternate-background-color: #131216; /* Color de fila alternativa */
-                    }
+        layout_Valores.addWidget(titulo_usuariosAgregados  , 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
+   
+        #Hora
+        titulo_hora = QLabel('Hora')
+        titulo_hora.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Valores.addWidget(titulo_hora, 3, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-                    QTableWidget::item {
-                        background-color: #151419; /* Color de fondo de las celdas */
-                        border-color: #222126; /* Color del borde de las celdas */
-                    }
+        textbox_hora = QLineEdit()
+        textbox_hora.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        layout_Valores.addWidget(textbox_hora, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        #Dia
+        titulo_dia = QLabel('Dia')
+        titulo_dia.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Valores.addWidget(titulo_dia, 4, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-                    QHeaderView::section {
-                        background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                        color: white; /* Color del texto de las cabeceras de las columnas */
-                        border: none; /* Sin borde */
-                        padding: 4px; /* Ajuste del relleno */
-                    }
+        textbox_dia = QLineEdit()
+        textbox_dia.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        layout_Valores.addWidget(textbox_dia, 4, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        #Mes
+        titulo_mes = QLabel('Mes')
+        titulo_mes.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Valores.addWidget(titulo_mes, 5, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-                    QHeaderView::section:hover {
-                        background-color: #151419; /* Color de fondo al pasar el mouse */
-                    }
+        textbox_mes = QLineEdit()
+        textbox_mes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        layout_Valores.addWidget(textbox_mes, 5, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
-                    QHeaderView::section:selected {
-                        background-color: #151419; /* Color de fondo al seleccionar */
-                    }
-                """)
-        #seleccionar toda la fila
-        self.tabla_Usuarios.setSelectionBehavior(QAbstractItemView.SelectRows)
+        boton_aceptar = QPushButton('ACEPTAR')
+        boton_aceptar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        layout_Valores.addWidget(boton_aceptar, 6, 0, 1, 7,
+                                alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-        header = self.tabla_Usuarios.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
-        header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_Usuarios.addWidget(self.tabla_Usuarios, 2, 0, 4, 4)
-
-        # Rellenar la tabla
-        self.actualizarTablaUsuarios()
-
-        #Botones Tabla
-        boton_editar = QPushButton('EDITAR')
-        boton_editar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_Usuarios.addWidget(boton_editar , 6, 0, 1, 2,
-                                alignment=Qt.AlignBottom| Qt.AlignCenter)
-        
-        boton_eliminar = QPushButton('ELIMINAR')
-        boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_Usuarios.addWidget(boton_eliminar, 6, 2, 1, 2,
-                                alignment=Qt.AlignBottom| Qt.AlignCenter)
-        #Parte Derecha Tabla
-        titulo_ID = QLabel('ID')
-        titulo_ID.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Usuarios.addWidget(titulo_ID, 2, 4, 1, 3, alignment=Qt.AlignTop| Qt.AlignCenter)
-
-        textbox_ID = QLineEdit()
-        textbox_ID.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_ID.setFixedWidth(250)
-        textbox_ID.setValidator(QIntValidator())
-        layout_Usuarios.addWidget(textbox_ID, 2, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignBottom)
-
-        titulo_Usuario = QLabel('USUARIO')
-        titulo_Usuario.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Usuarios.addWidget(titulo_Usuario, 3, 4, 1, 3, alignment=Qt.AlignTop | Qt.AlignHCenter)
-
-        textbox_Usuario = QLineEdit()
-        textbox_Usuario.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Usuario.setFixedWidth(250)
-        layout_Usuarios.addWidget(textbox_Usuario, 3, 4, 1, 3, alignment=Qt.AlignBottom |Qt.AlignHCenter)
-        
-        titulo_Contraseña = QLabel('CONTRASEÑA')
-        titulo_Contraseña.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Usuarios.addWidget(titulo_Contraseña, 4, 4, 1, 3, alignment=Qt.AlignTop| Qt.AlignHCenter)
-
-        textbox_Contraseña  = QLineEdit()
-        textbox_Contraseña .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Contraseña .setFixedWidth(250)
-        layout_Usuarios.addWidget(textbox_Contraseña , 4, 4, 1, 3, alignment=Qt.AlignBottom |Qt.AlignHCenter)
-
-        titulo_Tipo = QLabel('TIPO')
-        titulo_Tipo.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Usuarios.addWidget(titulo_Tipo, 5, 4, 1, 3, alignment=Qt.AlignTop | Qt.AlignHCenter)
-
-        combobox_Tipo = QComboBox()
-        combobox_Tipo.addItems(['CAJERO', 'ADMIN'])
-        combobox_Tipo.setFixedWidth(250)
-        combobox_Tipo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_Usuarios.addWidget(combobox_Tipo, 5, 4, 1, 3, alignment=Qt.AlignBottom | Qt.AlignHCenter)
-
-        #Boton Guardar 
-        boton_Guardar = QPushButton('GUARDAR')
-        boton_Guardar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_Usuarios.addWidget(boton_Guardar , 6, 4, 1, 3,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
 
         #Fila-Tamaño
-        layout_Usuarios.setRowStretch(0, 0)
-        layout_Usuarios.setRowStretch(1, 1)
-        layout_Usuarios.setRowStretch(2, 1)
-        layout_Usuarios.setRowStretch(3, 1)
-        layout_Usuarios.setRowStretch(4, 1)
-        layout_Usuarios.setRowStretch(5, 1)
-        layout_Usuarios.setRowStretch(6, 1)
+        layout_Valores.setRowStretch(0, 0)
+        layout_Valores.setRowStretch(1, 1)
+        layout_Valores.setRowStretch(2, 1)
+        layout_Valores.setRowStretch(3, 1)
+        layout_Valores.setRowStretch(4, 1)
+        layout_Valores.setRowStretch(5, 1)
+        layout_Valores.setRowStretch(6, 1)
 
         #Se agrega el layout a la pagina
-        page_Usuarios.setLayout(layout_Usuarios)
+        page_Valores.setLayout(layout_Valores)
         #se agrega la pagina al stack
-        self.stacked_widgetConfiguracion.addWidget(page_Usuarios)
+        self.stacked_widgetConfiguracion.addWidget(page_Valores)
 
-    def pantallaConexion(self):
+    def pantallaValidarAcceso(self):
         #Pagina de Usuarios
-        page_Conexion = QWidget()
+        page_Validar = QWidget()
         #Layout de la Pagina de Usuarios
-        layout_Conexion = QGridLayout()
+        layout_Validar = QGridLayout()
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
-        titulo_tickets = QLabel('CONEXIÓN')
-        titulo_tickets.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_Conexion.addWidget(titulo_tickets, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
+        titulo_validar = QLabel('VALIDAR ACCESO')
+        titulo_validar.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_Validar.addWidget(titulo_validar, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_Conexion.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
-        #Titulo
-        titulo_Acceso = QLabel('ACCESO PARA ESTE PC')
-        titulo_Acceso .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Conexion.addWidget(titulo_Acceso  , 1, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
+        layout_Validar.addWidget(linea_horizontal1, 1, 0, 1, 7)
+
         
-        titulo_Usuario = QLabel('USUARIO')
-        titulo_Usuario .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Conexion.addWidget(titulo_Usuario  , 2, 0, 1, 7, alignment= Qt.AlignTop |Qt.AlignHCenter)
+        titulo_ContraseñaAcceso = QLabel('CONTRASEÑA')
+        titulo_ContraseñaAcceso .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Validar.addWidget(titulo_ContraseñaAcceso  , 2, 0, 1, 7, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
-        textbox_Usuario = QLineEdit()
-        textbox_Usuario.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Usuario.setFixedWidth(250)
-        layout_Conexion.addWidget(textbox_Usuario, 2, 0, 1, 7, alignment=Qt.AlignHCenter |Qt.AlignBottom)
+        textbox_ContraseñaAcceso = QLineEdit()
+        textbox_ContraseñaAcceso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        layout_Validar.addWidget(textbox_ContraseñaAcceso, 3, 0, 1, 7, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
-        titulo_Contraseña = QLabel('CONTRASEÑA')
-        titulo_Contraseña .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Conexion.addWidget(titulo_Contraseña  , 3, 0, 1, 7, alignment= Qt.AlignTop |Qt.AlignHCenter)
-
-        textbox_Contraseña = QLineEdit()
-        textbox_Contraseña.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_Contraseña.setFixedWidth(250)
-        layout_Conexion.addWidget(textbox_Contraseña, 3, 0, 1, 7, alignment=Qt.AlignHCenter |Qt.AlignBottom)
         # Crea un boton para ingresar a generar ticket ingresar moto
         boton_OcultarContraseña = QPushButton()
         boton_OcultarContraseña.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
         boton_OcultarContraseña.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
         boton_OcultarContraseña.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
-        layout_Conexion.addWidget(boton_OcultarContraseña, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignBottom)
+        layout_Validar.addWidget(boton_OcultarContraseña, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Falta Integrar Ocultar
         boton_OcultarContraseña.clicked.connect(lambda: print("Ocultar"))#Se comprueba que funciona el boton
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
         boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
-        layout_Conexion.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignBottom)
-        #Informacion Conexion
-        titulo_UsuarioActual = QLabel('USUARIO ACTUAL')
-        titulo_UsuarioActual .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Conexion.addWidget(titulo_UsuarioActual  , 5, 0, 1, 4, alignment= Qt.AlignBottom |Qt.AlignRight)
+        layout_Validar.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
 
-        textbox_UsuarioActual = QLineEdit()
-        textbox_UsuarioActual.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_UsuarioActual.setFixedWidth(180)
-        textbox_UsuarioActual.setReadOnly(True)
-        layout_Conexion.addWidget(textbox_UsuarioActual, 5, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignBottom)
-
-        titulo_EstadoActual= QLabel('ESTADO ACTUAL')
-        titulo_EstadoActual .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Conexion.addWidget(titulo_EstadoActual  , 6, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignRight)
-
-        textbox_EstadoActual = QLineEdit()
-        textbox_EstadoActual.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
-        textbox_EstadoActual.setFixedWidth(180)
-        textbox_EstadoActual.setReadOnly(True)
-        layout_Conexion.addWidget(textbox_EstadoActual, 6, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
         #Fila-Tamaño
-        layout_Conexion.setRowStretch(0, 0)
-        layout_Conexion.setRowStretch(1, 1)
-        layout_Conexion.setRowStretch(2, 1)
-        layout_Conexion.setRowStretch(3, 1)
-        layout_Conexion.setRowStretch(4, 1)
-        layout_Conexion.setRowStretch(5, 1)
-        layout_Conexion.setRowStretch(6, 1)
+        layout_Validar.setRowStretch(0, 0)
+        layout_Validar.setRowStretch(1, 1)
+        layout_Validar.setRowStretch(2, 1)
+        layout_Validar.setRowStretch(3, 1)
+        layout_Validar.setRowStretch(4, 1)
+        layout_Validar.setRowStretch(5, 1)
 
         #Se agrega el layout a la pagina
-        page_Conexion.setLayout(layout_Conexion)
+        page_Validar.setLayout(layout_Validar)
         #se agrega la pagina al stack
-        self.stacked_widgetConfiguracion.addWidget(page_Conexion)
+        self.stacked_widgetConfiguracion.addWidget(page_Validar)
 
     def pantallaPC(self):
         # Crear la instancia de DatabaseConnection

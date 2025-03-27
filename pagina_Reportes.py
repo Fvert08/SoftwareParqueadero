@@ -171,7 +171,7 @@ class PaginaReportes(QWidget):
         boton_reimprimir = QPushButton('Reimprimir')
         boton_reimprimir.setStyleSheet(
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
-        layout_reportes.addWidget(boton_reimprimir, 10, 5, 1, 1,
+        layout_reportes.addWidget(boton_reimprimir, 10, 6, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignRight)
         boton_reimprimir.clicked.connect(lambda: [
              self.tabla_registros.selectedItems() and generarTicketReporteCompleto(
@@ -229,11 +229,11 @@ class PaginaReportes(QWidget):
         page_reportes.setLayout(layout_reportes)
         self.stacked_widget.addWidget(page_reportes)
 
-        # Crea un boton para Reimprimir
+        # Crea un boton para imprimir
         boton_imprimir = QPushButton('Imprimir')
         boton_imprimir.setStyleSheet(
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
-        layout_reportes.addWidget(boton_imprimir, 10, 6, 1, 1,
+        layout_reportes.addWidget(boton_imprimir, 10, 5, 1, 1,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
          # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
@@ -248,7 +248,13 @@ class PaginaReportes(QWidget):
 
         #self.senalActualizarTablaRegistroMotos.emit()
         ])
-
+        # Crea un boton para Resumen
+        boton_Resumen = QPushButton('Resumen')
+        boton_Resumen.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 20px; border-radius: 15px; padding: 15px 30px;")
+        layout_reportes.addWidget(boton_Resumen, 10, 4, 1, 1,
+                                alignment=Qt.AlignHCenter| Qt.AlignCenter)
+        # Implementar Funcion de Resumen
         layout_reportes.setRowStretch(0, 0)
         layout_reportes.setRowStretch(1, 1)
         layout_reportes.setRowStretch(2, 1)
