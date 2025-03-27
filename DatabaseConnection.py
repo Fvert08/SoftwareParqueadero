@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from PyQt5.QtWidgets import QMessageBox
 from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
 from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
 from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
@@ -194,9 +196,14 @@ class DatabaseConnection:
         datosBusquedarenovarMensualidad= db_connection.buscarMensualidadPorId(idRegistroMensualidad)
         generarTicketRenovarMensualidad(str(datosBusquedarenovarMensualidad['id']),fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
-    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono):
-        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s WHERE id = %s"
-        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,idRegistro)
+    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono,nuevaFechaRenovacion):
+        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s, fechaRenovacion=%s WHERE id = %s"
+        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,nuevaFechaRenovacion, idRegistro)
+        self.execute_query(query, params)
+
+    def editarRegistroPC(self, idRegistro, nuevadescrpcion):
+        query = "UPDATE regpc SET id = %s, Descripcion = %s WHERE id = %s"
+        params = (idRegistro, nuevadescrpcion,idRegistro)
         self.execute_query(query, params)
 
 
@@ -368,6 +375,22 @@ class DatabaseConnection:
             params = ('OCUPADO', idCasillero)
         self.execute_query(query, params)
 
+    def obtenerPlacaPorCasillero(self, casillero):
+        query = """
+        SELECT placa 
+        FROM registrosmoto 
+        WHERE Casillero = %s 
+        AND fechaSalida IS NULL
+        ORDER BY id DESC
+        LIMIT 1 
+        """
+        cursor = self.connection.cursor()
+        cursor.execute(query, (casillero,))
+        resultado = cursor.fetchone()  # Obtiene una sola fila
+        return resultado[0] if resultado else None  # Retorna la placa si existe, o None si no hay coincidencias
+
+
+
     def cambiarPcCasillero(self, idCasillero, nuevoPc):
         query = "UPDATE Casillero SET Pc = %s WHERE id = %s"
         params = (nuevoPc, idCasillero)
@@ -391,12 +414,59 @@ class DatabaseConnection:
         else:
             print("No se puede eliminar un casillero ocupado.")
 
-                
-
-    def eliminarMensualidad(self, idMensualidad):
+    def validarPlacaActiva(self, placa):
+        query = "SELECT COUNT(*) as count FROM registrosmoto WHERE placa = %s AND fechaSalida IS NULL"
+        result = self.executeQueryReturnAll(query, (placa,))
+        return result[0]['count'] > 0 if result else False  # Retorna True si hay al menos un registro
+    
+    def validarPlacaActivaMensualidad(self, placa):
+        query = "SELECT COUNT(*) as count FROM mensualidades WHERE Placa = %s"
+        result = self.executeQueryReturnAll(query, (placa,))
+        return result[0]['count'] > 0 if result else False  # Retorna True si hay al menos un registro
+    
+    def eliminarMensualidad(self, idMensualidad): 
         query = "DELETE FROM Mensualidades WHERE id = %s"
         params = (idMensualidad,)
         self.execute_query(query, params)
+    def eliminarPc(self, idPc): 
+        query = "DELETE FROM regpc WHERE id = %s"
+        params = (idPc,)
+        self.execute_query(query, params)
+
+    def eliminarRegistroMoto (self, idRegistro,fechaSalida):
+        if fechaSalida == "None":
+            QMessageBox.warning(None, "Advertencia", "No puede eliminar motos que no han salido.") 
+            return
+        query = "DELETE FROM registrosmoto WHERE id = %s"
+        params = (idRegistro,)
+        self.execute_query(query, params)
+
+    def eliminarRegistroFijo (self, idRegistro,fechaSalida):
+        if fechaSalida == "None":
+            QMessageBox.warning(None, "Advertencia", "No puede eliminar fijos que no han salido.") 
+            return
+        query = "DELETE FROM fijos WHERE id = %s"
+        params = (idRegistro,)
+        self.execute_query(query, params)
+
+    def eliminarRegistroMensualidades (self, idRegistro,fechaSalida):
+        if (datetime.strptime(fechaSalida, "%Y-%m-%d").date() + relativedelta(months=1)) >= datetime.now().date():
+            print((datetime.strptime(fechaSalida, "%Y-%m-%d").date() + relativedelta(months=1)))
+            print(datetime.now().date())
+            QMessageBox.warning(None, "Advertencia", "No puede eliminar mensualidades vigentes.") 
+            return
+        query = "DELETE FROM mensualidades WHERE id = %s"
+        params = (idRegistro,)
+        self.execute_query(query, params)
+
+    def limparRegistrosMotos(self): 
+        query = "DELETE FROM registrosmoto WHERE fechaSalida != CURDATE() AND fechaSalida IS NOT NULL"
+        self.execute_query(query)
+
+    def limparRegistrosFijos(self): 
+        query = "DELETE FROM fijos WHERE fechaSalida != CURDATE() AND fechaSalida IS NOT NULL"
+        self.execute_query(query)
+
     def casillerosDisponibles(self, pc):
         query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s AND Eliminado = 0"
         params = ("DISPONIBLE", pc)
@@ -533,7 +603,7 @@ class DatabaseConnection:
     def registrarSuscripcion(self):
             fechaActual = datetime.now().strftime('%Y-%m-%d')
             query = """
-            INSERT INTO Suscripcion (FA)
+            INSERT INTO suscripcion (FA)
             VALUES (%s)
             """
             params = (fechaActual,)

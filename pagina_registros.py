@@ -9,6 +9,7 @@ from config import DB_CONFIG
 from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
 from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
 from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
+from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
 class PaginaRegistros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -100,17 +101,25 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 6, item_hora_ingreso)
 
-            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            # Fecha de salida: Si es None, se pone ""
+            fecha_salida = registro.get('fechaSalida')
+            fecha_salida_str = fecha_salida.strftime('%Y-%m-%d') if isinstance(fecha_salida, (datetime, date)) else (str(fecha_salida) if fecha_salida else "")
+            item_fecha_salida = QTableWidgetItem(fecha_salida_str)
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 7, item_fecha_salida)
 
-            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            # Hora de salida: Si es None, se pone ""
+            hora_salida = registro.get('horaSalida', "")
+            item_hora_salida = QTableWidgetItem(str(hora_salida) if hora_salida else "")
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 8, item_hora_salida)
 
-            item_total = QTableWidgetItem(str(registro.get('Total', '')))
+            # Total: Si es None, se pone ""
+            total = registro.get('Total', "")
+            item_total = QTableWidgetItem(str(total) if total else "")
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
+
 
     def actualizarTablaFijos(self):
          # Crear la instancia de DatabaseConnection
@@ -144,13 +153,19 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 4, item_hora_ingreso)
 
-            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            # Fecha de salida: Si es None, se pone ""
+            fecha_salida = registro.get('fechaSalida')
+            fecha_salida_str = fecha_salida.strftime('%Y-%m-%d') if isinstance(fecha_salida, (datetime, date)) else (str(fecha_salida) if fecha_salida else "")
+            item_fecha_salida = QTableWidgetItem(fecha_salida_str)
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 5, item_fecha_salida)
 
-            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            # Hora de salida: Si es None, se pone ""
+            hora_salida = registro.get('horaSalida', "")
+            item_hora_salida = QTableWidgetItem(str(hora_salida) if hora_salida else "")
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 6, item_hora_salida)
+
 
             item_total = QTableWidgetItem(str(registro.get('Valor', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
@@ -342,6 +357,12 @@ class PaginaRegistros(QWidget):
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
         boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
+        boton_EliminarRegistro.clicked.connect(lambda: [
+            self.tablaRegistrosMotos.selectedItems() and db_connection.eliminarRegistroMoto(
+                                int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
+                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 7).text()),
+        ),
+        self.actualizarTablaRegistroMotos()])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
@@ -367,6 +388,8 @@ class PaginaRegistros(QWidget):
         boton_LimpiarRegistro = QPushButton('LIMPIAR REGISTRO')
         boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1)
+        boton_LimpiarRegistro.clicked.connect(lambda: [ db_connection.limparRegistrosMotos(),
+        self.actualizarTablaRegistroMotos()])
         #Hace que la fila 2 crezca 6 partes y la fila 8 crezca 1 parte
         layout_TablaRegistros.setRowStretch(2, 6)
         layout_TablaRegistros.setRowStretch(8, 1)
@@ -443,7 +466,7 @@ class PaginaRegistros(QWidget):
         """)
         #seleccionar toda la fila
         self.tablaRegistrosFijos.setSelectionBehavior(QAbstractItemView.SelectRows)
-         #Configurar cabecera
+        #Configurar cabecera
         header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
@@ -488,6 +511,12 @@ class PaginaRegistros(QWidget):
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
         boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
+        boton_EliminarRegistro.clicked.connect(lambda: [
+            self.tablaRegistrosFijos.selectedItems() and db_connection.eliminarRegistroFijo(
+                                int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
+                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 5).text()),
+        ),
+        self.actualizarTablaFijos()])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
@@ -512,6 +541,8 @@ class PaginaRegistros(QWidget):
         boton_Limpiar= QPushButton('LIMPIAR REGISTRO')
         boton_Limpiar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_Limpiar, 8, 8, 1, 1)
+        boton_Limpiar.clicked.connect(lambda: [ db_connection.limparRegistrosFijos(),
+        self.actualizarTablaFijos()])
         #Fila-Tamaño
         layout_TablaFijo.setRowStretch(2, 6)
         layout_TablaFijo.setRowStretch(8, 1)
@@ -635,15 +666,18 @@ class PaginaRegistros(QWidget):
             int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text())
+            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
+            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
         ),
         self.actualizarTablaMensualidades(),
-         self.tabla_Mensualidades.selectedItems() and generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 4).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 5).text()),
+         self.tabla_Mensualidades.selectedItems() and generarTicketRenovarMensualidad(
+                                        int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 6).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 7).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text())
         )
         ])
 
@@ -652,11 +686,11 @@ class PaginaRegistros(QWidget):
         boton_Eliminar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaMensualidades.addWidget(boton_Eliminar, 8, 7, 1, 1)
         boton_Eliminar.clicked.connect(lambda: [
-            self.tablaRegistrosFijos.currentRow() != -1 and db_connection.eliminarMensualidad(
-            int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
+            self.tabla_Mensualidades.selectedItems() and db_connection.eliminarRegistroMensualidades(
+                                int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+                                 str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
         ),
-        self.actualizarTablaMensualidades()
-        ])
+        self.actualizarTablaMensualidades()])
         #Fila-Tamaño
         #Fila-Tamaño
         layout_TablaMensualidades.setRowStretch(2, 6)

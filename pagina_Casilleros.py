@@ -37,6 +37,14 @@ class PaginaCasilleros(QWidget):
             item_estado.setTextAlignment(Qt.AlignCenter)
             self.tabla_registrosCasillero.setItem(row_idx, 3, item_estado)
 
+            casillero_value = registro['id']
+            Placa = db_connection.obtenerPlacaPorCasillero(casillero_value) or ""  # Si es None, usa ""
+
+            item_Placa = QTableWidgetItem(str(Placa))
+            item_Placa.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registrosCasillero.setItem(row_idx, 4, item_Placa)
+
+
     def actualizarTablaCasilleroOrden(self):
          # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
