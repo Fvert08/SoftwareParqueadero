@@ -250,18 +250,22 @@ class PaginaConfiguracion(QWidget):
         titulo_ContraseñaAcceso .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_Validar.addWidget(titulo_ContraseñaAcceso  , 2, 0, 1, 7, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
-        textbox_ContraseñaAcceso = QLineEdit()
-        textbox_ContraseñaAcceso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        layout_Validar.addWidget(textbox_ContraseñaAcceso, 3, 0, 1, 7, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        #Textbox Contraseña
+        self.textbox_ContraseñaAcceso = QLineEdit()
+        self.textbox_ContraseñaAcceso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_ContraseñaAcceso.setEchoMode(QLineEdit.Password)  # Inicialmente oculta la contraseña
+        layout_Validar.addWidget(self.textbox_ContraseñaAcceso, 3, 0, 1, 7, alignment=Qt.AlignHCenter | Qt.AlignCenter)
 
         # Crea un boton para ingresar a generar ticket ingresar moto
-        boton_OcultarContraseña = QPushButton()
-        boton_OcultarContraseña.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
-        boton_OcultarContraseña.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
-        boton_OcultarContraseña.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
-        layout_Validar.addWidget(boton_OcultarContraseña, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignCenter)
-        #Falta Integrar Ocultar
-        boton_OcultarContraseña.clicked.connect(lambda: print("Ocultar"))#Se comprueba que funciona el boton
+        self.boton_OcultarContrasena = QPushButton()
+        self.boton_OcultarContrasena.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
+        self.boton_OcultarContrasena.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
+        self.boton_OcultarContrasena.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
+        layout_Validar.addWidget(self.boton_OcultarContrasena, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        # Conectar eventos
+        self.boton_OcultarContrasena.pressed.connect(self.mostrar_contrasena)  # Mientras se mantiene presionado
+        self.boton_OcultarContrasena.released.connect(self.ocultar_contrasena)  # Al soltar, vuelve a ocultar
+
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
         boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
@@ -279,6 +283,14 @@ class PaginaConfiguracion(QWidget):
         page_Validar.setLayout(layout_Validar)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_Validar)
+
+    def mostrar_contrasena(self):
+        """Cambia el modo del campo de entrada para mostrar la contraseña"""
+        self.textbox_ContraseñaAcceso.setEchoMode(QLineEdit.Normal)
+
+    def ocultar_contrasena(self):
+        """Cambia el modo del campo de entrada para ocultar la contraseña"""
+        self.textbox_ContraseñaAcceso.setEchoMode(QLineEdit.Password)
 
     def pantallaPC(self):
         # Crear la instancia de DatabaseConnection
@@ -589,3 +601,5 @@ class PaginaConfiguracion(QWidget):
         page_Suscripcion.setLayout(layout_Suscripcion)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_Suscripcion)
+
+
