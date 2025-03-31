@@ -12,8 +12,7 @@ from FileEnCo import generarCodigoEncriptado
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
-from leerTxt import escribir_archivo
-from leerTxt import leer_archivo
+from leerTxt import escribir_archivo,leer_archivo,leer_archivoDesencriptado,escribir_archivoEncriptado
 
 class PaginaConfiguracion(QWidget):
     senalActualizarTextboxesSuscripcion = pyqtSignal()
@@ -22,6 +21,11 @@ class PaginaConfiguracion(QWidget):
         super().__init__()
         self.stacked_widget = stacked_widget
         self.initUI()
+    def cargar_datos_facturacion(self):
+        """Carga los datos de facturación en los textboxes desde archivos encriptados."""
+        self.textbox_horaFacturacion.setText(leer_archivoDesencriptado('config','VH.txt'))
+        self.textbox_diaFecturacion.setText(leer_archivoDesencriptado('config','VD.txt'))
+        self.textbox_mesFacturacion.setText(leer_archivoDesencriptado('config','VM.txt'))
 
     def actualizarComboboxpcs (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -188,32 +192,44 @@ class PaginaConfiguracion(QWidget):
         titulo_hora.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_Valores.addWidget(titulo_hora, 3, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-        textbox_hora = QLineEdit()
-        textbox_hora.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        layout_Valores.addWidget(textbox_hora, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        self.textbox_horaFacturacion = QLineEdit()
+        self.textbox_horaFacturacion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_horaFacturacion.setValidator(QIntValidator())
+        layout_Valores.addWidget(self.textbox_horaFacturacion, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Dia
         titulo_dia = QLabel('Dia')
         titulo_dia.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_Valores.addWidget(titulo_dia, 4, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-        textbox_dia = QLineEdit()
-        textbox_dia.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        layout_Valores.addWidget(textbox_dia, 4, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        self.textbox_diaFecturacion = QLineEdit()
+        self.textbox_diaFecturacion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_diaFecturacion.setValidator(QIntValidator())
+        layout_Valores.addWidget(self.textbox_diaFecturacion, 4, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Mes
         titulo_mes = QLabel('Mes')
         titulo_mes.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
         layout_Valores.addWidget(titulo_mes, 5, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
-        textbox_mes = QLineEdit()
-        textbox_mes.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        layout_Valores.addWidget(textbox_mes, 5, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        self.textbox_mesFacturacion = QLineEdit()
+        self.textbox_mesFacturacion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_mesFacturacion.setValidator(QIntValidator())
+        layout_Valores.addWidget(self.textbox_mesFacturacion, 5, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
         boton_aceptar = QPushButton('ACEPTAR')
         boton_aceptar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
         layout_Valores.addWidget(boton_aceptar, 6, 0, 1, 7,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
-
-
+        # Conectar el botón de imprimir a la función registrarMoto
+        boton_aceptar.clicked.connect(lambda: [
+         # Validaciones
+            QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
+            if not self.textbox_horaFacturacion.text().strip() or not self.textbox_diaFecturacion.text().strip() or not self.textbox_mesFacturacion.text().strip() else  [
+            escribir_archivoEncriptado('config','VH.txt', self.textbox_horaFacturacion.text()),
+            escribir_archivoEncriptado('config','VD.txt', self.textbox_diaFecturacion.text()),
+            escribir_archivoEncriptado('config','VM.txt', self.textbox_mesFacturacion.text()),
+             QMessageBox.information(None, "Éxito", "Se actualizaron los valores de facturación.")
+            ]])
+        self.cargar_datos_facturacion()
         #Fila-Tamaño
         layout_Valores.setRowStretch(0, 0)
         layout_Valores.setRowStretch(1, 1)
