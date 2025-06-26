@@ -9,7 +9,7 @@ from datetime import datetime
 from generarTickets.TicketSalidaMotos import generarTicketSalidaMoto
 from generarTickets.TicketSalidaFijo import generarTicketSalidaFijo
 from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
-from leerTxt import leer_archivo
+from leerTxt import leer_archivo,leer_archivoDesencriptado
 class PaginaTickets(QWidget):
     senalActualizarTablasCasilleros= pyqtSignal()
     senalActualizarTablaRegistroMotos = pyqtSignal()
@@ -102,8 +102,8 @@ class PaginaTickets(QWidget):
             datosBusquedaSalidaMoto= db_connection.buscarMotoPorId(self.textboxCodigoSacarMoto.text())
         else:
             if self.textboxPlacaSacarMoto.text():
-                datosBusquedaSalidaMoto= db_connection.buscarMotoPorPlaca(self.textboxPlacaSacarMoto.text())    
-                print (f"placa a buscar: {self.textboxPlacaSacarMoto.text()}")      
+                datosBusquedaSalidaMoto= db_connection.buscarMotoPorPlaca(self.textboxPlacaSacarMoto.text()) 
+                print (f"placa a buscar: {self.textboxPlacaSacarMoto.text()}")
         if datosBusquedaSalidaMoto:
             self.textboxCodigoSacarMoto.setText(str(datosBusquedaSalidaMoto['id']))
             self.textboxPlacaSacarMoto.setText(str(datosBusquedaSalidaMoto['Placa']))
@@ -135,8 +135,8 @@ class PaginaTickets(QWidget):
                 resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
                 self.textboxTiempoTotalSacarMoto.setText(resultado)
                 # Cambiar estas variables segun los precios a cobrar del parqueadero
-                cobroPorHora= 1000 #Cobro por hora del parqueadero
-                cobroPorDia = 5000 #Cobro ppr dia del parqueadero
+                cobroPorHora= int(leer_archivoDesencriptado('config','VH.txt')) #Cobro por hora del parqueadero
+                cobroPorDia = int(leer_archivoDesencriptado('config','VD.txt')) #Cobro ppr dia del parqueadero
                 #-------------------------------------------------------------------
                 if (minutos or segundos)>0: #Si Se lleva a subre pasar un segundo o un minuto de más se cobrará una hora completa
                     horas+=1
