@@ -1,9 +1,4 @@
 import os
-from cryptography.fernet import Fernet
-import os
-
-
-
 #----------------Lectura y escritura de archivos (Normal)------------------
 def leer_archivo(carpeta, nombre_archivo):
     ruta_completa = os.path.join(carpeta, nombre_archivo)
