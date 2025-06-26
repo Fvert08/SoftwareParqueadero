@@ -38,9 +38,14 @@ class PaginaCasilleros(QWidget):
             self.tabla_registrosCasillero.setItem(row_idx, 3, item_estado)
 
             casillero_value = registro['id']
-            Placa = db_connection.obtenerPlacaPorCasillero(casillero_value) or ""  # Si es None, usa ""
+            
+            Placa = db_connection.obtenerPlacaPorCasillero(casillero_value)
 
-            item_Placa = QTableWidgetItem(str(Placa))
+            # Si obtenerPlacaPorCasillero devuelve 0 → se muestra "0"
+            # Si obtenerPlacaPorCasillero devuelve None → se muestra "" (cadena vacía)
+            # Si obtenerPlacaPorCasillero devuelve una placa válida → se muestra la placa como string
+            texto_placa = "0" if Placa == 0 else ("" if Placa is None else str(Placa))
+            item_Placa = QTableWidgetItem(texto_placa)
             item_Placa.setTextAlignment(Qt.AlignCenter)
             self.tabla_registrosCasillero.setItem(row_idx, 4, item_Placa)
 

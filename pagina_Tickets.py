@@ -152,12 +152,9 @@ class PaginaTickets(QWidget):
     def actualizarTextboxCasilleros (self):
         self.casilleros_disponibles=[]
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
-        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt')))),
+        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt'))) if self.combobox_cascos.currentText() != "0" else "0"),
         self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt'))))
-        if self.textbox_casillerosDis.text() == "0": #Si no hay casilleros disponibles desactivar el boton imprimir
-            self.botonImprimirRegistroMoto.setDisabled(True)
-        else:
-            self.botonImprimirRegistroMoto.setEnabled(True)
+        self.botonImprimirRegistroMoto.setEnabled(True)
     def actualizarMensualidadesVigentes (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         self.textbox_MensualidadesVigentes.setText(str(db_connection.contarMensualidadesActivas()))
@@ -321,7 +318,7 @@ class PaginaTickets(QWidget):
             self.casilleros_disponibles = db_connection.listacasillerosDisponibles(pc)
         if not self.casilleros_disponibles:
             self.casilleros_disponibles = []
-            return None
+            return 0
         # Obtener el casillero actual y avanzar al siguiente
         casillero_actual = self.casilleros_disponibles[self.indice_actual]['id']
         self.indice_actual = (self.indice_actual + 1) % len(self.casilleros_disponibles)
@@ -362,10 +359,16 @@ class PaginaTickets(QWidget):
         label_cascos.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsIngresoMotos.addWidget(label_cascos, 5, 1, 1, 1,Qt.AlignRight)
 
-        combobox_cascos = QComboBox()
-        combobox_cascos.addItems(['0', '1', '2'])
-        combobox_cascos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
-        layout_ticketsIngresoMotos.addWidget(combobox_cascos, 5, 2, 1, 1,Qt.AlignLeft)
+        self.combobox_cascos = QComboBox()
+        self.combobox_cascos.addItems(['0', '1', '2'])
+        self.combobox_cascos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 40px;")
+        layout_ticketsIngresoMotos.addWidget(self.combobox_cascos, 5, 2, 1, 1,Qt.AlignLeft)
+        self.combobox_cascos.currentTextChanged.connect(
+            lambda: self.textbox_casillero.setText("0") 
+            if self.combobox_cascos.currentText() == "0" 
+            else self.textbox_casillero.setText(str(db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt'))))
+)
+
 
         # Crear el label "Tiempo" y el combobox
         label_Tiempo = QLabel('Tiempo:')
@@ -390,9 +393,8 @@ class PaginaTickets(QWidget):
         self.textbox_casillero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textbox_casillero.setFixedWidth(60)
         self.textbox_casillero.setReadOnly(True)
-        self.textbox_casillero.setText ("1")
         layout_ticketsIngresoMotos.addWidget(self.textbox_casillero, 9, 2, 1, 1,Qt.AlignLeft)  # Alineamiento arriba y a la izquierda
-        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(1)))
+        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt'))))
 
         # Crea un boton para cambiar al siguiente casillero disponible
         boton_cambiarcasillero = QPushButton('Siguiente', page_tickets)
@@ -456,19 +458,20 @@ class PaginaTickets(QWidget):
                 # Registrar moto
                 db_connection.registrarMoto(
                     textbox_placa.text(),
-                    combobox_cascos.currentText(),
+                    self.combobox_cascos.currentText(),
                     combobox_Tiempo.currentText(),
                     self.textbox_casillerosDis.text(),
                 ),
 
                 # Limpiar campos
                 textbox_placa.clear(),
-                combobox_cascos.setCurrentIndex(0),
+                self.combobox_cascos.setCurrentIndex(0),
                 combobox_Tiempo.setCurrentIndex(0),
-                checkbox_opcion.setChecked(False),  # <-- Aquí se deselecciona la checkbox
+                checkbox_opcion.setChecked(False),
 
-                # Cambiar estado del casillero
-                db_connection.cambiarEstadoCasillero(self.textbox_casillerosDis.text(), "DISPONIBLE"),
+                # Cambiar estado del casillero (usando expresión condicional)
+                db_connection.cambiarEstadoCasillero(self.textbox_casillerosDis.text(), "DISPONIBLE") 
+                if self.textbox_casillerosDis.text() != "0" else None,
 
                 # Actualizar UI
                 self.actualizarTextboxCasilleros(),

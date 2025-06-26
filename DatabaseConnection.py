@@ -330,11 +330,11 @@ class DatabaseConnection:
         return self.executeQueryReturnAll(query,params)
     
     def cargarTableCasillero(self):
-        query = "SELECT * FROM Casillero WHERE Eliminado=0;"
+        query = "SELECT * FROM Casillero WHERE Eliminado=0 AND id != 0;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableCasilleroOrden(self):
-        query = "SELECT * FROM Casillero WHERE Eliminado = 0 ORDER BY Posicion ASC;"
+        query = "SELECT * FROM Casillero WHERE Eliminado = 0 AND id != 0 ORDER BY Posicion ASC;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableRegistrosFijos(self):
@@ -376,6 +376,10 @@ class DatabaseConnection:
         self.execute_query(query, params)
 
     def obtenerPlacaPorCasillero(self, casillero):
+        # Si el casillero es 0, devolver 0 directamente
+        if casillero == 0:
+            return 0
+        
         query = """
         SELECT placa 
         FROM registrosmoto 
@@ -492,7 +496,8 @@ class DatabaseConnection:
         query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' AND Eliminado = 0 ORDER BY Posicion ASC LIMIT 1"
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
-        return result[0]['id'] if result else None
+        return result[0]['id'] if result else 0
+    
     def listacasillerosDisponibles(self, pc):
         query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' AND Eliminado = 0  ORDER BY Posicion ASC"
         params = (pc,)
