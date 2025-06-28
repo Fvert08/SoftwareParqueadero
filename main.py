@@ -22,14 +22,20 @@ class MiVentana(QWidget):
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
         self.setStyleSheet("background-color: #151419;")
-        # Obtener el tamaño de la pantalla del usuario
+
+        # Obtener el tamaño de la pantalla correctamente
         screen = QApplication.primaryScreen()
         screen_size = screen.size()
         self.width = screen_size.width()
         self.height = screen_size.height()
-        self.setWindowState(Qt.WindowMaximized)
-        self.setMaximumSize(self.width, self.height)  # tamaño máximo igual al tamaño de la pantalla
+
+        self.resize(self.width, self.height)  # Ajusta el tamaño inicial, pero no lo bloquea
+        self.setMinimumSize(800, 600)  # Evita que sea demasiado pequeña
+        self.setWindowState(Qt.WindowMaximized)  # Maximiza, pero permite cambiar tamaño
+
         self.Pagina_principal()
+
+
     def diasSuscripcion (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         ultimoPago = db_connection.consultarUltimaSuscripcion()
@@ -154,6 +160,7 @@ class MiVentana(QWidget):
         #Conexiones de señales entre páginas
         self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
         self.pagina_tickets.senalActualizarTablaRegistroMotos.connect(self.pagina_registros.actualizarTablaRegistroMotos) # Actualizar la tabla de ingresos motos
+        self.pagina_tickets.senalActualizarResumen.connect(self.pagina_registros.actualizarResumen) #conectar señal para actualizar el resumen de registros
         self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.connect(self.pagina_tickets.actualizarTextboxCasilleros) # conectar señal para actualizar los textbox de casilleros de registrar botos
         self.pagina_tickets.senalActualizarTablaRegistroFijos.connect(self.pagina_registros.actualizarTablaFijos) #conectar señal para actualizar las tablas de Fijos
         self.pagina_tickets.senalActualizarTablaRegistroMensualidades.connect(self.pagina_registros.actualizarTablaMensualidades) #conectar señal para actualizar las tablas de Mensualidad

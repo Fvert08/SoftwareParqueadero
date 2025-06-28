@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtWidgets import QTableWidget, QHeaderView, QAbstractItemView
@@ -35,6 +36,19 @@ class PaginaCasilleros(QWidget):
             item_estado = QTableWidgetItem(str(registro['Estado']))
             item_estado.setTextAlignment(Qt.AlignCenter)
             self.tabla_registrosCasillero.setItem(row_idx, 3, item_estado)
+
+            casillero_value = registro['id']
+            
+            Placa = db_connection.obtenerPlacaPorCasillero(casillero_value)
+
+            # Si obtenerPlacaPorCasillero devuelve 0 → se muestra "0"
+            # Si obtenerPlacaPorCasillero devuelve None → se muestra "" (cadena vacía)
+            # Si obtenerPlacaPorCasillero devuelve una placa válida → se muestra la placa como string
+            texto_placa = "0" if Placa == 0 else ("" if Placa is None else str(Placa))
+            item_Placa = QTableWidgetItem(texto_placa)
+            item_Placa.setTextAlignment(Qt.AlignCenter)
+            self.tabla_registrosCasillero.setItem(row_idx, 4, item_Placa)
+
 
     def actualizarTablaCasilleroOrden(self):
          # Crear la instancia de DatabaseConnection
@@ -87,47 +101,45 @@ class PaginaCasilleros(QWidget):
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_tickets.addWidget(linea_horizontal1, 0, 0, 1, 10, alignment=Qt.AlignBottom)
+        layout_tickets.addWidget(linea_horizontal1, 1, 0, 1, 10)
 
         titulo_tablacasilleros = QLabel('CASILLEROS')
         titulo_tablacasilleros.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_tablacasilleros, 1, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignTop)
+        layout_tickets.addWidget(titulo_tablacasilleros, 2, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         
         titulo_agregarCasillero = QLabel('AGREGAR CASILLERO')
         titulo_agregarCasillero.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_agregarCasillero, 7, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignTop)
+        layout_tickets.addWidget(titulo_agregarCasillero, 8, 0, 1, 4, alignment= Qt.AlignTop|Qt.AlignHCenter)
 
         titulo_numero = QLabel('NUMERO')
         titulo_numero .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_numero , 7, 0, 1, 1, alignment= Qt.AlignCenter |Qt.AlignBottom)
+        layout_tickets.addWidget(titulo_numero , 8, 0, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         textbox_numero = QLineEdit()
         textbox_numero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        textbox_numero.setFixedWidth(130)
-        layout_tickets.addWidget(textbox_numero, 7, 1, 1, 1, alignment=Qt.AlignCenter |Qt.AlignBottom)
+        textbox_numero.setValidator(QIntValidator())
+        layout_tickets.addWidget(textbox_numero, 8, 1, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         titulo_pc = QLabel('PC')
         titulo_pc.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_pc , 7, 2, 1, 1, alignment= Qt.AlignLeft |Qt.AlignBottom)
+        layout_tickets.addWidget(titulo_pc , 8, 2, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         self.combobox_pcRegistro = QComboBox()
-        self.combobox_pcRegistro.setFixedWidth(50)
         self.combobox_pcRegistro.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
-        layout_tickets.addWidget(self.combobox_pcRegistro,7, 2, 1, 1, alignment=Qt.AlignRight |Qt.AlignBottom)
+        layout_tickets.addWidget(self.combobox_pcRegistro,8, 3, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         titulo_estado = QLabel('ESTADO')
         titulo_estado .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_estado , 8, 0, 1, 1, alignment= Qt.AlignCenter )
+        layout_tickets.addWidget(titulo_estado , 9, 0, 1, 1, alignment= Qt.AlignCenter|Qt.AlignHCenter)
 
         combobox_Estado = QComboBox()
         combobox_Estado.addItems(['DISPONIBLE','OCUPADO'])
-        combobox_Estado.setFixedWidth(130)
         combobox_Estado.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
-        layout_tickets.addWidget(combobox_Estado,8, 1, 1, 1, alignment=Qt.AlignCenter )
+        layout_tickets.addWidget(combobox_Estado,9, 1, 1, 1, alignment= Qt.AlignCenter |Qt.AlignHCenter)
 
         boton_agregar = QPushButton('AGREGAR')
         boton_agregar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_agregar,8, 2, 1, 2, alignment=Qt.AlignLeft)
+        layout_tickets.addWidget(boton_agregar,9, 2, 1, 1, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         boton_agregar.clicked.connect(lambda: [
             db_connection.registrarCasillero(
             textbox_numero.text(),
@@ -138,6 +150,7 @@ class PaginaCasilleros(QWidget):
         combobox_Estado.setCurrentIndex(0),
         textbox_numero.clear(),
         self.actualizarTablaCasillero(),
+        self.actualizarTablaCasilleroOrden(),
         self.actualizarComboboxpcs()
     ])
         self.tabla_registrosCasillero = QTableWidget(self)
@@ -196,15 +209,15 @@ class PaginaCasilleros(QWidget):
 
         #---- aqui se carga la tabla
         self.actualizarTablaCasillero()
-        layout_tickets.addWidget(self.tabla_registrosCasillero, 2, 0, 5, 4)
+        layout_tickets.addWidget(self.tabla_registrosCasillero, 3, 0, 5, 4)
 
         boton_desocupar = QPushButton('DESOCUPAR')
         boton_desocupar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_desocupar, 2, 4, 2, 2,
-                                alignment=Qt.AlignTop| Qt.AlignHCenter)
+        layout_tickets.addWidget(boton_desocupar, 3, 4, 1, 2,
+                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
         # Conectar el botón de imprimir a la función registrarMoto
         boton_desocupar.clicked.connect(lambda: [
-            db_connection.cambiarEstadoCasillero(
+             self.tabla_registrosCasillero.selectedItems() and db_connection.cambiarEstadoCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text(),
         ),
@@ -214,37 +227,40 @@ class PaginaCasilleros(QWidget):
         
         boton_eliminar = QPushButton('ELIMINAR')
         boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_eliminar, 2, 4, 2, 2,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        layout_tickets.addWidget(boton_eliminar, 4, 4, 1, 2,
+                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
         #---
         boton_eliminar.clicked.connect(lambda: [
-            db_connection.eliminarCasillero(
+            self.tabla_registrosCasillero.selectedItems() and db_connection.eliminarCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
+            int(self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 2).text()),
+            self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 3).text()
         ),
-        self.actualizarTablaCasillero()
+        self.actualizarTablaCasillero(),
+        self.actualizarTablaCasilleroOrden()
     ])
         #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')
         titulo_cambiarPc .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_cambiarPc, 4, 4, 1, 2,
-                                alignment=Qt.AlignCenter| Qt.AlignHCenter)
+        layout_tickets.addWidget(titulo_cambiarPc, 5, 4, 1, 2,
+                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
         
         titulo_pcCambiar = QLabel('PC')
         titulo_pcCambiar.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_pcCambiar , 4, 4, 1, 1, alignment= Qt.AlignRight|Qt.AlignBottom)
+        layout_tickets.addWidget(titulo_pcCambiar , 6, 4, 1, 1, alignment= Qt.AlignRight|Qt.AlignTop)
 
         self.combobox_pcCambiar = QComboBox()
         self.combobox_pcCambiar.setFixedWidth(50)
         self.combobox_pcCambiar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
-        layout_tickets.addWidget(self.combobox_pcCambiar,4, 5, 1, 1, alignment=Qt.AlignLeft |Qt.AlignBottom)
+        layout_tickets.addWidget(self.combobox_pcCambiar,6, 5, 1, 1, alignment=Qt.AlignLeft |Qt.AlignTop)
         self.actualizarComboboxpcs()
         boton_guardarPc = QPushButton('GUARDAR')
         boton_guardarPc.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_guardarPc,5, 4, 1, 2,
+        layout_tickets.addWidget(boton_guardarPc,7, 4, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         #Se guarda la edición
         boton_guardarPc.clicked.connect(lambda: [
-            db_connection.cambiarPcCasillero(
+            self.tabla_registrosCasillero.currentRow() != -1 and db_connection.cambiarPcCasillero(
             self.tabla_registrosCasillero.item(self.tabla_registrosCasillero.currentRow(), 0).text(),
             self.combobox_pcCambiar.currentText(),
         ),
@@ -255,7 +271,7 @@ class PaginaCasilleros(QWidget):
 
         titulo_tablaOrdenDeLlegada = QLabel('ORDEN DE LLENADO')
         titulo_tablaOrdenDeLlegada.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
-        layout_tickets.addWidget(titulo_tablaOrdenDeLlegada, 1, 6, 1, 3, alignment= Qt.AlignCenter |Qt.AlignTop)
+        layout_tickets.addWidget(titulo_tablaOrdenDeLlegada, 2, 6, 1, 3, alignment= Qt.AlignCenter |Qt.AlignTop)
         self.tablaOrdenDeLlenado = QTableWidget(self)
         self.tablaOrdenDeLlenado.setColumnCount(4)  # Definir el número de columnas
         self.tablaOrdenDeLlenado.verticalHeader().setVisible(False)
@@ -311,31 +327,31 @@ class PaginaCasilleros(QWidget):
         self.tablaOrdenDeLlenado.setSelectionBehavior(QAbstractItemView.SelectRows)
         #---- aqui se carga la tabla
         self.actualizarTablaCasilleroOrden()
-        layout_tickets.addWidget(self.tablaOrdenDeLlenado, 2, 6, 5, 3)
+        layout_tickets.addWidget(self.tablaOrdenDeLlenado, 3, 6, 5, 3)
 
         boton_subir = QPushButton('SUBIR')
         boton_subir.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_subir, 2, 9, 2, 1,
+        layout_tickets.addWidget(boton_subir, 3, 9, 2, 1,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         boton_subir.clicked.connect(lambda: [
-            db_connection.subirPosicionCasillero(
+            self.tablaOrdenDeLlenado.selectedItems() and db_connection.subirPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
         self.actualizarTablasCasilleros(),
-        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
+          self.tablaOrdenDeLlenado.selectedItems() and self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() - 1, 0)
         
         ])
 
         boton_bajar = QPushButton('BAJAR')
         boton_bajar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_tickets.addWidget(boton_bajar, 2, 9, 2, 1,
+        layout_tickets.addWidget(boton_bajar, 3, 9, 2, 1,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_bajar.clicked.connect(lambda: [
-            db_connection.bajarPosicionCasillero(
+             self.tablaOrdenDeLlenado.selectedItems() and db_connection.bajarPosicionCasillero(
             int(self.tablaOrdenDeLlenado.item(self.tablaOrdenDeLlenado.currentRow(), 0).text())
         ),
         self.actualizarTablasCasilleros(),
-        self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
+        self.tablaOrdenDeLlenado.selectedItems() and self.tablaOrdenDeLlenado.setCurrentCell(self.tablaOrdenDeLlenado.currentRow() + 1, 0)
         ])
   
         page_casilleros.setLayout(layout_tickets)
@@ -349,5 +365,6 @@ class PaginaCasilleros(QWidget):
         layout_tickets.setRowStretch(6, 1)
         layout_tickets.setRowStretch(7, 1)
         layout_tickets.setRowStretch(8, 1)
+        layout_tickets.setRowStretch(9, 1)
         self.stacked_widget.addWidget(page_casilleros)
     

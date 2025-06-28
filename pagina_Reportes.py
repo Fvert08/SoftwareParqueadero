@@ -79,7 +79,8 @@ class PaginaReportes(QWidget):
             item_DineroTotalMotosFijos = QTableWidgetItem(str(registro['totalFijos']))
             item_DineroTotalMotosFijos.setTextAlignment(Qt.AlignCenter)
             self.tabla_registros.setItem(row_idx, 13, item_DineroTotalMotosFijos)
-
+    def actualizarFechaHasta(self, date=None):
+        self.date_hasta.setMinimumDate( self.date_desde.date())
     def initUI(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -98,11 +99,11 @@ class PaginaReportes(QWidget):
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_reportes.addWidget(linea_horizontal1, 0, 0, 1, 7, alignment=Qt.AlignBottom)
+        layout_reportes.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_tablaReportes = QLabel('Historial de reportes')
         titulo_tablaReportes.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
-        layout_reportes.addWidget(titulo_tablaReportes, 1, 2, 1, 1, alignment= Qt.AlignCenter |Qt.AlignBottom)
+        layout_reportes.addWidget(titulo_tablaReportes, 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         #Tabla
         self.tabla_registros = QTableWidget(self)
         self.tabla_registros.setColumnCount(14)  # Definir el número de columnas
@@ -162,7 +163,7 @@ class PaginaReportes(QWidget):
         #se configuran las propiedades de latabla, para que se seleccione toda la fila y no se permita editar
         self.tabla_registros.setEditTriggers(QTableWidget.NoEditTriggers)
         self.tabla_registros.setSelectionBehavior(QAbstractItemView.SelectRows)
-        layout_reportes.addWidget(self.tabla_registros, 2, 0, 8, 5)
+        layout_reportes.addWidget(self.tabla_registros, 3, 0, 7, 7)
 
         # Rellenar la tabla
         self.actualizarTablaRegistros()
@@ -170,10 +171,10 @@ class PaginaReportes(QWidget):
         boton_reimprimir = QPushButton('Reimprimir')
         boton_reimprimir.setStyleSheet(
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
-        layout_reportes.addWidget(boton_reimprimir, 10, 4, 1, 1,
+        layout_reportes.addWidget(boton_reimprimir, 10, 6, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignRight)
         boton_reimprimir.clicked.connect(lambda: [
-            generarTicketReporteCompleto(
+             self.tabla_registros.selectedItems() and generarTicketReporteCompleto(
             self.tabla_registros.item(self.tabla_registros.currentRow(), 0).text(),
             "COPIA",
             self.tabla_registros.item(self.tabla_registros.currentRow(), 1).text(),
@@ -195,59 +196,68 @@ class PaginaReportes(QWidget):
         #Formulario
         # Crear el label "Desde" y la textbox
         label_desde = QLabel('Desde')
-        label_desde.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_reportes.addWidget(label_desde, 6, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        label_desde.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_reportes.addWidget(label_desde, 10, 0, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
        # Date desde
-        date_desde = QDateEdit()
-        date_desde.setFixedWidth(240)
-        date_desde.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 40px;")
-        date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
-        date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
-        date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
-        date_desde.setDisplayFormat("yyyy-MM-dd")
-        calendarDesde_widget = date_desde.calendarWidget()
-        calendarDesde_widget.setStyleSheet("font-size: 20px;") 
-        calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
-        layout_reportes.addWidget(date_desde, 7, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        self.date_desde = QDateEdit()
+        self.date_desde.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
+        self.date_desde.setFocusPolicy(Qt.NoFocus)  # Deshabilitar el foco
+        self.date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
+        self.date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        self.date_desde.setDisplayFormat("yyyy-MM-dd")
+        calendarDesde_widget = self.date_desde.calendarWidget()
+        calendarDesde_widget.setStyleSheet("font-size: 30px;") 
+        calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 30px; alternate-background-color: #131216;")
+        
+        layout_reportes.addWidget(self.date_desde, 10, 1, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
+        self.date_desde.dateChanged.connect(self.actualizarFechaHasta)
         # Crear el label "Hasta" y la textbox
         label_hasta = QLabel('Hasta')
-        label_hasta.setStyleSheet("color: #FFFFFF;font-size: 40px;")
-        layout_reportes.addWidget(label_hasta, 8, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        label_hasta.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_reportes.addWidget(label_hasta, 10,2, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
        # Date hasta
-        date_hasta = QDateEdit()
-        date_hasta.setFixedWidth(240)
-        date_hasta.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 40px;")
-        date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
-        date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
-        date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
-        date_hasta.setDisplayFormat("yyyy-MM-dd")
-        calendarhasta_widget = date_hasta.calendarWidget()
-        calendarhasta_widget.setStyleSheet("font-size: 20px;") 
-        calendarhasta_widget.setStyleSheet("background-color: #222126; color: white; font-size: 20px; alternate-background-color: #131216;")
-        layout_reportes.addWidget(date_hasta, 9, 5, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        self.date_hasta = QDateEdit()
+        self.date_hasta.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
+        self.date_hasta.setFocusPolicy(Qt.NoFocus)
+        self.date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
+        self.date_hasta.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
+        self.date_hasta.setMinimumDate(self.date_desde.date())
+        self.date_hasta.setDisplayFormat("yyyy-MM-dd")
+        calendarhasta_widget = self.date_hasta.calendarWidget()
+        calendarhasta_widget.setStyleSheet("font-size: 30px;") 
+        calendarhasta_widget.setStyleSheet("background-color: #222126; color: white; font-size: 30px; alternate-background-color: #131216;")
+        layout_reportes.addWidget(self.date_hasta, 10, 3, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         page_reportes.setLayout(layout_reportes)
         self.stacked_widget.addWidget(page_reportes)
 
-        # Crea un boton para Reimprimir
+        # Crea un boton para imprimir
         boton_imprimir = QPushButton('Imprimir')
         boton_imprimir.setStyleSheet(
             "color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 15px 30px;")
-        layout_reportes.addWidget(boton_imprimir, 10, 5, 1, 2,
-                                alignment=Qt.AlignTop| Qt.AlignCenter)
+        layout_reportes.addWidget(boton_imprimir, 10, 5, 1, 1,
+                                alignment=Qt.AlignHCenter| Qt.AlignCenter)
          # Conectar el botón de imprimir a la función registrarMoto
         boton_imprimir.clicked.connect(lambda: [
             db_connection.consultarReporte(
-                date_desde.text(),
-                date_hasta.text(),
+                self.date_desde.text(),
+                self.date_hasta.text(),
                 "ORIGINAL"
         ),
-            date_desde.setMaximumDate(QDate.currentDate()),
-            date_hasta.setDate(QDate.currentDate()),
+            self.date_desde.setMaximumDate(QDate.currentDate()),
+            self.date_hasta.setDate(QDate.currentDate()),
             self.actualizarTablaRegistros()
 
         #self.senalActualizarTablaRegistroMotos.emit()
         ])
-
+        # Crea un boton para Resumen
+        boton_Resumen = QPushButton('Resumen')
+        boton_Resumen.setStyleSheet(
+            "color: White; background-color: #222125; font-size: 20px; border-radius: 15px; padding: 15px 30px;")
+        layout_reportes.addWidget(boton_Resumen, 10, 4, 1, 1,
+                                alignment=Qt.AlignHCenter| Qt.AlignCenter)
+        # Implementar Funcion de Resumen
         layout_reportes.setRowStretch(0, 0)
         layout_reportes.setRowStretch(1, 1)
         layout_reportes.setRowStretch(2, 1)

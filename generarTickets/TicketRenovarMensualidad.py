@@ -3,6 +3,7 @@ import barcode
 from barcode.writer import ImageWriter
 import os
 import win32print
+from PyQt5.QtCore import QDate
 import win32ui
 from PIL import ImageWin
 def mm_to_pixels(mm, dpi):

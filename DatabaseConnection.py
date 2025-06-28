@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from PyQt5.QtWidgets import QMessageBox
 from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
 from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
 from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
@@ -97,7 +99,15 @@ class DatabaseConnection:
             return None
         finally:
             cursor.close()  # Cerrar el cursor después de usarlo
-        
+
+    def obterernuno(self, query, params=None):
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, params)
+                return cursor.fetchone()  # Devuelve una sola fila como una tupla o None si no hay resultados
+        except Exception as e:
+            return None
+
     def registrarMoto(self, placa, cascos, tiempo, casillero):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
         hora_ingreso = datetime.now().strftime('%H:%M:%S')
@@ -141,7 +151,7 @@ class DatabaseConnection:
     def registrarSalidaMoto(self, idRegistro,totalPagado):
         fecha_salida = datetime.now().strftime('%Y-%m-%d')
         hora_salida = datetime.now().strftime('%H:%M:%S')
-        query = "UPDATE registrosMoto SET fechaSalida = %s, horaSalida = %s, Total = %s WHERE id = %s"
+        query = "UPDATE registrosmoto SET fechaSalida = %s, horaSalida = %s, Total = %s WHERE id = %s"
         params = (fecha_salida, hora_salida, totalPagado, idRegistro)
         self.execute_query(query, params)
 
@@ -186,9 +196,14 @@ class DatabaseConnection:
         datosBusquedarenovarMensualidad= db_connection.buscarMensualidadPorId(idRegistroMensualidad)
         generarTicketRenovarMensualidad(str(datosBusquedarenovarMensualidad['id']),fecha_salida,hora_salida,str(datosBusquedarenovarMensualidad['Nombre']),str(datosBusquedarenovarMensualidad['Placa']),str(datosBusquedarenovarMensualidad['Telefono']), nueva_fecha)
     
-    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono):
-        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s WHERE id = %s"
-        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,idRegistro)
+    def editarRegistroMensualidad(self, idRegistro, nuevaPlaca,nuevoNombre,nuevoTelefono,nuevaFechaRenovacion):
+        query = "UPDATE Mensualidades SET Placa = %s, Nombre = %s, Telefono= %s, fechaRenovacion=%s WHERE id = %s"
+        params = (nuevaPlaca, nuevoNombre,nuevoTelefono,nuevaFechaRenovacion, idRegistro)
+        self.execute_query(query, params)
+
+    def editarRegistroPC(self, idRegistro, nuevadescrpcion):
+        query = "UPDATE regpc SET id = %s, Descripcion = %s WHERE id = %s"
+        params = (idRegistro, nuevadescrpcion,idRegistro)
         self.execute_query(query, params)
 
 
@@ -227,12 +242,33 @@ class DatabaseConnection:
         return dict(result[0]) if result else None
 
     def registrarCasillero(self, Numero, Pc, Estado):
-        query = """
-        INSERT INTO Casillero (id, Pc, Posicion, Estado)
-        VALUES (%s, %s, %s,%s)
-        """
-        params = (Numero, Pc, self.posicionDisponible(), Estado)
-        self.execute_query(query, params)
+        # Verificar si el casillero con ese ID ya existe
+        query_check = "SELECT Eliminado FROM Casillero WHERE id = %s"
+        params_check = (Numero,)
+        resultado = self.obterernuno(query_check, params_check)
+
+        if resultado:
+            # Si el casillero existe, revisar el estado de "Eliminado"
+            eliminado = resultado[0]  # Extraer el valor de "Eliminado"
+
+            if eliminado == 1:
+                # Si está eliminado, actualizarlo a 0 en vez de insertar uno nuevo
+                query_update = "UPDATE Casillero SET Eliminado = 0, Pc = %s, Estado = %s,Posicion=%s WHERE id = %s"
+                params_update = (Pc, Estado,self.posicionDisponible(), Numero)
+                self.execute_query(query_update, params_update)
+            else:
+                # Si ya existe y no está eliminado, mostrar mensaje
+                print(f"Error: El casillero con ID {Numero} ya existe y está activo.")
+        else:
+            # Si no existe, insertar un nuevo registro
+            query_insert = """
+            INSERT INTO Casillero (id, Pc, Posicion, Estado, Eliminado)
+            VALUES (%s, %s, %s, %s, 0)
+            """
+            params_insert = (Numero, Pc, self.posicionDisponible(), Estado)
+            self.execute_query(query_insert, params_insert)
+
+
     def registrarPC(self, id, Descipcion):
         query = """
         INSERT INTO regPC (id, Descripcion)
@@ -294,11 +330,11 @@ class DatabaseConnection:
         return self.executeQueryReturnAll(query,params)
     
     def cargarTableCasillero(self):
-        query = "SELECT * FROM Casillero;"
+        query = "SELECT * FROM Casillero WHERE Eliminado=0 AND id != 0;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableCasilleroOrden(self):
-        query = "SELECT * FROM Casillero ORDER BY Posicion ASC ;"
+        query = "SELECT * FROM Casillero WHERE Eliminado = 0 AND id != 0 ORDER BY Posicion ASC;"
         return self.executeQueryReturnAll(query)
     
     def cargarTableRegistrosFijos(self):
@@ -339,23 +375,110 @@ class DatabaseConnection:
             params = ('OCUPADO', idCasillero)
         self.execute_query(query, params)
 
+    def obtenerPlacaPorCasillero(self, casillero):
+        # Si el casillero es 0, devolver 0 directamente
+        if casillero == 0:
+            return 0
+        
+        query = """
+        SELECT placa 
+        FROM registrosmoto 
+        WHERE Casillero = %s 
+        AND fechaSalida IS NULL
+        ORDER BY id DESC
+        LIMIT 1 
+        """
+        cursor = self.connection.cursor()
+        cursor.execute(query, (casillero,))
+        resultado = cursor.fetchone()  # Obtiene una sola fila
+        return resultado[0] if resultado else None  # Retorna la placa si existe, o None si no hay coincidencias
+
+
+
     def cambiarPcCasillero(self, idCasillero, nuevoPc):
         query = "UPDATE Casillero SET Pc = %s WHERE id = %s"
         params = (nuevoPc, idCasillero)
         self.execute_query(query, params)
 
-    def eliminarCasillero(self, idCasillero):
-        query = "DELETE FROM Casillero WHERE id = %s"
-        params = (idCasillero,)
-        self.execute_query(query, params)
-    def eliminarMensualidad(self, idMensualidad):
+    def eliminarCasillero(self, idCasillero, posicion, estado):
+        if estado == "DISPONIBLE":
+            # Marcar el casillero como eliminado
+            query = "UPDATE casillero SET Eliminado = 1 WHERE id = %s"
+            params = (idCasillero,)
+            self.execute_query(query, params)
+
+            # Reorganizar las posiciones de los casilleros restantes
+            query_update = """
+            UPDATE casillero 
+            SET Posicion = Posicion - 1 
+            WHERE Posicion > %s AND Eliminado = 0
+            """
+            params_update = (posicion,)
+            self.execute_query(query_update, params_update)
+        else:
+            print("No se puede eliminar un casillero ocupado.")
+
+    def validarPlacaActiva(self, placa):
+        query = "SELECT COUNT(*) as count FROM registrosmoto WHERE placa = %s AND fechaSalida IS NULL"
+        result = self.executeQueryReturnAll(query, (placa,))
+        return result[0]['count'] > 0 if result else False  # Retorna True si hay al menos un registro
+    
+    def validarPlacaActivaMensualidad(self, placa):
+        query = "SELECT COUNT(*) as count FROM mensualidades WHERE Placa = %s"
+        result = self.executeQueryReturnAll(query, (placa,))
+        return result[0]['count'] > 0 if result else False  # Retorna True si hay al menos un registro
+    
+    def eliminarMensualidad(self, idMensualidad): 
         query = "DELETE FROM Mensualidades WHERE id = %s"
         params = (idMensualidad,)
         self.execute_query(query, params)
+    def eliminarPc(self, idPc): 
+        query = "DELETE FROM regpc WHERE id = %s"
+        params = (idPc,)
+        self.execute_query(query, params)
+
+    def eliminarRegistroMoto (self, idRegistro,fechaSalida):
+        if fechaSalida == "None":
+            QMessageBox.warning(None, "Advertencia", "No puede eliminar motos que no han salido.") 
+            return
+        query = "DELETE FROM registrosmoto WHERE id = %s"
+        params = (idRegistro,)
+        self.execute_query(query, params)
+
+    def eliminarRegistroFijo (self, idRegistro,fechaSalida):
+        if fechaSalida == "None":
+            QMessageBox.warning(None, "Advertencia", "No puede eliminar fijos que no han salido.") 
+            return
+        query = "DELETE FROM fijos WHERE id = %s"
+        params = (idRegistro,)
+        self.execute_query(query, params)
+
+    def eliminarRegistroMensualidades (self, idRegistro,fechaSalida):
+        if (datetime.strptime(fechaSalida, "%Y-%m-%d").date() + relativedelta(months=1)) >= datetime.now().date():
+            print((datetime.strptime(fechaSalida, "%Y-%m-%d").date() + relativedelta(months=1)))
+            print(datetime.now().date())
+            QMessageBox.warning(None, "Advertencia", "No puede eliminar mensualidades vigentes.") 
+            return
+        query = "DELETE FROM mensualidades WHERE id = %s"
+        params = (idRegistro,)
+        self.execute_query(query, params)
+
+    def limparRegistrosMotos(self): 
+        query = "DELETE FROM registrosmoto WHERE fechaSalida != CURDATE() AND fechaSalida IS NOT NULL"
+        self.execute_query(query)
+
+    def limparRegistrosFijos(self): 
+        query = "DELETE FROM fijos WHERE fechaSalida != CURDATE() AND fechaSalida IS NOT NULL"
+        self.execute_query(query)
+
     def casillerosDisponibles(self, pc):
-        query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s"
+        query = "SELECT COUNT(*) as count FROM Casillero WHERE Estado = %s AND Pc = %s AND Eliminado = 0"
         params = ("DISPONIBLE", pc)
         result = self.executeQueryReturnAll(query, params)
+        return result[0]['count'] if result else 0
+    def todosCasillerosDisponibles(self):
+        query = "SELECT COUNT(*) as count FROM casillero WHERE Eliminado = 0"
+        result = self.executeQueryReturnAll(query)
         return result[0]['count'] if result else 0
     def contarMensualidadesActivas(self):
         query = """
@@ -370,18 +493,19 @@ class DatabaseConnection:
         result = self.executeQueryReturnAll(query)
         return [row['id'] for row in result] if result else []
     def casilleroAsignado(self, pc):
-        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC LIMIT 1"
+        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' AND Eliminado = 0 ORDER BY Posicion ASC LIMIT 1"
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
-        return result[0]['id'] if result else None
+        return result[0]['id'] if result else 0
+    
     def listacasillerosDisponibles(self, pc):
-        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' ORDER BY Posicion ASC"
+        query = "SELECT id FROM Casillero WHERE Pc = %s AND Estado = 'DISPONIBLE' AND Eliminado = 0  ORDER BY Posicion ASC"
         params = (pc,)
         result = self.executeQueryReturnAll(query, params)
         return result
 
     def posicionDisponible(self):
-        query = "SELECT COALESCE(MAX(Posicion) + 1, 1) AS siguientePosicion FROM Casillero"
+        query = "SELECT COALESCE(MAX(Posicion) + 1, 1) AS siguientePosicion FROM Casillero WHERE Eliminado = 0"
         result = self.executeQueryReturnAll(query)
         return result[0]['siguientePosicion'] if result else 1
     
@@ -407,7 +531,7 @@ class DatabaseConnection:
         params = (str(posicionCasillero),)
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = %s"
-        
+        params = (str (posicionCasillero), str(posicionCasillero + 1))
         self.execute_query(query, params)
         query = "UPDATE Casillero SET Posicion = %s WHERE Posicion = 0"
         params = (str(posicionCasillero+1),)
@@ -480,11 +604,87 @@ class DatabaseConnection:
         self.execute_query(query, params)
         nuevo_id = self.obtenerUltimoRegistro()
         generarTicketReporteCompleto(nuevo_id,Tipo,fechaAcual,horaActual,fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
-            
+    def consultarResumenHoy(self):
+        #--------- Definir fecha de hoy ------------
+        fechaHoy = datetime.now().strftime('%Y-%m-%d')
+        params = (fechaHoy, fechaHoy)
+        
+        #------------ Consulta dia ---------------
+        query = """
+        SELECT COUNT(*) AS registrosDia, SUM(Total) AS totalDia
+        FROM registrosMoto
+        WHERE Tipo = 'Dia' AND fechaSalida BETWEEN %s AND %s;
+        """
+        resultsDia = self.executeQueryReturnAll(query, params)
+        if resultsDia and resultsDia[0]['totalDia']:
+            registrosDia = resultsDia[0]['registrosDia']
+            totalDia = resultsDia[0]['totalDia']
+        else:
+            registrosDia = 0
+            totalDia = 0
+        
+        #------------ Consulta hora ---------------
+        query = """
+        SELECT COUNT(*) AS registrosHora, SUM(Total) AS totalHora
+        FROM registrosMoto
+        WHERE Tipo = 'Hora' AND fechaSalida BETWEEN %s AND %s;
+        """
+        resultsHora = self.executeQueryReturnAll(query, params)
+        if resultsHora and resultsHora[0]['totalHora']:
+            registrosHora = resultsHora[0]['registrosHora']
+            totalHora = resultsHora[0]['totalHora']
+        else:
+            registrosHora = 0
+            totalHora = 0
+        
+        #------------ Consulta Mensualidades ---------------
+        query = """
+        SELECT COUNT(*) AS registrosMes
+        FROM Mensualidades
+        WHERE fechaUltimoPago BETWEEN %s AND %s;
+        """
+        resultsMes = self.executeQueryReturnAll(query, params)
+        if resultsMes:
+            registrosMes = resultsMes[0]['registrosMes']
+            totalMes = registrosMes * 45000
+        else:
+            registrosMes = 0
+            totalMes = 0
+        
+        #------------ Consulta Fijos -----------------------
+        query = """
+        SELECT COUNT(*) AS registrosFijos, SUM(Valor) AS totalFijos
+        FROM Fijos
+        WHERE fechaSalida BETWEEN %s AND %s;
+        """
+        resultsFijos = self.executeQueryReturnAll(query, params)
+        if resultsFijos and resultsFijos[0]['totalFijos']:
+            registrosFijos = resultsFijos[0]['registrosFijos']
+            totalFijos = resultsFijos[0]['totalFijos']
+        else:
+            registrosFijos = 0
+            totalFijos = 0
+        
+        #--------- Calcular total general --------
+        totalGeneral = totalDia + totalHora + totalMes + totalFijos
+        
+        #--------- Retornar todos los datos --------
+        return {
+            'fecha': fechaHoy,
+            'registrosDia': registrosDia,
+            'totalDia': totalDia,
+            'registrosHora': registrosHora,
+            'totalHora': totalHora,
+            'registrosMes': registrosMes,
+            'totalMes': totalMes,
+            'registrosFijos': registrosFijos,
+            'totalFijos': totalFijos,
+            'totalGeneral': totalGeneral
+        }            
     def registrarSuscripcion(self):
             fechaActual = datetime.now().strftime('%Y-%m-%d')
             query = """
-            INSERT INTO Suscripcion (FA)
+            INSERT INTO suscripcion (FA)
             VALUES (%s)
             """
             params = (fechaActual,)

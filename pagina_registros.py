@@ -9,6 +9,7 @@ from config import DB_CONFIG
 from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
 from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
 from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
+from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
 class PaginaRegistros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -100,17 +101,31 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 6, item_hora_ingreso)
 
-            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            # Fecha de salida: Si es None, se pone ""
+            fecha_salida = registro.get('fechaSalida')
+            fecha_salida_str = fecha_salida.strftime('%Y-%m-%d') if isinstance(fecha_salida, (datetime, date)) else (str(fecha_salida) if fecha_salida else "")
+            item_fecha_salida = QTableWidgetItem(fecha_salida_str)
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 7, item_fecha_salida)
 
-            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            # Hora de salida: Si es None, se pone ""
+            hora_salida = registro.get('horaSalida', "")
+            item_hora_salida = QTableWidgetItem(str(hora_salida) if hora_salida else "")
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 8, item_hora_salida)
 
-            item_total = QTableWidgetItem(str(registro.get('Total', '')))
+            # Total: Si es None, se pone ""
+            total = registro.get('Total', "")
+            item_total = QTableWidgetItem(str(total) if total else "")
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
+        # Bloquear columnas que no se pueden editar
+        for row in range(self.tablaRegistrosMotos.rowCount()):
+            for col in [0, 1, 5, 6, 7, 8, 9]:  # Columnas a bloquear
+                item = self.tablaRegistrosMotos.item(row, col)
+                if item:  
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
 
     def actualizarTablaFijos(self):
          # Crear la instancia de DatabaseConnection
@@ -144,17 +159,29 @@ class PaginaRegistros(QWidget):
             item_hora_ingreso.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 4, item_hora_ingreso)
 
-            item_fecha_salida = QTableWidgetItem(registro.get('fechaSalida', '').strftime('%Y-%m-%d') if isinstance(registro.get('fechaSalida', ''), (datetime, date)) else str(registro.get('fechaSalida', '')))
+            # Fecha de salida: Si es None, se pone ""
+            fecha_salida = registro.get('fechaSalida')
+            fecha_salida_str = fecha_salida.strftime('%Y-%m-%d') if isinstance(fecha_salida, (datetime, date)) else (str(fecha_salida) if fecha_salida else "")
+            item_fecha_salida = QTableWidgetItem(fecha_salida_str)
             item_fecha_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 5, item_fecha_salida)
 
-            item_hora_salida = QTableWidgetItem(str(registro.get('horaSalida', '')))
+            # Hora de salida: Si es None, se pone ""
+            hora_salida = registro.get('horaSalida', "")
+            item_hora_salida = QTableWidgetItem(str(hora_salida) if hora_salida else "")
             item_hora_salida.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 6, item_hora_salida)
 
             item_total = QTableWidgetItem(str(registro.get('Valor', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 7, item_total)
+        # Bloquear columnas que no se pueden editar
+        for row in range(self.tablaRegistrosMotos.rowCount()):
+            for col in [0, 1, 3, 4, 5, 6, 7]:  # Columnas a bloquear
+                item = self.tablaRegistrosFijos.item(row, col)
+                if item:  
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
 
     def initUI(self):
        # Crear el widget de la página de registros
@@ -174,51 +201,66 @@ class PaginaRegistros(QWidget):
         self.pantallaTablaRegistros()
         self.pantallaTablaFijos()
         self.pantallaTablaMensualidades()
+        self.pantallaTablaResumen()
         #------------------------Menu lateral---------------------------
         # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
         linea_vertical = QFrame()
         linea_vertical.setFrameShape(QFrame.VLine)
         linea_vertical.setLineWidth(1)
         linea_vertical.setStyleSheet("color: #FFFFFF;")
-        layout_registros.addWidget(linea_vertical, 0, 0, 8, 1)
+        layout_registros.addWidget(linea_vertical, 0, 0, 9, 1)  # Cambiado de 8 a 9 filas
+        
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('MENÚ')
         titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_registros.addWidget(titulo_menu, 0, 1, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_registros.addWidget(titulo_menu, 0, 1, 1, 1, alignment= Qt.AlignCenter)
 
         linea_horizontal2 = QFrame()
         linea_horizontal2.setFrameShape(QFrame.HLine)
         linea_horizontal2.setLineWidth(1)
         linea_horizontal2.setStyleSheet("color: #FFFFFF;")
-        layout_registros.addWidget(linea_horizontal2, 0, 1, 1, 2, alignment=Qt.AlignBottom)
+        layout_registros.addWidget(linea_horizontal2, 1, 1, 1, 1)
+        
         # Crea un boton para cambiar a Registros
         boton_Registros= QPushButton("REGISTROS")
         boton_Registros.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_registros.addWidget(boton_Registros, 1, 1, 1, 1, alignment=Qt.AlignHCenter  | Qt.AlignCenter)
+        layout_registros.addWidget(boton_Registros, 2, 1, 1, 1)
         boton_Registros.setCheckable(True)
         boton_Registros.setChecked(True)
         boton_Registros.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(0))
+        
         # Crea un boton para cambiar a Fijos
         boton_Fijos = QPushButton("FIJOS")
         boton_Fijos.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_registros.addWidget(boton_Fijos, 2, 1, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
+        layout_registros.addWidget(boton_Fijos, 3, 1, 1, 1)
         boton_Fijos.setCheckable(True)
         boton_Fijos.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(1))
       
         # Crea un boton para cambiar a las Mensualidades
         boton_Mensualidades = QPushButton("MENSUALIDADES")
         boton_Mensualidades.setStyleSheet("color: White; background-color: #222125; font-size: 10px; border-radius: 15px; padding: 10px 20px;")
-        layout_registros.addWidget(boton_Mensualidades, 3, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
+        layout_registros.addWidget(boton_Mensualidades, 4, 1, 1, 1)
         boton_Mensualidades.setCheckable(True)
         boton_Mensualidades.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(2))
 
-        layout_registros.setRowStretch(0, 0)
-        layout_registros.setRowStretch(1, 1)
-        layout_registros.setRowStretch(2, 1)
-        layout_registros.setRowStretch(3, 1)
-        layout_registros.setRowStretch(4, 1)
-        layout_registros.setRowStretch(5, 1)
-        layout_registros.setRowStretch(6, 1)
+       # Crea un botón para Resumen en la parte inferior
+        boton_Resumen = QPushButton("RESUMEN")
+        boton_Resumen.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_registros.addWidget(boton_Resumen, 8, 1, 1, 1)  # Posición 8 (parte inferior)
+        boton_Resumen.setCheckable(True)
+        boton_Resumen.pressed.connect(lambda:self.stacked_widgetregistros.setCurrentIndex(3))
+
+        # Configuración del stretch para mantener los botones superiores juntos y el botón Resumen abajo
+        layout_registros.setRowStretch(0, 0)  # Título
+        layout_registros.setRowStretch(1, 0)  # Línea horizontal
+        layout_registros.setRowStretch(2, 0)  # Botón Registros
+        layout_registros.setRowStretch(3, 0)  # Botón Fijos
+        layout_registros.setRowStretch(4, 0)  # Botón Mensualidades
+        layout_registros.setRowStretch(5, 1)  # Espacio expandible
+        layout_registros.setRowStretch(6, 0)  # 
+        layout_registros.setRowStretch(7, 0)  # 
+        layout_registros.setRowStretch(8, 0)  # Botón Resumen
+        
         #Se agrega el layout a la pagina
         page_registrosmenu.setLayout(layout_registros)
         #Se agrega el stack al layout principal
@@ -245,13 +287,13 @@ class PaginaRegistros(QWidget):
         # Crear el título y añadirlo a la sección izquierda
         titulo_Registros = QLabel('REGISTROS')
         titulo_Registros.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_TablaRegistros.addWidget(titulo_Registros, 0, 0, 1, 9, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_TablaRegistros.addWidget(titulo_Registros, 0, 0, 1, 9,alignment=Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_TablaRegistros.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
+        layout_TablaRegistros.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tablaRegistrosMotos = QTableWidget(self)
         self.tablaRegistrosMotos.setColumnCount(10)  # Definir el número de columnas
@@ -306,35 +348,31 @@ class PaginaRegistros(QWidget):
         header = self.tablaRegistrosMotos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
+        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 2, 0, 6, 9)
         #Botones del filtro
-        layout_TablaRegistros.addWidget(self.tablaRegistrosMotos, 1, 0, 7, 9)
         self.combobox_FiltroRegistroMoto = QComboBox()
         self.combobox_FiltroRegistroMoto.addItems(['Todo', "ID" ,'Casillero', 'Placa', 'Tipo'])
-        self.combobox_FiltroRegistroMoto.setFixedWidth(130)
-        self.combobox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaRegistros.addWidget(self.combobox_FiltroRegistroMoto, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
+        self.combobox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_TablaRegistros.addWidget(self.combobox_FiltroRegistroMoto, 8, 0, 1, 1)
         
         self.textbox_FiltroRegistroMoto = QLineEdit()
-        self.textbox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textbox_FiltroRegistroMoto.setFixedWidth(250)
-        layout_TablaRegistros.addWidget(self.textbox_FiltroRegistroMoto , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
-        # Rellenar la tabla
+        self.textbox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_TablaRegistros.addWidget(self.textbox_FiltroRegistroMoto , 8, 1, 1, 1)
+        # Rellenar la tabla dependiendo de lo seleccionado en el combo box
         self.actualizarTablaRegistroMotos()
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px")
+        layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaRegistroMotos()
             ])
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;  border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
-            generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
+            self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
@@ -344,23 +382,27 @@ class PaginaRegistros(QWidget):
         )])
         #Boton Eliminar Registro
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
-        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
+        boton_EliminarRegistro.clicked.connect(lambda: [
+            self.tablaRegistrosMotos.selectedItems() and db_connection.eliminarRegistroMoto(
+                                int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
+                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 7).text()),
+        ),
+        self.actualizarTablaRegistroMotos()])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
-            db_connection.editarRegistroMoto(
+             self.tablaRegistrosMotos.selectedItems() and db_connection.editarRegistroMoto(
             int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()), 
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
             str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text())
         ),
         self.actualizarTablaRegistroMotos(),
-        generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
+         self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
@@ -371,19 +413,14 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Limpiar Registro
         boton_LimpiarRegistro = QPushButton('LIMPIAR REGISTRO')
-        boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
-        #Fila-Tamaño
-        layout_TablaRegistros.setRowStretch(0, 0)
-        layout_TablaRegistros.setRowStretch(1, 1)
-        layout_TablaRegistros.setRowStretch(2, 1)
-        layout_TablaRegistros.setRowStretch(3, 1)
-        layout_TablaRegistros.setRowStretch(4, 1)
-        layout_TablaRegistros.setRowStretch(5, 1)
-        layout_TablaRegistros.setRowStretch(6, 1)
-        layout_TablaRegistros.setRowStretch(7, 2)
+        boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1)
+        boton_LimpiarRegistro.clicked.connect(lambda: [ db_connection.limparRegistrosMotos(),
+        self.actualizarTablaRegistroMotos()])
+        #Hace que la fila 2 crezca 6 partes y la fila 8 crezca 1 parte
+        layout_TablaRegistros.setRowStretch(2, 6)
         layout_TablaRegistros.setRowStretch(8, 1)
+
         #Se agrega el layout a la pagina
         page_TablaRegistros.setLayout(layout_TablaRegistros)
         #se agrega la pagina al stack
@@ -399,13 +436,13 @@ class PaginaRegistros(QWidget):
         # Crear el título y añadirlo a la sección izquierda
         titulo_Fijo = QLabel('FIJO')
         titulo_Fijo.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_TablaFijo.addWidget(titulo_Fijo, 0, 0, 1, 9, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_TablaFijo.addWidget(titulo_Fijo, 0, 0, 1, 9, Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_TablaFijo.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
+        layout_TablaFijo.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tablaRegistrosFijos = QTableWidget(self)
         self.tablaRegistrosFijos.setColumnCount(8)  # Definir el número de columnas
@@ -456,43 +493,39 @@ class PaginaRegistros(QWidget):
         """)
         #seleccionar toda la fila
         self.tablaRegistrosFijos.setSelectionBehavior(QAbstractItemView.SelectRows)
-         #Configurar cabecera
+        #Configurar cabecera
         header = self.tablaRegistrosFijos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
         #agregar la tabla
-        layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 1, 0, 7, 9)
+        layout_TablaFijo.addWidget(self.tablaRegistrosFijos, 2, 0, 6, 9)
 
+        #Botones del filtro
         self.combobox_filtroRegistroFijos= QComboBox()
         self.combobox_filtroRegistroFijos.addItems(['Todo','ID','Tipo','Valor'])
-        self.combobox_filtroRegistroFijos.setFixedWidth(130)
-        self.combobox_filtroRegistroFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaFijo.addWidget(self.combobox_filtroRegistroFijos, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
-        
-        self.textbox_FiltroRegistroFijo  = QLineEdit()
-        self.textbox_FiltroRegistroFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textbox_FiltroRegistroFijo .setFixedWidth(250)
-        layout_TablaFijo.addWidget( self.textbox_FiltroRegistroFijo , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
-
-
-        # Rellenar la tabla
+        self.combobox_filtroRegistroFijos.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_TablaFijo.addWidget(self.combobox_filtroRegistroFijos, 8, 0, 1, 1)
+        # Rellenar la tabla dependiendo de lo seleccionado en el combo box
         self.actualizarTablaFijos()
+
+        self.textbox_FiltroRegistroFijo  = QLineEdit()
+        self.textbox_FiltroRegistroFijo.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        layout_TablaFijo.addWidget( self.textbox_FiltroRegistroFijo , 8, 1, 1, 1)
+
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaFijo.addWidget(boton_Buscar , 8, 2, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaFijo.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaFijos()
             ])
 
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaFijo.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;border-radius: 15px; padding: 10px;")
+        layout_TablaFijo.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
-            generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
+             self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 3).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 4).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
@@ -503,23 +536,27 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Eliminar Registro
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
-        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaFijo.addWidget(boton_EliminarRegistro , 8, 6, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaFijo.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
+        boton_EliminarRegistro.clicked.connect(lambda: [
+            self.tablaRegistrosFijos.selectedItems() and db_connection.eliminarRegistroFijo(
+                                int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
+                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 5).text()),
+        ),
+        self.actualizarTablaFijos()])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaFijo.addWidget(boton_GuardarEdicion , 8, 7, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaFijo.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
-            db_connection.editarRegistroFijo(
+             self.tablaRegistrosFijos.selectedItems() and db_connection.editarRegistroFijo(
             int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()), 
             str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
             str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 2).text()),
             str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 7).text())
         ),
         self.actualizarTablaFijos(),
-        generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
+         self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 3).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 4).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
@@ -529,18 +566,12 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Limpiar Registro
         boton_Limpiar= QPushButton('LIMPIAR REGISTRO')
-        boton_Limpiar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaFijo.addWidget(boton_Limpiar, 8, 8, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Limpiar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaFijo.addWidget(boton_Limpiar, 8, 8, 1, 1)
+        boton_Limpiar.clicked.connect(lambda: [ db_connection.limparRegistrosFijos(),
+        self.actualizarTablaFijos()])
         #Fila-Tamaño
-        layout_TablaFijo.setRowStretch(0, 0)
-        layout_TablaFijo.setRowStretch(1, 1)
-        layout_TablaFijo.setRowStretch(2, 1)
-        layout_TablaFijo.setRowStretch(3, 1)
-        layout_TablaFijo.setRowStretch(4, 1)
-        layout_TablaFijo.setRowStretch(5, 1)
-        layout_TablaFijo.setRowStretch(6, 1)
-        layout_TablaFijo.setRowStretch(7, 2)
+        layout_TablaFijo.setRowStretch(2, 6)
         layout_TablaFijo.setRowStretch(8, 1)
         #Se agrega el layout a la pagina
         page_TablaFijo.setLayout(layout_TablaFijo)
@@ -558,13 +589,13 @@ class PaginaRegistros(QWidget):
         # Crear el título y añadirlo a la sección izquierda
         titulo_Mensualidades = QLabel('MENSUALIDADES')
         titulo_Mensualidades.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
-        layout_TablaMensualidades.addWidget(titulo_Mensualidades, 0, 0, 1, 9, alignment=Qt.AlignTop | Qt.AlignCenter)
+        layout_TablaMensualidades.addWidget(titulo_Mensualidades, 0, 0, 1, 9,Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
-        layout_TablaMensualidades.addWidget(linea_horizontal1, 0, 0, 1, 9, alignment=Qt.AlignBottom)
+        layout_TablaMensualidades.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tabla_Mensualidades = QTableWidget(self)
         self.tabla_Mensualidades.setColumnCount(9)  # Definir el número de columnas
@@ -619,39 +650,34 @@ class PaginaRegistros(QWidget):
         header = self.tabla_Mensualidades.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
-        layout_TablaMensualidades.addWidget(self.tabla_Mensualidades, 1, 0, 7, 9)
+        layout_TablaMensualidades.addWidget(self.tabla_Mensualidades, 2, 0, 6, 9)
 
-        
-
+        #Botones del filtro
         self.combobox_FiltrarRegistrosMensualidad = QComboBox()
         self.combobox_FiltrarRegistrosMensualidad.addItems(['Todo', 'ID','Nombre','Telefono'])
-        self.combobox_FiltrarRegistrosMensualidad.setFixedWidth(130)
-        self.combobox_FiltrarRegistrosMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
-        layout_TablaMensualidades.addWidget(self.combobox_FiltrarRegistrosMensualidad, 8, 0, 1, 1, alignment=Qt.AlignBottom | Qt.AlignHCenter)
+        self.combobox_FiltrarRegistrosMensualidad.setStyleSheet("color: #FFFFFF; font-size: 30px;")
+        layout_TablaMensualidades.addWidget(self.combobox_FiltrarRegistrosMensualidad, 8, 0, 1, 1)
         
         self.textbox_FiltrarRegistrosMensualidad  = QLineEdit()
-        self.textbox_FiltrarRegistrosMensualidad .setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        self.textbox_FiltrarRegistrosMensualidad .setFixedWidth(200)
-        layout_TablaMensualidades.addWidget(self.textbox_FiltrarRegistrosMensualidad , 8, 1, 1, 1, alignment=Qt.AlignBottom |Qt.AlignHCenter)
+        self.textbox_FiltrarRegistrosMensualidad .setStyleSheet("color: #FFFFFF; font-size: 30px;")
+        layout_TablaMensualidades.addWidget(self.textbox_FiltrarRegistrosMensualidad , 8, 1, 1, 1)
         
-        # Rellenar la tabla
+        # Rellenar la tabla segun lo seleccionado en el combo box
         self.actualizarTablaMensualidades()
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaMensualidades.addWidget(boton_Buscar , 8, 2, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Buscar .setStyleSheet("color: White; background-color: #222125;border-radius: 15px; padding: 10px;")
+        layout_TablaMensualidades.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaMensualidades()
             ])
         
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR REGISTRO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaMensualidades.addWidget(boton_ReimprimirRegistro , 8, 6, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaMensualidades.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
-            generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+            self.tabla_Mensualidades.selectedItems() and generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 4).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 5).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
@@ -660,49 +686,213 @@ class PaginaRegistros(QWidget):
         )])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaMensualidades.addWidget(boton_GuardarEdicion , 8, 7, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaMensualidades.addWidget(boton_GuardarEdicion , 8, 6, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
-            db_connection.editarRegistroMensualidad(
+             self.tabla_Mensualidades.selectedItems() and db_connection.editarRegistroMensualidad(
             int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
             str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text())
+            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
+            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
         ),
         self.actualizarTablaMensualidades(),
-        generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 4).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 5).text()),
+         self.tabla_Mensualidades.selectedItems() and generarTicketRenovarMensualidad(
+                                        int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 6).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 7).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
                                         str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
+                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text())
         )
         ])
 
         #Boton Limpiar Registro
         boton_Eliminar= QPushButton('ELIMINAR MENSUALIDAD')
-        boton_Eliminar .setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
-        layout_TablaMensualidades.addWidget(boton_Eliminar, 8, 8, 1, 1,
-                                alignment=Qt.AlignBottom| Qt.AlignHCenter)
+        boton_Eliminar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaMensualidades.addWidget(boton_Eliminar, 8, 7, 1, 1)
         boton_Eliminar.clicked.connect(lambda: [
-            db_connection.eliminarMensualidad(
-            int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
+            self.tabla_Mensualidades.selectedItems() and db_connection.eliminarRegistroMensualidades(
+                                int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
+                                 str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
         ),
-        self.actualizarTablaMensualidades()
-        ])
+        self.actualizarTablaMensualidades()])
         #Fila-Tamaño
-        layout_TablaMensualidades.setRowStretch(0, 0)
-        layout_TablaMensualidades.setRowStretch(1, 1)
-        layout_TablaMensualidades.setRowStretch(2, 1)
-        layout_TablaMensualidades.setRowStretch(3, 1)
-        layout_TablaMensualidades.setRowStretch(4, 1)
-        layout_TablaMensualidades.setRowStretch(5, 1)
-        layout_TablaMensualidades.setRowStretch(6, 1)
-        layout_TablaMensualidades.setRowStretch(7, 2)
+        #Fila-Tamaño
+        layout_TablaMensualidades.setRowStretch(2, 6)
         layout_TablaMensualidades.setRowStretch(8, 1)
         #Se agrega el layout a la pagina
         page_TablaMensualidades.setLayout(layout_TablaMensualidades)
         #se agrega la pagina al stack
         self.stacked_widgetregistros.addWidget(page_TablaMensualidades)
 
+    def pantallaTablaResumen(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+
+        # Página de Resumen
+        page_TablaResumen = QWidget()
+        # Layout de la Página de Resumen
+        layout_TablaResumen = QGridLayout()
+        
+        #------------------------------------------------------------
+        # Crear el título y añadirlo a la sección superior
+        titulo_Resumen = QLabel('RESUMEN')
+        titulo_Resumen.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_TablaResumen.addWidget(titulo_Resumen, 0, 0, 1, 9, alignment=Qt.AlignCenter)
+        
+        # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
+        linea_horizontal1 = QFrame()
+        linea_horizontal1.setFrameShape(QFrame.HLine)
+        linea_horizontal1.setLineWidth(1)
+        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        layout_TablaResumen.addWidget(linea_horizontal1, 1, 0, 1, 9)
+        
+        # Crear labels para mostrar la información del resumen
+        # Fecha y Hora
+        self.label_fecha = QLabel('Fecha: Cargando...')
+        self.label_fecha.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_fecha, 2, 0, 1, 3)
+        
+        self.label_hora = QLabel('Hora: Cargando...')
+        self.label_hora.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_hora, 2, 3, 1, 3)
+        
+        # Información de registros por Día
+        self.label_registros_dia = QLabel('Registros Día: 0')
+        self.label_registros_dia.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_dia, 3, 0, 1, 3)
+        
+        self.label_total_dia = QLabel('Total Día: $0')
+        self.label_total_dia.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_dia, 3, 3, 1, 3)
+        
+        # Información de registros por Hora
+        self.label_registros_hora = QLabel('Registros Hora: 0')
+        self.label_registros_hora.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_hora, 4, 0, 1, 3)
+        
+        self.label_total_hora = QLabel('Total Hora: $0')
+        self.label_total_hora.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_hora, 4, 3, 1, 3)
+        
+        # Información de Mensualidades
+        self.label_registros_mes = QLabel('Registros Mensualidades: 0')
+        self.label_registros_mes.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_mes, 5, 0, 1, 3)
+        
+        self.label_total_mes = QLabel('Total Mensualidades: $0')
+        self.label_total_mes.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_mes, 5, 3, 1, 3)
+        
+        # Información de Fijos
+        self.label_registros_fijos = QLabel('Registros Fijos: 0')
+        self.label_registros_fijos.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_fijos, 6, 0, 1, 3)
+        
+        self.label_total_fijos = QLabel('Total Fijos: $0')
+        self.label_total_fijos.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_fijos, 6, 3, 1, 3)
+        
+        # Línea separadora
+        linea_horizontal2 = QFrame()
+        linea_horizontal2.setFrameShape(QFrame.HLine)
+        linea_horizontal2.setLineWidth(2)
+        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
+        layout_TablaResumen.addWidget(linea_horizontal2, 7, 0, 1, 9)
+        
+        # Total Registros (suma de todos los registros)
+        self.label_total_registros = QLabel('TOTAL REGISTROS: 0')
+        self.label_total_registros.setStyleSheet("color: #00BFFF; font-size: 22px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_registros, 8, 0, 1, 4, alignment=Qt.AlignCenter)
+        
+        # Total General (suma de todos los valores monetarios)
+        self.label_total_general = QLabel('TOTAL GENERAL: $0')
+        self.label_total_general.setStyleSheet("color: #FFD700; font-size: 24px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_general, 8, 5, 1, 4, alignment=Qt.AlignCenter)
+        
+        # Botón para actualizar el resumen
+        boton_ActualizarResumen = QPushButton('ACTUALIZAR RESUMEN')
+        boton_ActualizarResumen.setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 15px; font-size: 16px;")
+        layout_TablaResumen.addWidget(boton_ActualizarResumen, 9, 3, 1, 3, alignment=Qt.AlignCenter)
+        boton_ActualizarResumen.clicked.connect(lambda: self.actualizarResumen())
+        
+        # Configurar el stretch para que el contenido se distribuya bien
+        layout_TablaResumen.setRowStretch(2, 1)
+        layout_TablaResumen.setRowStretch(3, 1)
+        layout_TablaResumen.setRowStretch(4, 1)
+        layout_TablaResumen.setRowStretch(5, 1)
+        layout_TablaResumen.setRowStretch(6, 1)
+        layout_TablaResumen.setRowStretch(8, 1)
+        layout_TablaResumen.setRowStretch(9, 1)
+        
+        # Se agrega el layout a la página
+        page_TablaResumen.setLayout(layout_TablaResumen)
+        # Se agrega la página al stack
+        self.stacked_widgetregistros.addWidget(page_TablaResumen)
+        
+        # Cargar los datos automáticamente al crear la pantalla
+        self.actualizarResumen()
+
+    def actualizarResumen(self):
+        """Función para actualizar los datos del resumen consultando la base de datos"""
+        try:
+            # Verificar que los labels existen antes de actualizar
+            if not hasattr(self, 'label_fecha'):
+                print("Los labels del resumen no están inicializados")
+                return
+                
+            # Crear la instancia de DatabaseConnection
+            db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+            
+            # Consultar los datos de resumen de hoy
+            datos_resumen = db_connection.consultarResumenHoy()
+            
+            # Obtener fecha y hora actual
+            fecha_actual = datetime.now().strftime('%Y-%m-%d')
+            hora_actual = datetime.now().strftime('%H:%M:%S')
+            
+            # Actualizar los labels con los datos obtenidos
+            self.label_fecha.setText(f'Fecha: {fecha_actual}')
+            self.label_hora.setText(f'Hora: {hora_actual}')
+            
+            # Actualizar información de registros por Día
+            self.label_registros_dia.setText(f'Registros Día: {datos_resumen["registrosDia"]}')
+            self.label_total_dia.setText(f'Total Día: ${datos_resumen["totalDia"]:,.0f}')
+            
+            # Actualizar información de registros por Hora
+            self.label_registros_hora.setText(f'Registros Hora: {datos_resumen["registrosHora"]}')
+            self.label_total_hora.setText(f'Total Hora: ${datos_resumen["totalHora"]:,.0f}')
+            
+            # Actualizar información de Mensualidades
+            self.label_registros_mes.setText(f'Registros Mensualidades: {datos_resumen["registrosMes"]}')
+            self.label_total_mes.setText(f'Total Mensualidades: ${datos_resumen["totalMes"]:,.0f}')
+            
+            # Actualizar información de Fijos
+            self.label_registros_fijos.setText(f'Registros Fijos: {datos_resumen["registrosFijos"]}')
+            self.label_total_fijos.setText(f'Total Fijos: ${datos_resumen["totalFijos"]:,.0f}')
+            
+            # Calcular Total de Registros (suma de todos los tipos de registros)
+            total_registros = (datos_resumen["registrosHora"] + 
+                            datos_resumen["registrosDia"] + 
+                            datos_resumen["registrosMes"] + 
+                            datos_resumen["registrosFijos"])
+            
+            # Actualizar Total de Registros
+            self.label_total_registros.setText(f'TOTAL REGISTROS: {total_registros:,}')
+            
+            # Actualizar Total General
+            self.label_total_general.setText(f'TOTAL GENERAL: ${datos_resumen["totalGeneral"]:,.0f}')
+            
+        except Exception as e:
+            # En caso de error, mostrar mensaje en consola
+            print(f"Error al actualizar resumen: {e}")
+            # Solo intentar actualizar labels si existen
+            if hasattr(self, 'label_fecha'):
+                self.label_fecha.setText('Error al cargar datos')
+            if hasattr(self, 'label_hora'):
+                self.label_hora.setText('Error al cargar datos')
+            # También verificar si existe el nuevo label antes de actualizarlo
+            if hasattr(self, 'label_total_registros'):
+                self.label_total_registros.setText('Error al cargar datos')
