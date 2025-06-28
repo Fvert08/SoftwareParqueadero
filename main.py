@@ -160,6 +160,7 @@ class MiVentana(QWidget):
         #Conexiones de señales entre páginas
         self.pagina_tickets.senalActualizarTablasCasilleros.connect(self.pagina_casilleros.actualizarTablasCasilleros) #conectar señal para actualizar las tablas de casilleros
         self.pagina_tickets.senalActualizarTablaRegistroMotos.connect(self.pagina_registros.actualizarTablaRegistroMotos) # Actualizar la tabla de ingresos motos
+        self.pagina_tickets.senalActualizarResumen.connect(self.pagina_registros.actualizarResumen) #conectar señal para actualizar el resumen de registros
         self.pagina_casilleros.senalActualizarTextboxesTicketsRegistrosMotos.connect(self.pagina_tickets.actualizarTextboxCasilleros) # conectar señal para actualizar los textbox de casilleros de registrar botos
         self.pagina_tickets.senalActualizarTablaRegistroFijos.connect(self.pagina_registros.actualizarTablaFijos) #conectar señal para actualizar las tablas de Fijos
         self.pagina_tickets.senalActualizarTablaRegistroMensualidades.connect(self.pagina_registros.actualizarTablaMensualidades) #conectar señal para actualizar las tablas de Mensualidad

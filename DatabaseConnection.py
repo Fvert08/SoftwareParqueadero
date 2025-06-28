@@ -604,7 +604,83 @@ class DatabaseConnection:
         self.execute_query(query, params)
         nuevo_id = self.obtenerUltimoRegistro()
         generarTicketReporteCompleto(nuevo_id,Tipo,fechaAcual,horaActual,fechaInicio,fechaFin,registrosHora,totalHora,registrosDia,totalDia,registrosMes,totalMes,registrosFijos,totalFijos)
-            
+    def consultarResumenHoy(self):
+        #--------- Definir fecha de hoy ------------
+        fechaHoy = datetime.now().strftime('%Y-%m-%d')
+        params = (fechaHoy, fechaHoy)
+        
+        #------------ Consulta dia ---------------
+        query = """
+        SELECT COUNT(*) AS registrosDia, SUM(Total) AS totalDia
+        FROM registrosMoto
+        WHERE Tipo = 'Dia' AND fechaSalida BETWEEN %s AND %s;
+        """
+        resultsDia = self.executeQueryReturnAll(query, params)
+        if resultsDia and resultsDia[0]['totalDia']:
+            registrosDia = resultsDia[0]['registrosDia']
+            totalDia = resultsDia[0]['totalDia']
+        else:
+            registrosDia = 0
+            totalDia = 0
+        
+        #------------ Consulta hora ---------------
+        query = """
+        SELECT COUNT(*) AS registrosHora, SUM(Total) AS totalHora
+        FROM registrosMoto
+        WHERE Tipo = 'Hora' AND fechaSalida BETWEEN %s AND %s;
+        """
+        resultsHora = self.executeQueryReturnAll(query, params)
+        if resultsHora and resultsHora[0]['totalHora']:
+            registrosHora = resultsHora[0]['registrosHora']
+            totalHora = resultsHora[0]['totalHora']
+        else:
+            registrosHora = 0
+            totalHora = 0
+        
+        #------------ Consulta Mensualidades ---------------
+        query = """
+        SELECT COUNT(*) AS registrosMes
+        FROM Mensualidades
+        WHERE fechaUltimoPago BETWEEN %s AND %s;
+        """
+        resultsMes = self.executeQueryReturnAll(query, params)
+        if resultsMes:
+            registrosMes = resultsMes[0]['registrosMes']
+            totalMes = registrosMes * 45000
+        else:
+            registrosMes = 0
+            totalMes = 0
+        
+        #------------ Consulta Fijos -----------------------
+        query = """
+        SELECT COUNT(*) AS registrosFijos, SUM(Valor) AS totalFijos
+        FROM Fijos
+        WHERE fechaSalida BETWEEN %s AND %s;
+        """
+        resultsFijos = self.executeQueryReturnAll(query, params)
+        if resultsFijos and resultsFijos[0]['totalFijos']:
+            registrosFijos = resultsFijos[0]['registrosFijos']
+            totalFijos = resultsFijos[0]['totalFijos']
+        else:
+            registrosFijos = 0
+            totalFijos = 0
+        
+        #--------- Calcular total general --------
+        totalGeneral = totalDia + totalHora + totalMes + totalFijos
+        
+        #--------- Retornar todos los datos --------
+        return {
+            'fecha': fechaHoy,
+            'registrosDia': registrosDia,
+            'totalDia': totalDia,
+            'registrosHora': registrosHora,
+            'totalHora': totalHora,
+            'registrosMes': registrosMes,
+            'totalMes': totalMes,
+            'registrosFijos': registrosFijos,
+            'totalFijos': totalFijos,
+            'totalGeneral': totalGeneral
+        }            
     def registrarSuscripcion(self):
             fechaActual = datetime.now().strftime('%Y-%m-%d')
             query = """

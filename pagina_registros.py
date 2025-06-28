@@ -201,13 +201,15 @@ class PaginaRegistros(QWidget):
         self.pantallaTablaRegistros()
         self.pantallaTablaFijos()
         self.pantallaTablaMensualidades()
+        self.pantallaTablaResumen()
         #------------------------Menu lateral---------------------------
         # Crear la línea vertical de 1 pixel y añadirla a la cuadrícula
         linea_vertical = QFrame()
         linea_vertical.setFrameShape(QFrame.VLine)
         linea_vertical.setLineWidth(1)
         linea_vertical.setStyleSheet("color: #FFFFFF;")
-        layout_registros.addWidget(linea_vertical, 0, 0, 8, 1)
+        layout_registros.addWidget(linea_vertical, 0, 0, 9, 1)  # Cambiado de 8 a 9 filas
+        
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('MENÚ')
         titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
@@ -218,6 +220,7 @@ class PaginaRegistros(QWidget):
         linea_horizontal2.setLineWidth(1)
         linea_horizontal2.setStyleSheet("color: #FFFFFF;")
         layout_registros.addWidget(linea_horizontal2, 1, 1, 1, 1)
+        
         # Crea un boton para cambiar a Registros
         boton_Registros= QPushButton("REGISTROS")
         boton_Registros.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -225,6 +228,7 @@ class PaginaRegistros(QWidget):
         boton_Registros.setCheckable(True)
         boton_Registros.setChecked(True)
         boton_Registros.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(0))
+        
         # Crea un boton para cambiar a Fijos
         boton_Fijos = QPushButton("FIJOS")
         boton_Fijos.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
@@ -239,13 +243,24 @@ class PaginaRegistros(QWidget):
         boton_Mensualidades.setCheckable(True)
         boton_Mensualidades.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(2))
 
-        layout_registros.setRowStretch(0, 0)
-        layout_registros.setRowStretch(1, 1)
-        layout_registros.setRowStretch(2, 1)
-        layout_registros.setRowStretch(3, 1)
-        layout_registros.setRowStretch(4, 1)
-        layout_registros.setRowStretch(5, 1)
-        layout_registros.setRowStretch(6, 1)
+       # Crea un botón para Resumen en la parte inferior
+        boton_Resumen = QPushButton("RESUMEN")
+        boton_Resumen.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        layout_registros.addWidget(boton_Resumen, 8, 1, 1, 1)  # Posición 8 (parte inferior)
+        boton_Resumen.setCheckable(True)
+        boton_Resumen.pressed.connect(lambda:self.stacked_widgetregistros.setCurrentIndex(3))
+
+        # Configuración del stretch para mantener los botones superiores juntos y el botón Resumen abajo
+        layout_registros.setRowStretch(0, 0)  # Título
+        layout_registros.setRowStretch(1, 0)  # Línea horizontal
+        layout_registros.setRowStretch(2, 0)  # Botón Registros
+        layout_registros.setRowStretch(3, 0)  # Botón Fijos
+        layout_registros.setRowStretch(4, 0)  # Botón Mensualidades
+        layout_registros.setRowStretch(5, 1)  # Espacio expandible
+        layout_registros.setRowStretch(6, 0)  # 
+        layout_registros.setRowStretch(7, 0)  # 
+        layout_registros.setRowStretch(8, 0)  # Botón Resumen
+        
         #Se agrega el layout a la pagina
         page_registrosmenu.setLayout(layout_registros)
         #Se agrega el stack al layout principal
@@ -712,3 +727,172 @@ class PaginaRegistros(QWidget):
         #se agrega la pagina al stack
         self.stacked_widgetregistros.addWidget(page_TablaMensualidades)
 
+    def pantallaTablaResumen(self):
+        # Crear la instancia de DatabaseConnection
+        db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+
+        # Página de Resumen
+        page_TablaResumen = QWidget()
+        # Layout de la Página de Resumen
+        layout_TablaResumen = QGridLayout()
+        
+        #------------------------------------------------------------
+        # Crear el título y añadirlo a la sección superior
+        titulo_Resumen = QLabel('RESUMEN')
+        titulo_Resumen.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        layout_TablaResumen.addWidget(titulo_Resumen, 0, 0, 1, 9, alignment=Qt.AlignCenter)
+        
+        # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
+        linea_horizontal1 = QFrame()
+        linea_horizontal1.setFrameShape(QFrame.HLine)
+        linea_horizontal1.setLineWidth(1)
+        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        layout_TablaResumen.addWidget(linea_horizontal1, 1, 0, 1, 9)
+        
+        # Crear labels para mostrar la información del resumen
+        # Fecha y Hora
+        self.label_fecha = QLabel('Fecha: Cargando...')
+        self.label_fecha.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_fecha, 2, 0, 1, 3)
+        
+        self.label_hora = QLabel('Hora: Cargando...')
+        self.label_hora.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_hora, 2, 3, 1, 3)
+        
+        # Información de registros por Día
+        self.label_registros_dia = QLabel('Registros Día: 0')
+        self.label_registros_dia.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_dia, 3, 0, 1, 3)
+        
+        self.label_total_dia = QLabel('Total Día: $0')
+        self.label_total_dia.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_dia, 3, 3, 1, 3)
+        
+        # Información de registros por Hora
+        self.label_registros_hora = QLabel('Registros Hora: 0')
+        self.label_registros_hora.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_hora, 4, 0, 1, 3)
+        
+        self.label_total_hora = QLabel('Total Hora: $0')
+        self.label_total_hora.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_hora, 4, 3, 1, 3)
+        
+        # Información de Mensualidades
+        self.label_registros_mes = QLabel('Registros Mensualidades: 0')
+        self.label_registros_mes.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_mes, 5, 0, 1, 3)
+        
+        self.label_total_mes = QLabel('Total Mensualidades: $0')
+        self.label_total_mes.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_mes, 5, 3, 1, 3)
+        
+        # Información de Fijos
+        self.label_registros_fijos = QLabel('Registros Fijos: 0')
+        self.label_registros_fijos.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        layout_TablaResumen.addWidget(self.label_registros_fijos, 6, 0, 1, 3)
+        
+        self.label_total_fijos = QLabel('Total Fijos: $0')
+        self.label_total_fijos.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_fijos, 6, 3, 1, 3)
+        
+        # Línea separadora
+        linea_horizontal2 = QFrame()
+        linea_horizontal2.setFrameShape(QFrame.HLine)
+        linea_horizontal2.setLineWidth(2)
+        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
+        layout_TablaResumen.addWidget(linea_horizontal2, 7, 0, 1, 9)
+        
+        # Total Registros (suma de todos los registros)
+        self.label_total_registros = QLabel('TOTAL REGISTROS: 0')
+        self.label_total_registros.setStyleSheet("color: #00BFFF; font-size: 22px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_registros, 8, 0, 1, 4, alignment=Qt.AlignCenter)
+        
+        # Total General (suma de todos los valores monetarios)
+        self.label_total_general = QLabel('TOTAL GENERAL: $0')
+        self.label_total_general.setStyleSheet("color: #FFD700; font-size: 24px; font-weight: bold;")
+        layout_TablaResumen.addWidget(self.label_total_general, 8, 5, 1, 4, alignment=Qt.AlignCenter)
+        
+        # Botón para actualizar el resumen
+        boton_ActualizarResumen = QPushButton('ACTUALIZAR RESUMEN')
+        boton_ActualizarResumen.setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 15px; font-size: 16px;")
+        layout_TablaResumen.addWidget(boton_ActualizarResumen, 9, 3, 1, 3, alignment=Qt.AlignCenter)
+        boton_ActualizarResumen.clicked.connect(lambda: self.actualizarResumen())
+        
+        # Configurar el stretch para que el contenido se distribuya bien
+        layout_TablaResumen.setRowStretch(2, 1)
+        layout_TablaResumen.setRowStretch(3, 1)
+        layout_TablaResumen.setRowStretch(4, 1)
+        layout_TablaResumen.setRowStretch(5, 1)
+        layout_TablaResumen.setRowStretch(6, 1)
+        layout_TablaResumen.setRowStretch(8, 1)
+        layout_TablaResumen.setRowStretch(9, 1)
+        
+        # Se agrega el layout a la página
+        page_TablaResumen.setLayout(layout_TablaResumen)
+        # Se agrega la página al stack
+        self.stacked_widgetregistros.addWidget(page_TablaResumen)
+        
+        # Cargar los datos automáticamente al crear la pantalla
+        self.actualizarResumen()
+
+    def actualizarResumen(self):
+        """Función para actualizar los datos del resumen consultando la base de datos"""
+        try:
+            # Verificar que los labels existen antes de actualizar
+            if not hasattr(self, 'label_fecha'):
+                print("Los labels del resumen no están inicializados")
+                return
+                
+            # Crear la instancia de DatabaseConnection
+            db_connection = DatabaseConnection.get_instance(DB_CONFIG)
+            
+            # Consultar los datos de resumen de hoy
+            datos_resumen = db_connection.consultarResumenHoy()
+            
+            # Obtener fecha y hora actual
+            fecha_actual = datetime.now().strftime('%Y-%m-%d')
+            hora_actual = datetime.now().strftime('%H:%M:%S')
+            
+            # Actualizar los labels con los datos obtenidos
+            self.label_fecha.setText(f'Fecha: {fecha_actual}')
+            self.label_hora.setText(f'Hora: {hora_actual}')
+            
+            # Actualizar información de registros por Día
+            self.label_registros_dia.setText(f'Registros Día: {datos_resumen["registrosDia"]}')
+            self.label_total_dia.setText(f'Total Día: ${datos_resumen["totalDia"]:,.0f}')
+            
+            # Actualizar información de registros por Hora
+            self.label_registros_hora.setText(f'Registros Hora: {datos_resumen["registrosHora"]}')
+            self.label_total_hora.setText(f'Total Hora: ${datos_resumen["totalHora"]:,.0f}')
+            
+            # Actualizar información de Mensualidades
+            self.label_registros_mes.setText(f'Registros Mensualidades: {datos_resumen["registrosMes"]}')
+            self.label_total_mes.setText(f'Total Mensualidades: ${datos_resumen["totalMes"]:,.0f}')
+            
+            # Actualizar información de Fijos
+            self.label_registros_fijos.setText(f'Registros Fijos: {datos_resumen["registrosFijos"]}')
+            self.label_total_fijos.setText(f'Total Fijos: ${datos_resumen["totalFijos"]:,.0f}')
+            
+            # Calcular Total de Registros (suma de todos los tipos de registros)
+            total_registros = (datos_resumen["registrosHora"] + 
+                            datos_resumen["registrosDia"] + 
+                            datos_resumen["registrosMes"] + 
+                            datos_resumen["registrosFijos"])
+            
+            # Actualizar Total de Registros
+            self.label_total_registros.setText(f'TOTAL REGISTROS: {total_registros:,}')
+            
+            # Actualizar Total General
+            self.label_total_general.setText(f'TOTAL GENERAL: ${datos_resumen["totalGeneral"]:,.0f}')
+            
+        except Exception as e:
+            # En caso de error, mostrar mensaje en consola
+            print(f"Error al actualizar resumen: {e}")
+            # Solo intentar actualizar labels si existen
+            if hasattr(self, 'label_fecha'):
+                self.label_fecha.setText('Error al cargar datos')
+            if hasattr(self, 'label_hora'):
+                self.label_hora.setText('Error al cargar datos')
+            # También verificar si existe el nuevo label antes de actualizarlo
+            if hasattr(self, 'label_total_registros'):
+                self.label_total_registros.setText('Error al cargar datos')

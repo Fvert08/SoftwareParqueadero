@@ -17,6 +17,7 @@ class PaginaTickets(QWidget):
     senalActualizarTablaRegistroMensualidades = pyqtSignal()
     senalActualizarTexboxCodigoFijos = pyqtSignal()
     senalActualizarTextboxMensualidadesVigentes = pyqtSignal()
+    senalActualizarResumen = pyqtSignal()
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
@@ -687,6 +688,7 @@ class PaginaTickets(QWidget):
         self.textboxTotalAPagarSacarMoto.clear(),
         self.senalActualizarTablasCasilleros.emit(),
         self.senalActualizarTablaRegistroMotos.emit(),
+        self.senalActualizarResumen.emit(),
         self.boton_facturar.setDisabled(True),
     ])
         layout_ticketsSalidaMotos.addWidget(self.boton_facturar, 9, 5, 1, 2,
@@ -985,6 +987,7 @@ class PaginaTickets(QWidget):
         self.textboxFSalidaFijos.clear(),
         self.textboxTiempoTotalFijos.clear(),
         self.senalActualizarTablaRegistroFijos.emit(),
+        self.senalActualizarResumen.emit(),
         self.botonfacturarFijos.setDisabled(True)
     ])
 
@@ -1083,6 +1086,7 @@ class PaginaTickets(QWidget):
         textbox_Nombre.clear(),
         textbox_Telefono.clear(),
         self.senalActualizarTablaRegistroMensualidades.emit(),#Se emite la señal para actualizar la tabla de mensualidades
+        self.senalActualizarResumen.emit(),
         self.actualizarMensualidadesVigentes()
     ]])
         # Establecer las proporciones de las filas en la cuadricula
@@ -1248,6 +1252,7 @@ class PaginaTickets(QWidget):
         self.textboxTotalAPagarRenovarMensualidad.clear(),
         self.senalActualizarTablaRegistroMensualidades.emit(),
         self.botonRenovarMensualidad.setDisabled(True),
+        self.senalActualizarResumen.emit(),
         self.senalActualizarTextboxMensualidadesVigentes.emit()
     ])
         
