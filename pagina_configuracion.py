@@ -20,7 +20,21 @@ class PaginaConfiguracion(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
+        self.acceso_permitido = False  # Bandera para controlar el acceso
         self.initUI()
+
+    def resetear_acceso(self):
+        """Resetea el estado de acceso cada vez que se entra a la sección"""
+        self.acceso_permitido = False
+        # Deshabilitar todos los botones del menú
+        self.boton_Usuarios.setEnabled(False)
+        self.boton_PC.setEnabled(False)
+        self.boton_Suscripcion.setEnabled(False)
+        # Mostrar siempre la pantalla de validación
+        self.stacked_widgetConfiguracion.setCurrentIndex(1)
+        # Limpiar el campo de contraseña
+        self.textbox_ContraseñaAcceso.clear()
+
     def cargar_datos_facturacion(self):
         """Carga los datos de facturación en los textboxes desde archivos encriptados."""
         self.textbox_horaFacturacion.setText(leer_archivoDesencriptado('config','VH.txt'))
@@ -96,7 +110,7 @@ class PaginaConfiguracion(QWidget):
 
         #Se llaman las pantallas para cargarlas en el stack
         self.pantallaValoresFacturacion()
-        self.pantallaValidarAcceso()
+        self.pantallaValidarAcceso()  # Esta debe ser la primera pantalla
         self.pantallaPC()
         self.pantallaSuscripcion()
         
@@ -128,28 +142,25 @@ class PaginaConfiguracion(QWidget):
         layout_configuracion.setRowStretch(6, 1)
 
         # Crea un boton para cambiar a las configuraciones de Usuario
-        boton_Usuarios = QPushButton("VALORES")
-        boton_Usuarios.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_configuracion.addWidget(boton_Usuarios, 1, 1, 1, 1, alignment=Qt.AlignHCenter  | Qt.AlignCenter)
-        boton_Usuarios.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(0))
+        self.boton_Usuarios = QPushButton("VALORES")
+        self.boton_Usuarios.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        layout_configuracion.addWidget(self.boton_Usuarios, 1, 1, 1, 1, alignment=Qt.AlignHCenter  | Qt.AlignCenter)
+        self.boton_Usuarios.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(0))
+        self.boton_Usuarios.setEnabled(False)  # Deshabilitado inicialmente
 
-        # Crea un boton para cambiar a las configuraciones de Conexión
-        boton_Conexion = QPushButton("VALIDAR")
-        boton_Conexion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_configuracion.addWidget(boton_Conexion, 2, 1, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
-        boton_Conexion.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(1))
-        
-         # Crea un boton para cambiar a las configuraciones de PC
-        boton_PC = QPushButton("PC")
-        boton_PC.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_configuracion.addWidget(boton_PC, 3, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
-        boton_PC.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(2))  
+        # Crea un boton para cambiar a las configuraciones de PC
+        self.boton_PC = QPushButton("PC")
+        self.boton_PC.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        layout_configuracion.addWidget(self.boton_PC, 2, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
+        self.boton_PC.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(2))
+        self.boton_PC.setEnabled(False)  # Deshabilitado inicialmente
 
-         # Crea un boton para cambiar a la suscripcion del PC
-        boton_Suscripcion = QPushButton("SUSCRIPCIÓN")
-        boton_Suscripcion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
-        layout_configuracion.addWidget(boton_Suscripcion, 4, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
-        boton_Suscripcion.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(3))  
+        # Crea un boton para cambiar a la suscripcion del PC
+        self.boton_Suscripcion = QPushButton("SUSCRIPCIÓN")
+        self.boton_Suscripcion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        layout_configuracion.addWidget(self.boton_Suscripcion, 3, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
+        self.boton_Suscripcion.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(3))
+        self.boton_Suscripcion.setEnabled(False)  # Deshabilitado inicialmente
         
         #Se agrega el layout a la pagina
         page_configuracionMenu.setLayout(layout_configuracion)
@@ -159,11 +170,12 @@ class PaginaConfiguracion(QWidget):
         main_layoutConfiguracion.addWidget(page_configuracionMenu)
         #se agrega el layout principal a la pagina principal
         page_configuracion.setLayout(main_layoutConfiguracion)
-        #se llama la primera posición del stack
-        self.stacked_widgetConfiguracion.setCurrentIndex(0)
+        #se llama la primera posición del stack (pantalla de validación)
+        self.stacked_widgetConfiguracion.setCurrentIndex(1)
         #Se agrega al stack
         self.stacked_widget.addWidget(page_configuracion)
-    
+    def mostrarValidacion(self):
+        self.stacked_widgetConfiguracion.setCurrentIndex(1)
     def pantallaValoresFacturacion(self):
         # Crear la instancia de DatabaseConnection
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -261,10 +273,9 @@ class PaginaConfiguracion(QWidget):
         linea_horizontal1.setStyleSheet("color: #FFFFFF;")
         layout_Validar.addWidget(linea_horizontal1, 1, 0, 1, 7)
 
-        
         titulo_ContraseñaAcceso = QLabel('CONTRASEÑA')
-        titulo_ContraseñaAcceso .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
-        layout_Validar.addWidget(titulo_ContraseñaAcceso  , 2, 0, 1, 7, alignment= Qt.AlignBottom |Qt.AlignHCenter)
+        titulo_ContraseñaAcceso.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        layout_Validar.addWidget(titulo_ContraseñaAcceso, 2, 0, 1, 7, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         #Textbox Contraseña
         self.textbox_ContraseñaAcceso = QLineEdit()
@@ -286,6 +297,9 @@ class PaginaConfiguracion(QWidget):
         boton_validar = QPushButton('VALIDAR')
         boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
         layout_Validar.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
+        
+        # Conectar el botón de validar a la función de verificación
+        boton_validar.clicked.connect(self.verificar_contrasena)
 
         #Fila-Tamaño
         layout_Validar.setRowStretch(0, 0)
@@ -299,6 +313,24 @@ class PaginaConfiguracion(QWidget):
         page_Validar.setLayout(layout_Validar)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_Validar)
+
+    def verificar_contrasena(self):
+        # Aquí debes implementar la lógica para verificar la contraseña
+        # Ejemplo básico - deberías usar tu método real de verificación
+        contrasena_correcta = "admin123"  # Cambia esto por tu contraseña real
+        
+        if self.textbox_ContraseñaAcceso.text() == contrasena_correcta:
+            self.acceso_permitido = True
+            # Habilitar todos los botones del menú
+            self.boton_Usuarios.setEnabled(True)
+            self.boton_PC.setEnabled(True)
+            self.boton_Suscripcion.setEnabled(True)
+            # Cambiar a la pantalla de valores por defecto
+            self.stacked_widgetConfiguracion.setCurrentIndex(0)
+            self.textbox_ContraseñaAcceso.clear()
+        else:
+            QMessageBox.warning(self, "Error", "Contraseña incorrecta")
+            self.textbox_ContraseñaAcceso.clear()
 
     def mostrar_contrasena(self):
         """Cambia el modo del campo de entrada para mostrar la contraseña"""
@@ -503,6 +535,7 @@ class PaginaConfiguracion(QWidget):
         page_PC.setLayout(layout_PC)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_PC)
+
     def actualizarTextboxesSuscripcion (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         ultimoPago = db_connection.consultarUltimaSuscripcion()
@@ -617,5 +650,3 @@ class PaginaConfiguracion(QWidget):
         page_Suscripcion.setLayout(layout_Suscripcion)
         #se agrega la pagina al stack
         self.stacked_widgetConfiguracion.addWidget(page_Suscripcion)
-
-
