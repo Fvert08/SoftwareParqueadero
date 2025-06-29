@@ -329,7 +329,7 @@ class PaginaConfiguracion(QWidget):
             self.stacked_widgetConfiguracion.setCurrentIndex(0)
             self.textbox_ContraseñaAcceso.clear()
         else:
-            QMessageBox.warning(self, "Error", "Contraseña incorrecta")
+            QMessageBox.warning(None, "Error", "Contraseña incorrecta")
             self.textbox_ContraseñaAcceso.clear()
 
     def mostrar_contrasena(self):
