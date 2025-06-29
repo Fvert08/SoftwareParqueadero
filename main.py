@@ -209,8 +209,11 @@ class MiVentana(QWidget):
             self.stacked_widget.setCurrentIndex(6)
         elif sender.text() == "Configuracion":
             self.stacked_widget.setCurrentIndex(8)
+            # Resetear el estado de acceso cada vez que se entra a Configuración
+            self.pagina_configuracion.resetear_acceso()
             self.pagina_configuracion.senalActualizarTablaPCs.emit()
             self.pagina_configuracion.senalActualizarTextboxesSuscripcion.emit()
+
         elif sender.text() == "Creditos":
             self.stacked_widget.setCurrentIndex(10)
 
