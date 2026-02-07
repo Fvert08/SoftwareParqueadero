@@ -560,6 +560,7 @@ class PaginaConfiguracion(QWidget):
         fecha_actual = datetime.strptime(fecha_str, "%Y-%m-%d")
         dia = fecha_actual.day
         codigo = generarCodigoEncriptado("parqueaderola18", str(fecha_str), int(dia))  # Se genera un código a partir de una palabra clave, la fecha y un numero de iteraciones, que variará en función del día
+        print("Código generado:", codigo)
         if textoCodigo == codigo:
             print("Suscripción Activada")
             msg = QMessageBox()
