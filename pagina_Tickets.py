@@ -150,12 +150,25 @@ class PaginaTickets(QWidget):
         else:
             print("No se encontraron registros")
 
-    def actualizarTextboxCasilleros (self):
-        self.casilleros_disponibles=[]
+    def actualizarTextboxCasilleros(self):
+        """Actualiza los textbox de casilleros disponibles"""
+        self.casilleros_disponibles = []
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
-        self.textbox_casillero.setText(str(db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt'))) if self.combobox_cascos.currentText() != "0" else "0"),
-        self.textbox_casillerosDis.setText(str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt'))))
+        
+        # Si no hay cascos, asignar directamente casillero 0
+        if self.combobox_cascos.currentText() == "0":
+            self.textbox_casillero.setText("0")
+        else:
+            # Asignar casillero disponible en caso de no haber casillero se asigna el 0
+            casillero = db_connection.casilleroAsignado(leer_archivo('config','PcActual.txt'))
+            self.textbox_casillero.setText(str(casillero) if casillero else "0")
+        
+        # Actualizar contador de disponibles
+        self.textbox_casillerosDis.setText(
+            str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt')))
+        )
         self.botonImprimirRegistroMoto.setEnabled(True)
+    
     def actualizarMensualidadesVigentes (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         self.textbox_MensualidadesVigentes.setText(str(db_connection.contarMensualidadesActivas()))
@@ -412,12 +425,19 @@ class PaginaTickets(QWidget):
                 color: lightgray;
                 border: 2px solid #555555;
             }
+            QPushButton:disabled {
+                background-color: #3a3a3a;
+                color: #666666;
+            }
         """)
         layout_ticketsIngresoMotos.addWidget(boton_cambiarcasillero, 9, 3, 1, 1)
-        # Conectar el botón de imprimir a la función para buscar el siguiente disponible
+
+        # CORRECCIÓN: Solo permitir cambiar si hay cascos
         boton_cambiarcasillero.clicked.connect(lambda: [
-            self.textbox_casillero.setText(str(self.siguienteCasilleroDisponible(leer_archivo('config','PcActual.txt'))))
-    ])
+            self.textbox_casillero.setText(
+                str(self.siguienteCasilleroDisponible(leer_archivo('config','PcActual.txt')))
+            ) if self.combobox_cascos.currentText() != "0" else None
+        ])
         # Crear el label "Casilleros disponibles" y el combobox
         label_casillerosDis = QLabel('Casilleros disponibles:', page_tickets)
         label_casillerosDis.setStyleSheet("color: #FFFFFF;font-size: 30px;")
@@ -456,12 +476,12 @@ class PaginaTickets(QWidget):
             QMessageBox.warning(None, "Advertencia", "Debe seleccionar la opción en la casilla si el tiempo es 'Día'.") 
             if combobox_Tiempo.currentText() == "Dia" and not checkbox_opcion.isChecked() else [
 
-                # Registrar moto
+                # Registrar moto (ahora cambia el estado del casillero internamente)
                 db_connection.registrarMoto(
                     textbox_placa.text(),
                     self.combobox_cascos.currentText(),
                     combobox_Tiempo.currentText(),
-                    self.textbox_casillerosDis.text(),
+                    self.textbox_casillero.text(),
                 ),
 
                 # Limpiar campos
@@ -470,9 +490,8 @@ class PaginaTickets(QWidget):
                 combobox_Tiempo.setCurrentIndex(0),
                 checkbox_opcion.setChecked(False),
 
-                # Cambiar estado del casillero (usando expresión condicional)
-                db_connection.cambiarEstadoCasillero(self.textbox_casillerosDis.text(), "DISPONIBLE") 
-                if self.textbox_casillerosDis.text() != "0" else None,
+                # YA NO ES NECESARIO cambiar el estado aquí
+                # (registrarMoto() ya lo hace automáticamente)
 
                 # Actualizar UI
                 self.actualizarTextboxCasilleros(),
@@ -554,8 +573,7 @@ class PaginaTickets(QWidget):
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_buscar.clicked.connect(lambda: [
             self.cargarBusquedaSalidaMoto(),
-            db_connection.cambiarEstadoCasillero(self.textboxCasilleroSacarMoto.text(),"OCUPADO"),
-    ])
+        ])
 #----Mostrar---
     #---Fila 1
         # Crear el label "Casillero" y la textbox
@@ -663,34 +681,45 @@ class PaginaTickets(QWidget):
         # Conectar el botón de imprimir a la función registrarMoto
         self.boton_facturar.clicked.connect(lambda: [
             db_connection.registrarSalidaMoto(
-            self.textboxCodigoSacarMoto.text(),
-            float( self.textboxTotalAPagarSacarMoto.text().replace("$", "").strip())
-        ),
-        generarTicketSalidaMoto(self.textboxFIngresoSacarMoto.text(),
-                                self.textboxFSalidaSacarMoto.text(),
-                                self.textboxHIngresoSacarMoto.text(),
-                                self.textboxHSalidaSacarMoto.text(),
-                                self.textboxTiempoTotalSacarMoto.text(),
-                                float( self.textboxTotalAPagarSacarMoto.text().replace("$", "").strip()),
-                                self.textboxPlacaSacarMoto.text(),
-                                self.textboxCasilleroSacarMoto.text()),
-        db_connection.cambiarEstadoCasillero(self.textboxCasilleroSacarMoto.text(),"OCUPADO"),
-        self.textboxCodigoSacarMoto.clear(),
-        self.textboxPlacaSacarMoto.clear (),
-        self.textboxCasilleroSacarMoto.clear(),
-        self.textboxCascosSacarMoto.clear(),
-        self.textboxFIngresoSacarMoto.clear(),
-        self.textboxHIngresoSacarMoto.clear(),
-        self.textboxFSalidaSacarMoto.clear(),
-        self.textboxHSalidaSacarMoto.clear(),
-        self.textboxPagadoPorSacarMoto.clear(),
-        self.textboxTiempoTotalSacarMoto.clear(),
-        self.textboxTotalAPagarSacarMoto.clear(),
-        self.senalActualizarTablasCasilleros.emit(),
-        self.senalActualizarTablaRegistroMotos.emit(),
-        self.senalActualizarResumen.emit(),
-        self.boton_facturar.setDisabled(True),
-    ])
+                self.textboxCodigoSacarMoto.text(),
+                float(self.textboxTotalAPagarSacarMoto.text().replace("$", "").strip())
+            ),
+            generarTicketSalidaMoto(
+                self.textboxFIngresoSacarMoto.text(),
+                self.textboxFSalidaSacarMoto.text(),
+                self.textboxHIngresoSacarMoto.text(),
+                self.textboxHSalidaSacarMoto.text(),
+                self.textboxTiempoTotalSacarMoto.text(),
+                float(self.textboxTotalAPagarSacarMoto.text().replace("$", "").strip()),
+                self.textboxPlacaSacarMoto.text(),
+                self.textboxCasilleroSacarMoto.text()
+            ),
+            # Cambiar estado de OCUPADO a DISPONIBLE (solo si casillero > 0)
+            db_connection.cambiarEstadoCasillero(
+                self.textboxCasilleroSacarMoto.text(),
+                "OCUPADO"  # Estado actual = OCUPADO, se cambiará a DISPONIBLE
+            ) if (self.textboxCasilleroSacarMoto.text() and 
+                  self.textboxCasilleroSacarMoto.text() != "0" and 
+                  int(self.textboxCasilleroSacarMoto.text()) > 0) else None,
+            # Limpiar campos
+            self.textboxCodigoSacarMoto.clear(),
+            self.textboxPlacaSacarMoto.clear(),
+            self.textboxCasilleroSacarMoto.clear(),
+            self.textboxCascosSacarMoto.clear(),
+            self.textboxFIngresoSacarMoto.clear(),
+            self.textboxHIngresoSacarMoto.clear(),
+            self.textboxFSalidaSacarMoto.clear(),
+            self.textboxHSalidaSacarMoto.clear(),
+            self.textboxPagadoPorSacarMoto.clear(),
+            self.textboxTiempoTotalSacarMoto.clear(),
+            self.textboxTotalAPagarSacarMoto.clear(),
+            # Emitir señales
+            self.senalActualizarTablasCasilleros.emit(),
+            self.senalActualizarTablaRegistroMotos.emit(),
+            self.senalActualizarResumen.emit(),
+            self.boton_facturar.setDisabled(True),
+        ])
+
         layout_ticketsSalidaMotos.addWidget(self.boton_facturar, 9, 5, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignCenter)
         # Establecer las proporciones de las filas en la cuadricula
