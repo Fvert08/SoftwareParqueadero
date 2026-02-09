@@ -5,6 +5,7 @@ from PyQt5.QtCore import QDate, Qt
 import sys
 from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
+from styles import LABELS, LINEAS, BOTONES, INPUTS, COMBOBOX, TABLAS, CHECKBOXES, CALENDARIOS, OTROS
 class PaginaCreditos(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -19,46 +20,46 @@ class PaginaCreditos(QWidget):
         layout_creditos = QGridLayout()
 
         titulo_casilleros = QLabel('CREDITOS')
-        titulo_casilleros.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_casilleros.setStyleSheet(LABELS['creditos_titulo_casilleros'])
         layout_creditos.addWidget(titulo_casilleros, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
 
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(LINEAS['creditos_linea_horizontal1'])
         layout_creditos.addWidget(linea_horizontal1, 1, 0, 1, 7)
 
         titulo_principal = QLabel('SOFTWARE DESAROLLADO POR')
-        titulo_principal.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_principal.setStyleSheet(LABELS['creditos_titulo_principal'])
         layout_creditos.addWidget(titulo_principal, 2, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_nombre1 = QLabel('JAVIER PARRA')
-        titulo_nombre1 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_nombre1 .setStyleSheet(LABELS['creditos_titulo_nombre1'])
         layout_creditos.addWidget(titulo_nombre1 , 3, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
         
         titulo_nombre2 = QLabel('JUAN LOAIZA')
-        titulo_nombre2 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_nombre2 .setStyleSheet(LABELS['creditos_titulo_nombre2'])
         layout_creditos.addWidget(titulo_nombre2 , 4, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
 
         titulo_carrera = QLabel('ESTUDIANTES DE INGENIERIA EN SISTEMAS')
-        titulo_carrera .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_carrera .setStyleSheet(LABELS['creditos_titulo_carrera'])
         layout_creditos.addWidget(titulo_carrera, 5, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_universidad = QLabel('UTP')
-        titulo_universidad.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_universidad.setStyleSheet(LABELS['creditos_titulo_universidad'])
         layout_creditos.addWidget(titulo_universidad, 6, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
 
         titulo_contacto = QLabel('CONTACTO Y SOPORTE')
-        titulo_contacto .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_contacto .setStyleSheet(LABELS['creditos_titulo_contacto'])
         layout_creditos.addWidget(titulo_contacto , 7, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_numero1 = QLabel('3192742428')
-        titulo_numero1 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_numero1 .setStyleSheet(LABELS['creditos_titulo_numero1'])
         layout_creditos.addWidget(titulo_numero1 , 8, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
         
         titulo_numero2 = QLabel('3246844088')
-        titulo_numero2 .setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_numero2 .setStyleSheet(LABELS['creditos_titulo_numero2'])
         layout_creditos.addWidget(titulo_numero2 , 9, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
 
         #Crear un QLabel para mostrar la imagen

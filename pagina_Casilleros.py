@@ -8,6 +8,7 @@ from PyQt5.QtCore import pyqtSignal
 # base de datos
 from DatabaseConnection import DatabaseConnection
 from config import DB_CONFIG
+from styles import LABELS, LINEAS, BOTONES, INPUTS, COMBOBOX, TABLAS, CHECKBOXES, CALENDARIOS, OTROS
 class PaginaCasilleros(QWidget):
     senalActualizarTextboxesTicketsRegistrosMotos = pyqtSignal()
     senalActualizarComboboxPcs= pyqtSignal()
@@ -93,52 +94,52 @@ class PaginaCasilleros(QWidget):
         layout_tickets = QGridLayout()
 
         titulo_casilleros = QLabel('GESTIONAR CASILLEROS')
-        titulo_casilleros.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_casilleros.setStyleSheet(LABELS['casilleros_titulo_casilleros'])
         layout_tickets.addWidget(titulo_casilleros, 0, 0, 1, 10, alignment=Qt.AlignTop | Qt.AlignCenter)
 
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(LINEAS['casilleros_linea_horizontal1'])
         layout_tickets.addWidget(linea_horizontal1, 1, 0, 1, 10)
 
         titulo_tablacasilleros = QLabel('CASILLEROS')
-        titulo_tablacasilleros.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_tablacasilleros.setStyleSheet(LABELS['casilleros_titulo_tablacasilleros'])
         layout_tickets.addWidget(titulo_tablacasilleros, 2, 0, 1, 4, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         
         titulo_agregarCasillero = QLabel('AGREGAR CASILLERO')
-        titulo_agregarCasillero.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_agregarCasillero.setStyleSheet(LABELS['casilleros_titulo_agregar_casillero'])
         layout_tickets.addWidget(titulo_agregarCasillero, 8, 0, 1, 4, alignment= Qt.AlignTop|Qt.AlignHCenter)
 
         titulo_numero = QLabel('NUMERO')
-        titulo_numero .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_numero .setStyleSheet(LABELS['casilleros_titulo_numero'])
         layout_tickets.addWidget(titulo_numero , 8, 0, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         textbox_numero = QLineEdit()
-        textbox_numero.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_numero.setStyleSheet(INPUTS['casilleros_textbox_numero'])
         textbox_numero.setValidator(QIntValidator())
         layout_tickets.addWidget(textbox_numero, 8, 1, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         titulo_pc = QLabel('PC')
-        titulo_pc.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_pc.setStyleSheet(LABELS['casilleros_titulo_pc'])
         layout_tickets.addWidget(titulo_pc , 8, 2, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         self.combobox_pcRegistro = QComboBox()
-        self.combobox_pcRegistro.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
+        self.combobox_pcRegistro.setStyleSheet(COMBOBOX['casilleros_combobox_pc_registro'])
         layout_tickets.addWidget(self.combobox_pcRegistro,8, 3, 1, 1, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         titulo_estado = QLabel('ESTADO')
-        titulo_estado .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_estado .setStyleSheet(LABELS['casilleros_titulo_estado'])
         layout_tickets.addWidget(titulo_estado , 9, 0, 1, 1, alignment= Qt.AlignCenter|Qt.AlignHCenter)
 
         combobox_Estado = QComboBox()
         combobox_Estado.addItems(['DISPONIBLE','OCUPADO'])
-        combobox_Estado.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
+        combobox_Estado.setStyleSheet(COMBOBOX['casilleros_combobox_estado'])
         layout_tickets.addWidget(combobox_Estado,9, 1, 1, 1, alignment= Qt.AlignCenter |Qt.AlignHCenter)
 
         boton_agregar = QPushButton('AGREGAR')
-        boton_agregar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_agregar.setStyleSheet(BOTONES['casilleros_boton_agregar'])
         layout_tickets.addWidget(boton_agregar,9, 2, 1, 1, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         boton_agregar.clicked.connect(lambda: [
             db_connection.registrarCasillero(
@@ -158,48 +159,7 @@ class PaginaCasilleros(QWidget):
         self.tabla_registrosCasillero.verticalHeader().setVisible(False)
         self.tabla_registrosCasillero.setHorizontalHeaderLabels(
             ['NUMERO', 'PC', 'Posicion', 'Estado','Placa'])
-        self.tabla_registrosCasillero.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
-
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
-            }
-
-            QTableWidget::item:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
-            }
-
-            QTableWidget::item:selected {
-                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
-                color: white; /* Color del texto de la celda seleccionada */
-            }
-
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
-
-            QHeaderView::section:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse */
-            }
-
-            QHeaderView::section:selected {
-                background-color: white; /* Color de fondo al seleccionar */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-            }
-
-            QLineEdit {
-                color: white; /* Color del texto del QLineEdit durante la edición */
-            }
-        """)
+        self.tabla_registrosCasillero.setStyleSheet(TABLAS['casilleros_tabla_registros_casillero'])
         header = self.tabla_registrosCasillero.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
@@ -212,7 +172,7 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(self.tabla_registrosCasillero, 3, 0, 5, 4)
 
         boton_desocupar = QPushButton('DESOCUPAR')
-        boton_desocupar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_desocupar.setStyleSheet(BOTONES['casilleros_boton_desocupar'])
         layout_tickets.addWidget(boton_desocupar, 3, 4, 1, 2,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -226,7 +186,7 @@ class PaginaCasilleros(QWidget):
 
         
         boton_eliminar = QPushButton('ELIMINAR')
-        boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_eliminar.setStyleSheet(BOTONES['casilleros_boton_eliminar'])
         layout_tickets.addWidget(boton_eliminar, 4, 4, 1, 2,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         #---
@@ -241,21 +201,21 @@ class PaginaCasilleros(QWidget):
     ])
         #---
         titulo_cambiarPc = QLabel('CAMBIAR PC')
-        titulo_cambiarPc .setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_cambiarPc .setStyleSheet(LABELS['casilleros_titulo_cambiar_pc'])
         layout_tickets.addWidget(titulo_cambiarPc, 5, 4, 1, 2,
                                 alignment=Qt.AlignBottom| Qt.AlignHCenter)
         
         titulo_pcCambiar = QLabel('PC')
-        titulo_pcCambiar.setStyleSheet("color: #FFFFFF;font-size: 20px; font-weight: bold;")
+        titulo_pcCambiar.setStyleSheet(LABELS['casilleros_titulo_pc_cambiar'])
         layout_tickets.addWidget(titulo_pcCambiar , 6, 4, 1, 1, alignment= Qt.AlignRight|Qt.AlignTop)
 
         self.combobox_pcCambiar = QComboBox()
         self.combobox_pcCambiar.setFixedWidth(50)
-        self.combobox_pcCambiar.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 20px;")
+        self.combobox_pcCambiar.setStyleSheet(COMBOBOX['casilleros_combobox_pc_cambiar'])
         layout_tickets.addWidget(self.combobox_pcCambiar,6, 5, 1, 1, alignment=Qt.AlignLeft |Qt.AlignTop)
         self.actualizarComboboxpcs()
         boton_guardarPc = QPushButton('GUARDAR')
-        boton_guardarPc.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_guardarPc.setStyleSheet(BOTONES['casilleros_boton_guardar_pc'])
         layout_tickets.addWidget(boton_guardarPc,7, 4, 1, 2,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         #Se guarda la edición
@@ -270,55 +230,14 @@ class PaginaCasilleros(QWidget):
 
 
         titulo_tablaOrdenDeLlegada = QLabel('ORDEN DE LLENADO')
-        titulo_tablaOrdenDeLlegada.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_tablaOrdenDeLlegada.setStyleSheet(LABELS['casilleros_titulo_tabla_orden_de_llegada'])
         layout_tickets.addWidget(titulo_tablaOrdenDeLlegada, 2, 6, 1, 3, alignment= Qt.AlignCenter |Qt.AlignTop)
         self.tablaOrdenDeLlenado = QTableWidget(self)
         self.tablaOrdenDeLlenado.setColumnCount(4)  # Definir el número de columnas
         self.tablaOrdenDeLlenado.verticalHeader().setVisible(False)
         self.tablaOrdenDeLlenado.setHorizontalHeaderLabels(
             ['POSICION','NUMERO', 'ESTADO', 'PC'])
-        self.tablaOrdenDeLlenado.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
-
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
-            }
-
-            QTableWidget::item:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
-            }
-
-            QTableWidget::item:selected {
-                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
-                color: white; /* Color del texto de la celda seleccionada */
-            }
-
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
-
-            QHeaderView::section:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse */
-            }
-
-            QHeaderView::section:selected {
-                background-color: white; /* Color de fondo al seleccionar */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-            }
-
-            QLineEdit {
-                color: white; /* Color del texto del QLineEdit durante la edición */
-            }
-        """)
+        self.tablaOrdenDeLlenado.setStyleSheet(TABLAS['casilleros_tabla_orden_de_llenado'])
         header = self.tablaOrdenDeLlenado.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Estirar las columnas para ocupar el espacio
         header.setStretchLastSection(True)  # Estirar la última sección (última columna) para llenar el espacio restante
@@ -330,7 +249,7 @@ class PaginaCasilleros(QWidget):
         layout_tickets.addWidget(self.tablaOrdenDeLlenado, 3, 6, 5, 3)
 
         boton_subir = QPushButton('SUBIR')
-        boton_subir.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_subir.setStyleSheet(BOTONES['casilleros_boton_subir'])
         layout_tickets.addWidget(boton_subir, 3, 9, 2, 1,
                                 alignment=Qt.AlignTop| Qt.AlignHCenter)
         boton_subir.clicked.connect(lambda: [
@@ -343,7 +262,7 @@ class PaginaCasilleros(QWidget):
         ])
 
         boton_bajar = QPushButton('BAJAR')
-        boton_bajar.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_bajar.setStyleSheet(BOTONES['casilleros_boton_bajar'])
         layout_tickets.addWidget(boton_bajar, 3, 9, 2, 1,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_bajar.clicked.connect(lambda: [
