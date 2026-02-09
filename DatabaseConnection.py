@@ -416,22 +416,53 @@ class DatabaseConnection:
         self.execute_query(query, params)
 
     def obtenerPlacaPorCasillero(self, casillero):
+        """
+        Obtiene la placa de la moto que actualmente ocupa un casillero.
+        
+        Retorna la placa solo si:
+        - El casillero existe en la tabla Casillero
+        - El estado del casillero es 'OCUPADO'
+        - Hay un registro activo en registrosMoto (fechaSalida IS NULL)
+        - El casillero no está eliminado
+        
+        Returns:
+            str: Placa de la moto si el casillero está ocupado
+            None: Si el casillero está disponible o no existe
+            0: Si es el casillero 0 (sin casco)
+        """
         # Si el casillero es 0, devolver 0 directamente
         if casillero == 0:
             return 0
         
         query = """
-        SELECT placa 
-        FROM registrosmoto 
-        WHERE Casillero = %s 
-        AND fechaSalida IS NULL
-        ORDER BY id DESC
+        SELECT rm.Placa 
+        FROM registrosmoto rm
+        INNER JOIN Casillero c ON rm.Casillero = c.id
+        WHERE rm.Casillero = %s 
+        AND rm.fechaSalida IS NULL
+        AND c.Estado = 'OCUPADO'
+        AND c.Eliminado = 0
+        ORDER BY rm.id DESC
         LIMIT 1 
         """
         cursor = self.connection.cursor()
-        cursor.execute(query, (casillero,))
-        resultado = cursor.fetchone()  # Obtiene una sola fila
-        return resultado[0] if resultado else None  # Retorna la placa si existe, o None si no hay coincidencias
+        try:
+            cursor.execute(query, (casillero,))
+            resultado = cursor.fetchone()
+            placa = resultado[0] if resultado else None
+            
+            # Debug opcional - comentar después de verificar funcionamiento
+            if placa:
+                print(f"🔍 Casillero {casillero}: OCUPADO con placa {placa}")
+            else:
+                print(f"🔍 Casillero {casillero}: DISPONIBLE (sin placa)")
+            
+            return placa
+        except Exception as e:
+            print(f"❌ Error al obtener placa del casillero {casillero}: {e}")
+            return None
+        finally:
+            cursor.close()
 
 
 
