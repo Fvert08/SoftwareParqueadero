@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
 from leerTxt import escribir_archivo,leer_archivo,leer_archivoDesencriptado,escribir_archivoEncriptado
+from styles import STYLES
 
 class PaginaConfiguracion(QWidget):
     senalActualizarTextboxesSuscripcion = pyqtSignal()
@@ -119,18 +120,18 @@ class PaginaConfiguracion(QWidget):
         linea_vertical = QFrame()
         linea_vertical.setFrameShape(QFrame.VLine)
         linea_vertical.setLineWidth(1)
-        linea_vertical.setStyleSheet("color: #FFFFFF;")
+        linea_vertical.setStyleSheet(STYLES['pagina_configuracion.py:122'])
         layout_configuracion.addWidget(linea_vertical, 0, 0, 8, 1)
 
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('Menú')
-        titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_menu.setStyleSheet(STYLES['pagina_configuracion.py:127'])
         layout_configuracion.addWidget(titulo_menu, 0, 1, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
 
         linea_horizontal2 = QFrame()
         linea_horizontal2.setFrameShape(QFrame.HLine)
         linea_horizontal2.setLineWidth(1)
-        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal2.setStyleSheet(STYLES['pagina_configuracion.py:133'])
         layout_configuracion.addWidget(linea_horizontal2, 0, 1, 1, 2, alignment=Qt.AlignBottom)
 
         layout_configuracion.setRowStretch(0, 0)
@@ -143,21 +144,21 @@ class PaginaConfiguracion(QWidget):
 
         # Crea un boton para cambiar a las configuraciones de Usuario
         self.boton_Usuarios = QPushButton("VALORES")
-        self.boton_Usuarios.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        self.boton_Usuarios.setStyleSheet(STYLES['pagina_configuracion.py:146'])
         layout_configuracion.addWidget(self.boton_Usuarios, 1, 1, 1, 1, alignment=Qt.AlignHCenter  | Qt.AlignCenter)
         self.boton_Usuarios.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(0))
         self.boton_Usuarios.setEnabled(False)  # Deshabilitado inicialmente
 
         # Crea un boton para cambiar a las configuraciones de PC
         self.boton_PC = QPushButton("PC")
-        self.boton_PC.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        self.boton_PC.setStyleSheet(STYLES['pagina_configuracion.py:153'])
         layout_configuracion.addWidget(self.boton_PC, 2, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
         self.boton_PC.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(2))
         self.boton_PC.setEnabled(False)  # Deshabilitado inicialmente
 
         # Crea un boton para cambiar a la suscripcion del PC
         self.boton_Suscripcion = QPushButton("SUSCRIPCIÓN")
-        self.boton_Suscripcion.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        self.boton_Suscripcion.setStyleSheet(STYLES['pagina_configuracion.py:160'])
         layout_configuracion.addWidget(self.boton_Suscripcion, 3, 1, 1, 1, alignment=Qt.AlignHCenter  |Qt.AlignCenter)
         self.boton_Suscripcion.clicked.connect(lambda: self.stacked_widgetConfiguracion.setCurrentIndex(3))
         self.boton_Suscripcion.setEnabled(False)  # Deshabilitado inicialmente
@@ -186,49 +187,49 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_CambiarValores = QLabel('VALORES DE FACTURACION')
-        titulo_CambiarValores.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_CambiarValores.setStyleSheet(STYLES['pagina_configuracion.py:189'])
         layout_Valores.addWidget(titulo_CambiarValores, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_configuracion.py:195'])
         layout_Valores.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_usuariosAgregados = QLabel('Valores')
-        titulo_usuariosAgregados .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_usuariosAgregados .setStyleSheet(STYLES['pagina_configuracion.py:199'])
         layout_Valores.addWidget(titulo_usuariosAgregados  , 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
    
         #Hora
         titulo_hora = QLabel('Hora')
-        titulo_hora.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_hora.setStyleSheet(STYLES['pagina_configuracion.py:204'])
         layout_Valores.addWidget(titulo_hora, 3, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
         self.textbox_horaFacturacion = QLineEdit()
-        self.textbox_horaFacturacion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_horaFacturacion.setStyleSheet(STYLES['pagina_configuracion.py:208'])
         self.textbox_horaFacturacion.setValidator(QIntValidator())
         layout_Valores.addWidget(self.textbox_horaFacturacion, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Dia
         titulo_dia = QLabel('Dia')
-        titulo_dia.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_dia.setStyleSheet(STYLES['pagina_configuracion.py:213'])
         layout_Valores.addWidget(titulo_dia, 4, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
         self.textbox_diaFecturacion = QLineEdit()
-        self.textbox_diaFecturacion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_diaFecturacion.setStyleSheet(STYLES['pagina_configuracion.py:217'])
         self.textbox_diaFecturacion.setValidator(QIntValidator())
         layout_Valores.addWidget(self.textbox_diaFecturacion, 4, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Mes
         titulo_mes = QLabel('Mes')
-        titulo_mes.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_mes.setStyleSheet(STYLES['pagina_configuracion.py:222'])
         layout_Valores.addWidget(titulo_mes, 5, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
         self.textbox_mesFacturacion = QLineEdit()
-        self.textbox_mesFacturacion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_mesFacturacion.setStyleSheet(STYLES['pagina_configuracion.py:226'])
         self.textbox_mesFacturacion.setValidator(QIntValidator())
         layout_Valores.addWidget(self.textbox_mesFacturacion, 5, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
         boton_aceptar = QPushButton('ACEPTAR')
-        boton_aceptar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        boton_aceptar.setStyleSheet(STYLES['pagina_configuracion.py:231'])
         layout_Valores.addWidget(boton_aceptar, 6, 0, 1, 7,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -264,28 +265,28 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_validar = QLabel('VALIDAR ACCESO')
-        titulo_validar.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_validar.setStyleSheet(STYLES['pagina_configuracion.py:267'])
         layout_Validar.addWidget(titulo_validar, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_configuracion.py:273'])
         layout_Validar.addWidget(linea_horizontal1, 1, 0, 1, 7)
 
         titulo_ContraseñaAcceso = QLabel('CONTRASEÑA')
-        titulo_ContraseñaAcceso.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_ContraseñaAcceso.setStyleSheet(STYLES['pagina_configuracion.py:277'])
         layout_Validar.addWidget(titulo_ContraseñaAcceso, 2, 0, 1, 7, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         #Textbox Contraseña
         self.textbox_ContraseñaAcceso = QLineEdit()
-        self.textbox_ContraseñaAcceso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textbox_ContraseñaAcceso.setStyleSheet(STYLES['pagina_configuracion.py:282'])
         self.textbox_ContraseñaAcceso.setEchoMode(QLineEdit.Password)  # Inicialmente oculta la contraseña
         layout_Validar.addWidget(self.textbox_ContraseñaAcceso, 3, 0, 1, 7, alignment=Qt.AlignHCenter | Qt.AlignCenter)
 
         # Crea un boton para ingresar a generar ticket ingresar moto
         self.boton_OcultarContrasena = QPushButton()
-        self.boton_OcultarContrasena.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
+        self.boton_OcultarContrasena.setStyleSheet(STYLES['pagina_configuracion.py:288'])
         self.boton_OcultarContrasena.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
         self.boton_OcultarContrasena.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
         layout_Validar.addWidget(self.boton_OcultarContrasena, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignCenter)
@@ -295,7 +296,7 @@ class PaginaConfiguracion(QWidget):
 
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
-        boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
+        boton_validar.setStyleSheet(STYLES['pagina_configuracion.py:298'])
         layout_Validar.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
         
         # Conectar el botón de validar a la función de verificación
@@ -350,65 +351,24 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_ = QLabel('PC')
-        titulo_.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_.setStyleSheet(STYLES['pagina_configuracion.py:353'])
         layout_PC.addWidget(titulo_, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_configuracion.py:359'])
         layout_PC.addWidget(linea_horizontal1, 1, 0, 1, 7)
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcAgregados= QLabel('PC´S AGREGADOS')
-        titulo_PcAgregados.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_PcAgregados.setStyleSheet(STYLES['pagina_configuracion.py:363'])
         layout_PC.addWidget(titulo_PcAgregados, 2, 0, 1, 4, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         #Tabla
         self.tabla_PCAgregados = QTableWidget(self)
         self.tabla_PCAgregados.setColumnCount(3)  # Definir el número de columnas
         self.tabla_PCAgregados.verticalHeader().setVisible(False)
         self.tabla_PCAgregados.setHorizontalHeaderLabels(['ID', 'DESCRIPCIÓN', 'CASILLEROS\nASOCIADOS'])
-        self.tabla_PCAgregados.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
-
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
-            }
-
-            QTableWidget::item:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
-            }
-
-            QTableWidget::item:selected {
-                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
-                color: white; /* Color del texto de la celda seleccionada */
-            }
-
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
-
-            QHeaderView::section:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse */
-            }
-
-            QHeaderView::section:selected {
-                background-color: white; /* Color de fondo al seleccionar */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-            }
-
-            QLineEdit {
-                color: white; /* Color del texto del QLineEdit durante la edición */
-            }
-        """)
+        self.tabla_PCAgregados.setStyleSheet(STYLES['pagina_configuracion.py:370'])
         #seleccionar toda la fila
         self.tabla_PCAgregados.setSelectionBehavior(QAbstractItemView.SelectRows)
 
@@ -422,7 +382,7 @@ class PaginaConfiguracion(QWidget):
 
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
-        boton_editar .setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        boton_editar .setStyleSheet(STYLES['pagina_configuracion.py:425'])
         layout_PC.addWidget(boton_editar , 7, 0, 1, 2,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         boton_editar.clicked.connect(lambda: [
@@ -442,7 +402,7 @@ class PaginaConfiguracion(QWidget):
         ])
         
         boton_eliminar = QPushButton('ELIMINAR')
-        boton_eliminar.setStyleSheet("color: White; background-color: #222125; font-size: 25px; border-radius: 15px; padding: 10px 20px;")
+        boton_eliminar.setStyleSheet(STYLES['pagina_configuracion.py:445'])
         layout_PC.addWidget(boton_eliminar, 7, 2, 1, 2,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_eliminar.clicked.connect(lambda: [
@@ -461,10 +421,10 @@ class PaginaConfiguracion(QWidget):
         ])
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcActual= QLabel('PC ACTUAL')
-        titulo_PcActual.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_PcActual.setStyleSheet(STYLES['pagina_configuracion.py:464'])
         layout_PC.addWidget(titulo_PcActual, 8, 0, 1, 1, alignment=Qt.AlignCenter| Qt.AlignLeft)
         textbox_PCActual = QLineEdit()
-        textbox_PCActual.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_PCActual.setStyleSheet(STYLES['pagina_configuracion.py:467'])
         textbox_PCActual.setFixedWidth(50)
         textbox_PCActual.setReadOnly(True)
         textbox_PCActual.setText(leer_archivo('config','PcActual.txt'))
@@ -472,23 +432,23 @@ class PaginaConfiguracion(QWidget):
         layout_PC.addWidget(textbox_PCActual, 8, 1, 1, 1, alignment=Qt.AlignCenter| Qt.AlignRight)
         #Parte derecha de la Tabla 
         titulo_ID= QLabel('ID')
-        titulo_ID.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_ID.setStyleSheet(STYLES['pagina_configuracion.py:475'])
         layout_PC.addWidget(titulo_ID, 3, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
         textbox_ID = QLineEdit()
-        textbox_ID.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_ID.setStyleSheet(STYLES['pagina_configuracion.py:478'])
         textbox_ID.setValidator(QIntValidator())
         layout_PC.addWidget(textbox_ID, 4, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
         
         titulo_Descripcion= QLabel('DESCRIPCION')
-        titulo_Descripcion.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_Descripcion.setStyleSheet(STYLES['pagina_configuracion.py:483'])
         layout_PC.addWidget(titulo_Descripcion,5, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
 
         textbox_Descripcion = QLineEdit()
-        textbox_Descripcion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Descripcion.setStyleSheet(STYLES['pagina_configuracion.py:487'])
         layout_PC.addWidget(textbox_Descripcion, 6, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
 
         boton_Guardar = QPushButton('Guardar')
-        boton_Guardar.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
+        boton_Guardar.setStyleSheet(STYLES['pagina_configuracion.py:491'])
         layout_PC.addWidget(boton_Guardar, 7, 4, 1, 3,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         boton_Guardar.clicked.connect(lambda: [
@@ -504,15 +464,15 @@ class PaginaConfiguracion(QWidget):
         #Cambiar Pc
         titulo_CambiarPC= QLabel('CAMBIAR PC\nACTUAL')
         titulo_CambiarPC.setAlignment(Qt.AlignCenter)
-        titulo_CambiarPC.setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_CambiarPC.setStyleSheet(STYLES['pagina_configuracion.py:507'])
         layout_PC.addWidget(titulo_CambiarPC,8, 2, 1, 3, alignment=Qt.AlignCenter | Qt.AlignRight)
 
         self.combobox_pc = QComboBox()
-        self.combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
+        self.combobox_pc.setStyleSheet(STYLES['pagina_configuracion.py:511'])
         layout_PC.addWidget(self.combobox_pc,8,5, 1, 1, alignment=Qt.AlignCenter|Qt.AlignHCenter)
         self.actualizarComboboxpcs()
         boton_Cambiar = QPushButton('CAMBIAR')
-        boton_Cambiar.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
+        boton_Cambiar.setStyleSheet(STYLES['pagina_configuracion.py:515'])
         layout_PC.addWidget(boton_Cambiar, 8, 6, 1, 1,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         #Se guarda la edición
@@ -588,25 +548,25 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_Suscripcion= QLabel('SUSCRIPCIÓN')
-        titulo_Suscripcion.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_Suscripcion.setStyleSheet(STYLES['pagina_configuracion.py:591'])
         layout_Suscripcion.addWidget(titulo_Suscripcion, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_configuracion.py:597'])
         layout_Suscripcion.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_Codigo = QLabel('CÓDIGO')
-        titulo_Codigo .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_Codigo .setStyleSheet(STYLES['pagina_configuracion.py:601'])
         layout_Suscripcion.addWidget(titulo_Codigo  , 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         
         textbox_Codigo = QLineEdit()
-        textbox_Codigo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        textbox_Codigo.setStyleSheet(STYLES['pagina_configuracion.py:605'])
         layout_Suscripcion.addWidget(textbox_Codigo,3, 0, 2, 7, alignment=Qt.AlignHCenter |Qt.AlignTop)
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
-        boton_validar.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
+        boton_validar.setStyleSheet(STYLES['pagina_configuracion.py:609'])
         layout_Suscripcion.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
          # Conectar el botón de imprimir a la función registrarMoto
         boton_validar.clicked.connect(lambda: [
@@ -618,21 +578,21 @@ class PaginaConfiguracion(QWidget):
 
 
         titulo_EstadoActual= QLabel('ESTADO ACTUAL')
-        titulo_EstadoActual .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        titulo_EstadoActual .setStyleSheet(STYLES['pagina_configuracion.py:621'])
         layout_Suscripcion.addWidget(titulo_EstadoActual  , 6, 3, 1, 1, alignment= Qt.AlignCenter |Qt.AlignCenter)
 
         self.textboxEstadoActualSuscripcion = QLineEdit()
-        self.textboxEstadoActualSuscripcion.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxEstadoActualSuscripcion.setStyleSheet(STYLES['pagina_configuracion.py:625'])
         self.textboxEstadoActualSuscripcion.setReadOnly(True)
         layout_Suscripcion.addWidget(self.textboxEstadoActualSuscripcion, 6, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
 
 
         tituloDiasRestantesSuscripción = QLabel('DIAS RESTANTES')
-        tituloDiasRestantesSuscripción .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
+        tituloDiasRestantesSuscripción .setStyleSheet(STYLES['pagina_configuracion.py:631'])
         layout_Suscripcion.addWidget(tituloDiasRestantesSuscripción  , 7, 3, 1, 1, alignment= Qt.AlignTop |Qt.AlignCenter)
 
         self.textboxDiasRestantesSuscripcion = QLineEdit()
-        self.textboxDiasRestantesSuscripcion.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxDiasRestantesSuscripcion.setStyleSheet(STYLES['pagina_configuracion.py:635'])
         self.textboxDiasRestantesSuscripcion.setReadOnly(True)
         layout_Suscripcion.addWidget(self.textboxDiasRestantesSuscripcion, 7, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
         self.actualizarTextboxesSuscripcion() #Actualizar etxboxes

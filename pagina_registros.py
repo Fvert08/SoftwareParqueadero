@@ -10,6 +10,7 @@ from generarTickets.TicketIngresoMoto import generarTicketIngresoMoto
 from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensualidad
 from generarTickets.TicketIngresoFijo import generarTicketIngresoFijo
 from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
+from styles import STYLES
 class PaginaRegistros(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -207,23 +208,23 @@ class PaginaRegistros(QWidget):
         linea_vertical = QFrame()
         linea_vertical.setFrameShape(QFrame.VLine)
         linea_vertical.setLineWidth(1)
-        linea_vertical.setStyleSheet("color: #FFFFFF;")
+        linea_vertical.setStyleSheet(STYLES['pagina_registros.py:210'])
         layout_registros.addWidget(linea_vertical, 0, 0, 9, 1)  # Cambiado de 8 a 9 filas
         
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('MENÚ')
-        titulo_menu.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_menu.setStyleSheet(STYLES['pagina_registros.py:215'])
         layout_registros.addWidget(titulo_menu, 0, 1, 1, 1, alignment= Qt.AlignCenter)
 
         linea_horizontal2 = QFrame()
         linea_horizontal2.setFrameShape(QFrame.HLine)
         linea_horizontal2.setLineWidth(1)
-        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal2.setStyleSheet(STYLES['pagina_registros.py:221'])
         layout_registros.addWidget(linea_horizontal2, 1, 1, 1, 1)
         
         # Crea un boton para cambiar a Registros
         boton_Registros= QPushButton("REGISTROS")
-        boton_Registros.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_Registros.setStyleSheet(STYLES['pagina_registros.py:226'])
         layout_registros.addWidget(boton_Registros, 2, 1, 1, 1)
         boton_Registros.setCheckable(True)
         boton_Registros.setChecked(True)
@@ -231,21 +232,21 @@ class PaginaRegistros(QWidget):
         
         # Crea un boton para cambiar a Fijos
         boton_Fijos = QPushButton("FIJOS")
-        boton_Fijos.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_Fijos.setStyleSheet(STYLES['pagina_registros.py:234'])
         layout_registros.addWidget(boton_Fijos, 3, 1, 1, 1)
         boton_Fijos.setCheckable(True)
         boton_Fijos.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(1))
       
         # Crea un boton para cambiar a las Mensualidades
         boton_Mensualidades = QPushButton("MENSUALIDADES")
-        boton_Mensualidades.setStyleSheet("color: White; background-color: #222125; font-size: 10px; border-radius: 15px; padding: 10px 20px;")
+        boton_Mensualidades.setStyleSheet(STYLES['pagina_registros.py:241'])
         layout_registros.addWidget(boton_Mensualidades, 4, 1, 1, 1)
         boton_Mensualidades.setCheckable(True)
         boton_Mensualidades.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(2))
 
        # Crea un botón para Resumen en la parte inferior
         boton_Resumen = QPushButton("RESUMEN")
-        boton_Resumen.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_Resumen.setStyleSheet(STYLES['pagina_registros.py:248'])
         layout_registros.addWidget(boton_Resumen, 8, 1, 1, 1)  # Posición 8 (parte inferior)
         boton_Resumen.setCheckable(True)
         boton_Resumen.pressed.connect(lambda:self.stacked_widgetregistros.setCurrentIndex(3))
@@ -286,13 +287,13 @@ class PaginaRegistros(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_Registros = QLabel('REGISTROS')
-        titulo_Registros.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_Registros.setStyleSheet(STYLES['pagina_registros.py:289'])
         layout_TablaRegistros.addWidget(titulo_Registros, 0, 0, 1, 9,alignment=Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_registros.py:295'])
         layout_TablaRegistros.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tablaRegistrosMotos = QTableWidget(self)
@@ -300,48 +301,7 @@ class PaginaRegistros(QWidget):
         self.tablaRegistrosMotos.verticalHeader().setVisible(False)
         self.tablaRegistrosMotos.setHorizontalHeaderLabels(
             ['ID', 'CASILLERO', 'PLACA', 'CASCOS', 'TIPO', 'F.INGRESO', 'H.INGRESO', 'F.SALIDA','H.SALIDA', 'TOTAL'])
-        self.tablaRegistrosMotos.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
-
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
-            }
-
-            QTableWidget::item:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
-            }
-
-            QTableWidget::item:selected {
-                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
-                color: white; /* Color del texto de la celda seleccionada */
-            }
-
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
-
-            QHeaderView::section:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse */
-            }
-
-            QHeaderView::section:selected {
-                background-color: white; /* Color de fondo al seleccionar */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-            }
-
-            QLineEdit {
-                color: white; /* Color del texto del QLineEdit durante la edición */
-            }
-        """)
+        self.tablaRegistrosMotos.setStyleSheet(STYLES['pagina_registros.py:303'])
         #seleccionar toda la fila
         self.tablaRegistrosMotos.setSelectionBehavior(QAbstractItemView.SelectRows)
         #Configurar cabecera
@@ -352,24 +312,24 @@ class PaginaRegistros(QWidget):
         #Botones del filtro
         self.combobox_FiltroRegistroMoto = QComboBox()
         self.combobox_FiltroRegistroMoto.addItems(['Todo', "ID" ,'Casillero', 'Placa', 'Tipo'])
-        self.combobox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        self.combobox_FiltroRegistroMoto.setStyleSheet(STYLES['pagina_registros.py:355'])
         layout_TablaRegistros.addWidget(self.combobox_FiltroRegistroMoto, 8, 0, 1, 1)
         
         self.textbox_FiltroRegistroMoto = QLineEdit()
-        self.textbox_FiltroRegistroMoto.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        self.textbox_FiltroRegistroMoto.setStyleSheet(STYLES['pagina_registros.py:359'])
         layout_TablaRegistros.addWidget(self.textbox_FiltroRegistroMoto , 8, 1, 1, 1)
         # Rellenar la tabla dependiendo de lo seleccionado en el combo box
         self.actualizarTablaRegistroMotos()
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px")
+        boton_Buscar .setStyleSheet(STYLES['pagina_registros.py:365'])
         layout_TablaRegistros.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaRegistroMotos()
             ])
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;  border-radius: 15px; padding: 10px;")
+        boton_ReimprimirRegistro .setStyleSheet(STYLES['pagina_registros.py:372'])
         layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
             self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
@@ -382,7 +342,7 @@ class PaginaRegistros(QWidget):
         )])
         #Boton Eliminar Registro
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
-        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_EliminarRegistro .setStyleSheet(STYLES['pagina_registros.py:385'])
         layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
         boton_EliminarRegistro.clicked.connect(lambda: [
             self.tablaRegistrosMotos.selectedItems() and db_connection.eliminarRegistroMoto(
@@ -392,7 +352,7 @@ class PaginaRegistros(QWidget):
         self.actualizarTablaRegistroMotos()])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_GuardarEdicion .setStyleSheet(STYLES['pagina_registros.py:395'])
         layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
              self.tablaRegistrosMotos.selectedItems() and db_connection.editarRegistroMoto(
@@ -413,7 +373,7 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Limpiar Registro
         boton_LimpiarRegistro = QPushButton('LIMPIAR REGISTRO')
-        boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_LimpiarRegistro .setStyleSheet(STYLES['pagina_registros.py:416'])
         layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1)
         boton_LimpiarRegistro.clicked.connect(lambda: [ db_connection.limparRegistrosMotos(),
         self.actualizarTablaRegistroMotos()])
@@ -435,13 +395,13 @@ class PaginaRegistros(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_Fijo = QLabel('FIJO')
-        titulo_Fijo.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_Fijo.setStyleSheet(STYLES['pagina_registros.py:438'])
         layout_TablaFijo.addWidget(titulo_Fijo, 0, 0, 1, 9, Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_registros.py:444'])
         layout_TablaFijo.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tablaRegistrosFijos = QTableWidget(self)
@@ -449,48 +409,7 @@ class PaginaRegistros(QWidget):
         self.tablaRegistrosFijos.verticalHeader().setVisible(False)
         self.tablaRegistrosFijos.setHorizontalHeaderLabels(
             ['ID', 'TIPO','NOTA','F.INGRESO', 'H.INGRESO', 'F.SALIDA', 'H.SALIDA','VALOR'])
-        self.tablaRegistrosFijos.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
-
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
-            }
-
-            QTableWidget::item:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
-            }
-
-            QTableWidget::item:selected {
-                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
-                color: white; /* Color del texto de la celda seleccionada */
-            }
-
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
-
-            QHeaderView::section:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse */
-            }
-
-            QHeaderView::section:selected {
-                background-color: white; /* Color de fondo al seleccionar */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-            }
-
-            QLineEdit {
-                color: white; /* Color del texto del QLineEdit durante la edición */
-            }
-        """)
+        self.tablaRegistrosFijos.setStyleSheet(STYLES['pagina_registros.py:452'])
         #seleccionar toda la fila
         self.tablaRegistrosFijos.setSelectionBehavior(QAbstractItemView.SelectRows)
         #Configurar cabecera
@@ -503,18 +422,18 @@ class PaginaRegistros(QWidget):
         #Botones del filtro
         self.combobox_filtroRegistroFijos= QComboBox()
         self.combobox_filtroRegistroFijos.addItems(['Todo','ID','Tipo','Valor'])
-        self.combobox_filtroRegistroFijos.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        self.combobox_filtroRegistroFijos.setStyleSheet(STYLES['pagina_registros.py:506'])
         layout_TablaFijo.addWidget(self.combobox_filtroRegistroFijos, 8, 0, 1, 1)
         # Rellenar la tabla dependiendo de lo seleccionado en el combo box
         self.actualizarTablaFijos()
 
         self.textbox_FiltroRegistroFijo  = QLineEdit()
-        self.textbox_FiltroRegistroFijo.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        self.textbox_FiltroRegistroFijo.setStyleSheet(STYLES['pagina_registros.py:512'])
         layout_TablaFijo.addWidget( self.textbox_FiltroRegistroFijo , 8, 1, 1, 1)
 
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_Buscar .setStyleSheet(STYLES['pagina_registros.py:517'])
         layout_TablaFijo.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaFijos()
@@ -522,7 +441,7 @@ class PaginaRegistros(QWidget):
 
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR INGRESO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125;border-radius: 15px; padding: 10px;")
+        boton_ReimprimirRegistro .setStyleSheet(STYLES['pagina_registros.py:525'])
         layout_TablaFijo.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
              self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
@@ -536,7 +455,7 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Eliminar Registro
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
-        boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_EliminarRegistro .setStyleSheet(STYLES['pagina_registros.py:539'])
         layout_TablaFijo.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
         boton_EliminarRegistro.clicked.connect(lambda: [
             self.tablaRegistrosFijos.selectedItems() and db_connection.eliminarRegistroFijo(
@@ -546,7 +465,7 @@ class PaginaRegistros(QWidget):
         self.actualizarTablaFijos()])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_GuardarEdicion .setStyleSheet(STYLES['pagina_registros.py:549'])
         layout_TablaFijo.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
              self.tablaRegistrosFijos.selectedItems() and db_connection.editarRegistroFijo(
@@ -566,7 +485,7 @@ class PaginaRegistros(QWidget):
         ])
         #Boton Limpiar Registro
         boton_Limpiar= QPushButton('LIMPIAR REGISTRO')
-        boton_Limpiar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_Limpiar .setStyleSheet(STYLES['pagina_registros.py:569'])
         layout_TablaFijo.addWidget(boton_Limpiar, 8, 8, 1, 1)
         boton_Limpiar.clicked.connect(lambda: [ db_connection.limparRegistrosFijos(),
         self.actualizarTablaFijos()])
@@ -588,13 +507,13 @@ class PaginaRegistros(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_Mensualidades = QLabel('MENSUALIDADES')
-        titulo_Mensualidades.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_Mensualidades.setStyleSheet(STYLES['pagina_registros.py:591'])
         layout_TablaMensualidades.addWidget(titulo_Mensualidades, 0, 0, 1, 9,Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_registros.py:597'])
         layout_TablaMensualidades.addWidget(linea_horizontal1, 1, 0, 1, 9)
          # Crear la tabla de registros
         self.tabla_Mensualidades = QTableWidget(self)
@@ -602,48 +521,7 @@ class PaginaRegistros(QWidget):
         self.tabla_Mensualidades.verticalHeader().setVisible(False)
         self.tabla_Mensualidades.setHorizontalHeaderLabels(
             ['ID', 'PLACA','NOMBRE', 'TELEFONO','F.INGRESO','H.INGRESO','F.U.PAGO','H.U.PAGO','F.RENOVACIÓN', 'D.TRANSCURRIDOS'])
-        self.tabla_Mensualidades.setStyleSheet("""
-            QTableWidget {
-                background-color: #222126;
-                color: white;
-                border: 1px solid #222126;
-                alternate-background-color: #131216; /* Color de fila alternativa */
-            }
-
-            QTableWidget::item {
-                background-color: #151419; /* Color de fondo de las celdas */
-                border: 0px solid #222126; /* Color y ancho del borde de las celdas */
-            }
-
-            QTableWidget::item:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse sobre una celda */
-            }
-
-            QTableWidget::item:selected {
-                background-color: #3c3b40; /* Color de fondo al seleccionar una celda */
-                color: white; /* Color del texto de la celda seleccionada */
-            }
-
-            QHeaderView::section {
-                background-color: #151419; /* Color de fondo de las cabeceras de las columnas */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-                border: none; /* Sin borde */
-                padding: 4px; /* Ajuste del relleno */
-            }
-
-            QHeaderView::section:hover {
-                background-color: #2a292e; /* Color de fondo al pasar el mouse */
-            }
-
-            QHeaderView::section:selected {
-                background-color: white; /* Color de fondo al seleccionar */
-                color: white; /* Color del texto de las cabeceras de las columnas */
-            }
-
-            QLineEdit {
-                color: white; /* Color del texto del QLineEdit durante la edición */
-            }
-        """)
+        self.tabla_Mensualidades.setStyleSheet(STYLES['pagina_registros.py:605'])
         #seleccionar toda la fila
         self.tabla_Mensualidades.setSelectionBehavior(QAbstractItemView.SelectRows)
         #Configurar cabecera      
@@ -655,18 +533,18 @@ class PaginaRegistros(QWidget):
         #Botones del filtro
         self.combobox_FiltrarRegistrosMensualidad = QComboBox()
         self.combobox_FiltrarRegistrosMensualidad.addItems(['Todo', 'ID','Nombre','Telefono'])
-        self.combobox_FiltrarRegistrosMensualidad.setStyleSheet("color: #FFFFFF; font-size: 30px;")
+        self.combobox_FiltrarRegistrosMensualidad.setStyleSheet(STYLES['pagina_registros.py:658'])
         layout_TablaMensualidades.addWidget(self.combobox_FiltrarRegistrosMensualidad, 8, 0, 1, 1)
         
         self.textbox_FiltrarRegistrosMensualidad  = QLineEdit()
-        self.textbox_FiltrarRegistrosMensualidad .setStyleSheet("color: #FFFFFF; font-size: 30px;")
+        self.textbox_FiltrarRegistrosMensualidad .setStyleSheet(STYLES['pagina_registros.py:662'])
         layout_TablaMensualidades.addWidget(self.textbox_FiltrarRegistrosMensualidad , 8, 1, 1, 1)
         
         # Rellenar la tabla segun lo seleccionado en el combo box
         self.actualizarTablaMensualidades()
         #Boton Buscar 
         boton_Buscar = QPushButton('BUSCAR')
-        boton_Buscar .setStyleSheet("color: White; background-color: #222125;border-radius: 15px; padding: 10px;")
+        boton_Buscar .setStyleSheet(STYLES['pagina_registros.py:669'])
         layout_TablaMensualidades.addWidget(boton_Buscar , 8, 2, 1, 1)
         boton_Buscar.clicked.connect(lambda: [
             self.actualizarTablaMensualidades()
@@ -674,7 +552,7 @@ class PaginaRegistros(QWidget):
         
         #Boton Reimprimir Registro
         boton_ReimprimirRegistro= QPushButton('REIMPRIMIR REGISTRO')
-        boton_ReimprimirRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_ReimprimirRegistro .setStyleSheet(STYLES['pagina_registros.py:677'])
         layout_TablaMensualidades.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
             self.tabla_Mensualidades.selectedItems() and generarTicketIngresoMensualidad(int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
@@ -686,7 +564,7 @@ class PaginaRegistros(QWidget):
         )])
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
-        boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_GuardarEdicion .setStyleSheet(STYLES['pagina_registros.py:689'])
         layout_TablaMensualidades.addWidget(boton_GuardarEdicion , 8, 6, 1, 1)
         boton_GuardarEdicion.clicked.connect(lambda: [
              self.tabla_Mensualidades.selectedItems() and db_connection.editarRegistroMensualidad(
@@ -710,7 +588,7 @@ class PaginaRegistros(QWidget):
 
         #Boton Limpiar Registro
         boton_Eliminar= QPushButton('ELIMINAR MENSUALIDAD')
-        boton_Eliminar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        boton_Eliminar .setStyleSheet(STYLES['pagina_registros.py:713'])
         layout_TablaMensualidades.addWidget(boton_Eliminar, 8, 7, 1, 1)
         boton_Eliminar.clicked.connect(lambda: [
             self.tabla_Mensualidades.selectedItems() and db_connection.eliminarRegistroMensualidades(
@@ -739,82 +617,82 @@ class PaginaRegistros(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección superior
         titulo_Resumen = QLabel('RESUMEN')
-        titulo_Resumen.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_Resumen.setStyleSheet(STYLES['pagina_registros.py:742'])
         layout_TablaResumen.addWidget(titulo_Resumen, 0, 0, 1, 9, alignment=Qt.AlignCenter)
         
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(STYLES['pagina_registros.py:749'])
         layout_TablaResumen.addWidget(linea_horizontal1, 1, 0, 1, 9)
         
         # Crear labels para mostrar la información del resumen
         # Fecha y Hora
         self.label_fecha = QLabel('Fecha: Cargando...')
-        self.label_fecha.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: bold;")
+        self.label_fecha.setStyleSheet(STYLES['pagina_registros.py:755'])
         layout_TablaResumen.addWidget(self.label_fecha, 2, 0, 1, 3)
         
         self.label_hora = QLabel('Hora: Cargando...')
-        self.label_hora.setStyleSheet("color: #FFFFFF; font-size: 20px; font-weight: bold;")
+        self.label_hora.setStyleSheet(STYLES['pagina_registros.py:759'])
         layout_TablaResumen.addWidget(self.label_hora, 2, 3, 1, 3)
         
         # Información de registros por Día
         self.label_registros_dia = QLabel('Registros Día: 0')
-        self.label_registros_dia.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        self.label_registros_dia.setStyleSheet(STYLES['pagina_registros.py:764'])
         layout_TablaResumen.addWidget(self.label_registros_dia, 3, 0, 1, 3)
         
         self.label_total_dia = QLabel('Total Día: $0')
-        self.label_total_dia.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        self.label_total_dia.setStyleSheet(STYLES['pagina_registros.py:768'])
         layout_TablaResumen.addWidget(self.label_total_dia, 3, 3, 1, 3)
         
         # Información de registros por Hora
         self.label_registros_hora = QLabel('Registros Hora: 0')
-        self.label_registros_hora.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        self.label_registros_hora.setStyleSheet(STYLES['pagina_registros.py:773'])
         layout_TablaResumen.addWidget(self.label_registros_hora, 4, 0, 1, 3)
         
         self.label_total_hora = QLabel('Total Hora: $0')
-        self.label_total_hora.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        self.label_total_hora.setStyleSheet(STYLES['pagina_registros.py:777'])
         layout_TablaResumen.addWidget(self.label_total_hora, 4, 3, 1, 3)
         
         # Información de Mensualidades
         self.label_registros_mes = QLabel('Registros Mensualidades: 0')
-        self.label_registros_mes.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        self.label_registros_mes.setStyleSheet(STYLES['pagina_registros.py:782'])
         layout_TablaResumen.addWidget(self.label_registros_mes, 5, 0, 1, 3)
         
         self.label_total_mes = QLabel('Total Mensualidades: $0')
-        self.label_total_mes.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        self.label_total_mes.setStyleSheet(STYLES['pagina_registros.py:786'])
         layout_TablaResumen.addWidget(self.label_total_mes, 5, 3, 1, 3)
         
         # Información de Fijos
         self.label_registros_fijos = QLabel('Registros Fijos: 0')
-        self.label_registros_fijos.setStyleSheet("color: #FFFFFF; font-size: 18px;")
+        self.label_registros_fijos.setStyleSheet(STYLES['pagina_registros.py:791'])
         layout_TablaResumen.addWidget(self.label_registros_fijos, 6, 0, 1, 3)
         
         self.label_total_fijos = QLabel('Total Fijos: $0')
-        self.label_total_fijos.setStyleSheet("color: #00FF00; font-size: 18px; font-weight: bold;")
+        self.label_total_fijos.setStyleSheet(STYLES['pagina_registros.py:795'])
         layout_TablaResumen.addWidget(self.label_total_fijos, 6, 3, 1, 3)
         
         # Línea separadora
         linea_horizontal2 = QFrame()
         linea_horizontal2.setFrameShape(QFrame.HLine)
         linea_horizontal2.setLineWidth(2)
-        linea_horizontal2.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal2.setStyleSheet(STYLES['pagina_registros.py:802'])
         layout_TablaResumen.addWidget(linea_horizontal2, 7, 0, 1, 9)
         
         # Total Registros (suma de todos los registros)
         self.label_total_registros = QLabel('TOTAL REGISTROS: 0')
-        self.label_total_registros.setStyleSheet("color: #00BFFF; font-size: 22px; font-weight: bold;")
+        self.label_total_registros.setStyleSheet(STYLES['pagina_registros.py:807'])
         layout_TablaResumen.addWidget(self.label_total_registros, 8, 0, 1, 4, alignment=Qt.AlignCenter)
         
         # Total General (suma de todos los valores monetarios)
         self.label_total_general = QLabel('TOTAL GENERAL: $0')
-        self.label_total_general.setStyleSheet("color: #FFD700; font-size: 24px; font-weight: bold;")
+        self.label_total_general.setStyleSheet(STYLES['pagina_registros.py:812'])
         layout_TablaResumen.addWidget(self.label_total_general, 8, 5, 1, 4, alignment=Qt.AlignCenter)
         
         # Botón para actualizar el resumen
         boton_ActualizarResumen = QPushButton('ACTUALIZAR RESUMEN')
-        boton_ActualizarResumen.setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 15px; font-size: 16px;")
+        boton_ActualizarResumen.setStyleSheet(STYLES['pagina_registros.py:817'])
         layout_TablaResumen.addWidget(boton_ActualizarResumen, 9, 3, 1, 3, alignment=Qt.AlignCenter)
         boton_ActualizarResumen.clicked.connect(lambda: self.actualizarResumen())
         

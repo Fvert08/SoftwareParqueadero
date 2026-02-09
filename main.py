@@ -14,6 +14,7 @@ from datetime import datetime, date
 from DatabaseConnection import DatabaseConnection
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from config import DB_CONFIG
+from styles import STYLES
 class MiVentana(QWidget):
     #Señales para actualizar tablas y textbox de otras pantallas
     def __init__(self):
@@ -21,7 +22,7 @@ class MiVentana(QWidget):
         self.initUI()
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
-        self.setStyleSheet("background-color: #151419;")
+        self.setStyleSheet(STYLES['main.py:24'])
 
         # Obtener el tamaño de la pantalla correctamente
         screen = QApplication.primaryScreen()
@@ -70,52 +71,52 @@ class MiVentana(QWidget):
         layout_menu = QVBoxLayout(menuizquierdo)
         layout_menu.addWidget (label_Logo,alignment=Qt.AlignCenter)
         self.menu_label = QLabel('MENÚ', self)
-        self.menu_label.setStyleSheet("color: #888888; font-size: 20px; font-weight: bold;")
+        self.menu_label.setStyleSheet(STYLES['main.py:73'])
         layout_menu.addWidget(self.menu_label, alignment=Qt.AlignCenter)
 
         self.line_frame2 = QFrame(self)
         self.line_frame2.setFrameShape(QFrame.HLine)
         self.line_frame2.setLineWidth(2)
-        self.line_frame2.setStyleSheet("color: #222126;")
+        self.line_frame2.setStyleSheet(STYLES['main.py:79'])
         layout_menu.addWidget(self.line_frame2, alignment=Qt.AlignTop)
 
         self.botonRegistros = QPushButton('Registro de ingresos', self)
-        self.botonRegistros.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonRegistros.setStyleSheet(STYLES['main.py:83'])
         self.botonRegistros.setIcon(QIcon('imagenes/registrosSel.png'))
         self.botonRegistros.setCheckable(True)
         self.botonRegistros.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonRegistros, alignment=Qt.AlignCenter)
 
         self.botontickets = QPushButton('Generar Tickets', self)
-        self.botontickets.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botontickets.setStyleSheet(STYLES['main.py:90'])
         self.botontickets.setIcon(QIcon('imagenes/ticketMotos.png'))
         self.botontickets.setCheckable(True)
         self.botontickets.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botontickets, alignment=Qt.AlignCenter)
 
         self.botonGestionarCasilleros = QPushButton('Gestionar casilleros', self)
-        self.botonGestionarCasilleros.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonGestionarCasilleros.setStyleSheet(STYLES['main.py:97'])
         self.botonGestionarCasilleros.setIcon(QIcon('imagenes/gestionCasilleros.png'))
         self.botonGestionarCasilleros.setCheckable(True)
         self.botonGestionarCasilleros.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonGestionarCasilleros, alignment=Qt.AlignCenter)
 
         self.botonReportes = QPushButton('Gestión de reportes', self)
-        self.botonReportes.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonReportes.setStyleSheet(STYLES['main.py:104'])
         self.botonReportes.setIcon(QIcon('imagenes/reportes.png'))
         self.botonReportes.setCheckable(True)
         self.botonReportes.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonReportes, alignment=Qt.AlignCenter)
 
         self.botonConfiguracion = QPushButton('Configuracion', self)
-        self.botonConfiguracion.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonConfiguracion.setStyleSheet(STYLES['main.py:111'])
         self.botonConfiguracion.setIcon(QIcon('imagenes/Configuracion.png'))
         self.botonConfiguracion.setCheckable(True)
         self.botonConfiguracion.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonConfiguracion, alignment=Qt.AlignCenter)
 
         self.botonConCreditos = QPushButton('Creditos', self)
-        self.botonConCreditos.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonConCreditos.setStyleSheet(STYLES['main.py:118'])
         self.botonConCreditos.setIcon(QIcon('imagenes/LogoJDev.png'))
         self.botonConCreditos.setCheckable(True)
         self.botonConCreditos.pressed.connect(self.cambiar_color)
@@ -152,8 +153,8 @@ class MiVentana(QWidget):
             self.botonConfiguracion.setChecked(True)
             self.stacked_widget.setCurrentIndex(8)
             self.ultimo_boton_seleccionado = self.botonConfiguracion
-            self.botonConfiguracion.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-            self.botonRegistros.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+            self.botonConfiguracion.setStyleSheet(STYLES['main.py:155'])
+            self.botonRegistros.setStyleSheet(STYLES['main.py:156'])
         else:
             self.botonRegistros.setChecked(True)
             self.ultimo_boton_seleccionado = self.botonRegistros
@@ -184,11 +185,11 @@ class MiVentana(QWidget):
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.exec_()
         
-        sender.setStyleSheet("background-color: #222125; color: white; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        sender.setStyleSheet(STYLES['main.py:187'])
         if boton_actual != self.ultimo_boton_seleccionado:
             if self.ultimo_boton_seleccionado:
                 self.ultimo_boton_seleccionado.setChecked(False)
-                self.ultimo_boton_seleccionado.setStyleSheet("background-color: #151419; color: #737074; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+                self.ultimo_boton_seleccionado.setStyleSheet(STYLES['main.py:191'])
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
             self.pagina_tickets.senalActualizarTablaRegistroMotos.emit()#Se actualiza la tabla registros motos
