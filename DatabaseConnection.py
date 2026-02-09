@@ -109,6 +109,10 @@ class DatabaseConnection:
             return None
 
     def registrarMoto(self, placa, cascos, tiempo, casillero):
+        """
+        Registra el ingreso de una moto y actualiza el estado del casillero.
+        Si casillero = 0 (sin casco), NO cambia el estado de ningún casillero.
+        """
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
         hora_ingreso = datetime.now().strftime('%H:%M:%S')
         query = """
@@ -117,9 +121,23 @@ class DatabaseConnection:
         """
         params = (casillero, placa, cascos, tiempo, fecha_ingreso, hora_ingreso)
         self.execute_query(query, params)
+        
+        # NUEVO: Cambiar estado del casillero (solo si > 0)
+        try:
+            casillero_int = int(casillero)
+            if casillero_int > 0:
+                # Cambiar de DISPONIBLE a OCUPADO
+                self.cambiarEstadoCasillero(casillero, "DISPONIBLE")
+                print(f"✅ Casillero {casillero} marcado como OCUPADO")
+            else:
+                print(f" Casillero {casillero} = 0, no se cambia estado (correcto)")
+        except (ValueError, TypeError):
+            print(f" Casillero {casillero} no válido, no se cambia estado")
+        
         # Obtener el ID del nuevo registro
         nuevo_id = self.obtenerUltimoRegistro()
-        generarTicketIngresoMoto(nuevo_id,tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+        generarTicketIngresoMoto(nuevo_id, tiempo, placa, cascos, casillero, fecha_ingreso, hora_ingreso)
+
 
     def registrarMensualidad(self, placa, nombre, telefono):
         fecha_ingreso = datetime.now().strftime('%Y-%m-%d')
@@ -368,11 +386,33 @@ class DatabaseConnection:
         return 0  # Retorna 0 si no hay resultados
     
     def cambiarEstadoCasillero(self, idCasillero, estado):
+        """
+        Cambia el estado de un casillero entre OCUPADO y DISPONIBLE.
+        
+        Parámetro estado: Estado ACTUAL del casillero
+        - Si está "OCUPADO" → cambia a "DISPONIBLE" (liberar)
+        - Si está "DISPONIBLE" → cambia a "OCUPADO" (ocupar)
+        
+        REGLA CRÍTICA: El casillero 0 NUNCA cambia de estado.
+        """
+        # Validar que no sea casillero 0
+        try:
+            casillero_int = int(idCasillero)
+            if casillero_int == 0:
+                print(f" Casillero 0 ignorado - no se cambia estado (correcto)")
+                return
+        except (ValueError, TypeError):
+            print(f" Error: ID de casillero inválido: {idCasillero}")
+            return
+        
         query = "UPDATE Casillero SET Estado = %s WHERE id = %s"
         if estado == "OCUPADO":
             params = ('DISPONIBLE', idCasillero)
+            print(f" Casillero {idCasillero}: OCUPADO → DISPONIBLE")
         else:
             params = ('OCUPADO', idCasillero)
+            print(f" Casillero {idCasillero}: DISPONIBLE → OCUPADO")
+        
         self.execute_query(query, params)
 
     def obtenerPlacaPorCasillero(self, casillero):
