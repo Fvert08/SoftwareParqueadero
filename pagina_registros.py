@@ -101,8 +101,8 @@ class PaginaRegistros(QWidget):
             self.tablaRegistrosMotos.setItem(row_idx, 3, item_cascos)
 
             combo_tipo = QComboBox()
-            combo_tipo.addItems(["Hora", "Mes", "Dia"])
-            combo_tipo.setCurrentText(registro['Tipo'] if registro['Tipo'] in ["Hora", "Mes", "Dia"] else "Hora")
+            combo_tipo.addItems(["Hora", "Dia"])
+            combo_tipo.setCurrentText(registro['Tipo'] if registro['Tipo'] in ["Hora", "Dia"] else "Hora")
             combo_tipo.setStyleSheet("color: #FFFFFF;")
             self.tablaRegistrosMotos.setCellWidget(row_idx, 4, combo_tipo)
 
@@ -155,14 +155,37 @@ class PaginaRegistros(QWidget):
                 combo_tipo.setEnabled(not tiene_salida)
 
     def confirmarAccion(self, titulo, mensaje):
-        respuesta = QMessageBox.question(
-            self,
-            titulo,
-            mensaje,
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
-        )
-        return respuesta == QMessageBox.Yes
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Question)
+        msg.setWindowTitle(titulo)
+        msg.setText(mensaje)
+
+        btn_confirmar = msg.addButton("Confirmar", QMessageBox.YesRole)
+        btn_cancelar = msg.addButton("Cancelar", QMessageBox.NoRole)
+        msg.setDefaultButton(btn_cancelar)
+
+        # Texto del mensaje en blanco
+        msg.setStyleSheet("QLabel { color: white; }")
+
+        # Estilo forzado a los botones
+        estilo_botones = """
+            QPushButton {
+                color: white;
+                border: 1px solid white;
+                background-color: transparent;
+                padding: 5px 15px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+        """
+
+        btn_confirmar.setStyleSheet(estilo_botones)
+        btn_cancelar.setStyleSheet(estilo_botones)
+
+        msg.exec_()
+        return msg.clickedButton() == btn_confirmar
 
     def obtenerTipoRegistroMoto(self, row):
         combo_tipo = self.tablaRegistrosMotos.cellWidget(row, 4)
