@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout,QHeaderView, QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt,QSize
 from datetime import datetime, date
@@ -28,6 +28,7 @@ class PaginaRegistros(QWidget):
         for row_idx, registro in enumerate(datosTablaMensualides):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
+            item_id.setData(Qt.UserRole, registro.get('Casillero'))
             self.tabla_Mensualidades.setItem(row_idx, 0, item_id)
 
             item_placa = QTableWidgetItem(registro['Placa'])
@@ -61,6 +62,22 @@ class PaginaRegistros(QWidget):
             item_fechaRenovacion = QTableWidgetItem(str(registro.get('fechaRenovacion')))
             item_fechaRenovacion.setTextAlignment(Qt.AlignCenter)
             self.tabla_Mensualidades.setItem(row_idx, 8, item_fechaRenovacion)
+
+        for row in range(self.tabla_Mensualidades.rowCount()):
+            fecha_salida = self.tabla_Mensualidades.item(row, 8)
+            tiene_salida = bool(fecha_salida and fecha_salida.text().strip() and fecha_salida.text().strip() != "None")
+
+            for col in range(self.tabla_Mensualidades.columnCount()):
+                item = self.tabla_Mensualidades.item(row, col)
+                if not item:
+                    continue
+
+                if tiene_salida:
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                elif col in [1, 2, 3]:
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+                else:
+                    item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
   
 
     def actualizarTablaRegistroMotos(self):
@@ -89,9 +106,11 @@ class PaginaRegistros(QWidget):
             item_cascos.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 3, item_cascos)
 
-            item_tipo = QTableWidgetItem(registro['Tipo'])
-            item_tipo.setTextAlignment(Qt.AlignCenter)
-            self.tablaRegistrosMotos.setItem(row_idx, 4, item_tipo)
+            combo_tipo = QComboBox()
+            combo_tipo.addItems(["Hora", "Mes", "Dia"])
+            combo_tipo.setCurrentText(registro['Tipo'] if registro['Tipo'] in ["Hora", "Mes", "Dia"] else "Hora")
+            combo_tipo.setStyleSheet("color: #FFFFFF;")
+            self.tablaRegistrosMotos.setCellWidget(row_idx, 4, combo_tipo)
 
             item_fecha_ingreso = QTableWidgetItem(registro['fechaIngreso'].strftime('%Y-%m-%d') if isinstance(registro['fechaIngreso'], (datetime, date)) else str(registro['fechaIngreso']))
             item_fecha_ingreso.setTextAlignment(Qt.AlignCenter)
@@ -119,12 +138,109 @@ class PaginaRegistros(QWidget):
             item_total = QTableWidgetItem(str(total) if total else "")
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosMotos.setItem(row_idx, 9, item_total)
-        # Bloquear columnas que no se pueden editar
+        # Configurar qué columnas se pueden editar según el estado del registro
         for row in range(self.tablaRegistrosMotos.rowCount()):
-            for col in [0, 1, 5, 6, 7, 8, 9]:  # Columnas a bloquear
+            fecha_salida = self.tablaRegistrosMotos.item(row, 7)
+            tiene_salida = bool(fecha_salida and fecha_salida.text().strip())
+
+            # Estas columnas siempre están bloqueadas
+            for col in [0, 1, 3, 5, 6, 7, 8, 9]:
                 item = self.tablaRegistrosMotos.item(row, col)
                 if item:  
                     item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
+            item_placa = self.tablaRegistrosMotos.item(row, 2)
+            if item_placa:
+                if tiene_salida:
+                    item_placa.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                else:
+                    item_placa.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+
+            combo_tipo = self.tablaRegistrosMotos.cellWidget(row, 4)
+            if combo_tipo:
+                combo_tipo.setEnabled(not tiene_salida)
+
+    def confirmarAccion(self, titulo, mensaje):
+        respuesta = QMessageBox.question(
+            self,
+            titulo,
+            mensaje,
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        return respuesta == QMessageBox.Yes
+
+    def obtenerTipoRegistroMoto(self, row):
+        combo_tipo = self.tablaRegistrosMotos.cellWidget(row, 4)
+        if combo_tipo:
+            return combo_tipo.currentText()
+
+        item_tipo = self.tablaRegistrosMotos.item(row, 4)
+        return item_tipo.text() if item_tipo else ""
+
+    def eliminarRegistroMotoSeleccionado(self, db_connection):
+        if not self.tablaRegistrosMotos.selectedItems():
+            return
+
+        if not self.confirmarAccion("Confirmar eliminación", "¿Está seguro de eliminar el registro seleccionado?"):
+            return
+
+        row = self.tablaRegistrosMotos.currentRow()
+        id_registro = int(self.tablaRegistrosMotos.item(row, 0).text())
+        fecha_salida = str(self.tablaRegistrosMotos.item(row, 7).text()).strip()
+
+        if fecha_salida:
+            db_connection.eliminarRegistroMoto(id_registro, fecha_salida)
+        else:
+            casillero = str(self.tablaRegistrosMotos.item(row, 1).text())
+            db_connection.execute_query("DELETE FROM registrosmoto WHERE id = %s", (id_registro,))
+            db_connection.cambiarEstadoCasillero(casillero, "OCUPADO")
+
+        self.actualizarTablaRegistroMotos()
+
+    def guardarEdicionRegistroMoto(self, db_connection):
+        if not self.tablaRegistrosMotos.selectedItems():
+            return
+
+        row = self.tablaRegistrosMotos.currentRow()
+        fecha_salida = self.tablaRegistrosMotos.item(row, 7)
+        if fecha_salida and fecha_salida.text().strip():
+            QMessageBox.warning(self, "Advertencia", "No se puede editar un registro que ya tiene fecha de salida.")
+            return
+
+        id_registro = int(self.tablaRegistrosMotos.item(row, 0).text())
+        placa = str(self.tablaRegistrosMotos.item(row, 2).text())
+        cascos = str(self.tablaRegistrosMotos.item(row, 3).text())
+        tipo = self.obtenerTipoRegistroMoto(row)
+        casillero = str(self.tablaRegistrosMotos.item(row, 1).text())
+        fecha_ingreso = str(self.tablaRegistrosMotos.item(row, 5).text())
+        hora_ingreso = str(self.tablaRegistrosMotos.item(row, 6).text())
+
+        db_connection.editarRegistroMoto(
+            id_registro,
+            placa,
+            cascos,
+            tipo
+        )
+
+        self.actualizarTablaRegistroMotos()
+
+        generarTicketIngresoMoto(
+            id_registro,
+            tipo,
+            placa,
+            cascos,
+            casillero,
+            fecha_ingreso,
+            hora_ingreso,
+        )
+
+    def limpiarRegistrosMotosConConfirmacion(self, db_connection):
+        if not self.confirmarAccion("Confirmar limpieza", "¿Está seguro de limpiar los registros?"):
+            return
+
+        db_connection.limparRegistrosMotos()
+        self.actualizarTablaRegistroMotos()
 
 
     def actualizarTablaFijos(self):
@@ -141,11 +257,14 @@ class PaginaRegistros(QWidget):
         for row_idx, registro in enumerate(datosTablaRegistroFijos):
             item_id = QTableWidgetItem(str(registro['id']))
             item_id.setTextAlignment(Qt.AlignCenter)
+            item_id.setData(Qt.UserRole, registro.get('Casillero'))
             self.tablaRegistrosFijos.setItem(row_idx, 0, item_id)
 
-            item_casillero = QTableWidgetItem(str(registro['Tipo']))
-            item_casillero.setTextAlignment(Qt.AlignCenter)
-            self.tablaRegistrosFijos.setItem(row_idx, 1, item_casillero)
+            combo_tipo = QComboBox()
+            combo_tipo.addItems(["Puesto", "Carretilla", "Otro"])
+            combo_tipo.setCurrentText(registro['Tipo'] if registro['Tipo'] in ["Puesto", "Carretilla", "Otro"] else "Otro")
+            combo_tipo.setStyleSheet("color: #FFFFFF;")
+            self.tablaRegistrosFijos.setCellWidget(row_idx, 1, combo_tipo)
 
             item_placa = QTableWidgetItem(registro['Nota'])
             item_placa.setTextAlignment(Qt.AlignCenter)
@@ -175,12 +294,152 @@ class PaginaRegistros(QWidget):
             item_total = QTableWidgetItem(str(registro.get('Valor', '')))
             item_total.setTextAlignment(Qt.AlignCenter)
             self.tablaRegistrosFijos.setItem(row_idx, 7, item_total)
-        # Bloquear columnas que no se pueden editar
-        for row in range(self.tablaRegistrosMotos.rowCount()):
-            for col in [0, 1, 3, 4, 5, 6, 7]:  # Columnas a bloquear
+        for row in range(self.tablaRegistrosFijos.rowCount()):
+            fecha_salida = self.tablaRegistrosFijos.item(row, 5)
+            tiene_salida = bool(fecha_salida and fecha_salida.text().strip() and fecha_salida.text().strip() != "None")
+
+            for col in [0, 3, 4, 5, 6]:
                 item = self.tablaRegistrosFijos.item(row, col)
-                if item:  
+                if item:
                     item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
+            item_nota = self.tablaRegistrosFijos.item(row, 2)
+            if item_nota:
+                if tiene_salida:
+                    item_nota.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                else:
+                    item_nota.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+
+            item_valor = self.tablaRegistrosFijos.item(row, 7)
+            if item_valor:
+                if tiene_salida:
+                    item_valor.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                else:
+                    item_valor.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+
+            combo_tipo = self.tablaRegistrosFijos.cellWidget(row, 1)
+            if combo_tipo:
+                combo_tipo.setEnabled(not tiene_salida)
+
+    def obtenerTipoRegistroFijo(self, row):
+        combo_tipo = self.tablaRegistrosFijos.cellWidget(row, 1)
+        if combo_tipo:
+            return combo_tipo.currentText()
+
+        item_tipo = self.tablaRegistrosFijos.item(row, 1)
+        return item_tipo.text() if item_tipo else ""
+
+    def eliminarRegistroFijoSeleccionado(self, db_connection):
+        if not self.tablaRegistrosFijos.selectedItems():
+            return
+
+        if not self.confirmarAccion("Confirmar eliminación", "¿Está seguro de eliminar el registro fijo seleccionado?"):
+            return
+
+        row = self.tablaRegistrosFijos.currentRow()
+        id_registro = int(self.tablaRegistrosFijos.item(row, 0).text())
+        fecha_salida = str(self.tablaRegistrosFijos.item(row, 5).text()).strip()
+
+        if fecha_salida and fecha_salida != "None":
+            db_connection.eliminarRegistroFijo(id_registro, fecha_salida)
+        else:
+            db_connection.execute_query("DELETE FROM fijos WHERE id = %s", (id_registro,))
+            casillero = self.tablaRegistrosFijos.item(row, 0).data(Qt.UserRole)
+            if casillero:
+                db_connection.cambiarEstadoCasillero(str(casillero), "DISPONIBLE")
+
+        self.actualizarTablaFijos()
+
+    def guardarEdicionRegistroFijo(self, db_connection):
+        if not self.tablaRegistrosFijos.selectedItems():
+            return
+
+        row = self.tablaRegistrosFijos.currentRow()
+        fecha_salida = self.tablaRegistrosFijos.item(row, 5)
+        if fecha_salida and fecha_salida.text().strip() and fecha_salida.text().strip() != "None":
+            QMessageBox.warning(self, "Advertencia", "No se puede editar un registro fijo que ya tiene fecha de salida.")
+            return
+
+        id_registro = int(self.tablaRegistrosFijos.item(row, 0).text())
+        tipo = self.obtenerTipoRegistroFijo(row)
+        nota = str(self.tablaRegistrosFijos.item(row, 2).text())
+        valor = str(self.tablaRegistrosFijos.item(row, 7).text())
+
+        db_connection.editarRegistroFijo(id_registro, tipo, nota, valor)
+        self.actualizarTablaFijos()
+
+        generarTicketIngresoFijo(
+            id_registro,
+            str(self.tablaRegistrosFijos.item(row, 3).text()),
+            str(self.tablaRegistrosFijos.item(row, 4).text()),
+            tipo,
+            nota,
+            valor,
+        )
+
+    def limpiarRegistrosFijosConConfirmacion(self, db_connection):
+        if not self.confirmarAccion("Confirmar limpieza", "¿Está seguro de limpiar los registros fijos?"):
+            return
+
+        db_connection.limparRegistrosFijos()
+        self.actualizarTablaFijos()
+
+    def eliminarMensualidadSeleccionada(self, db_connection):
+        if not self.tabla_Mensualidades.selectedItems():
+            return
+
+        if not self.confirmarAccion("Confirmar eliminación", "¿Está seguro de eliminar la mensualidad seleccionada?"):
+            return
+
+        row = self.tabla_Mensualidades.currentRow()
+        id_registro = int(self.tabla_Mensualidades.item(row, 0).text())
+        fecha_salida = str(self.tabla_Mensualidades.item(row, 8).text()).strip()
+
+        if fecha_salida and fecha_salida != "None":
+            db_connection.eliminarRegistroMensualidades(id_registro, fecha_salida)
+        else:
+            db_connection.execute_query("DELETE FROM mensualidades WHERE id = %s", (id_registro,))
+            casillero = self.tabla_Mensualidades.item(row, 0).data(Qt.UserRole)
+            if casillero:
+                db_connection.cambiarEstadoCasillero(str(casillero), "DISPONIBLE")
+
+        self.actualizarTablaMensualidades()
+
+    def guardarEdicionMensualidad(self, db_connection):
+        if not self.tabla_Mensualidades.selectedItems():
+            return
+
+        row = self.tabla_Mensualidades.currentRow()
+        fecha_salida = self.tabla_Mensualidades.item(row, 8)
+        if fecha_salida and fecha_salida.text().strip() and fecha_salida.text().strip() != "None":
+            QMessageBox.warning(self, "Advertencia", "No se puede editar una mensualidad que ya tiene fecha de salida.")
+            return
+
+        db_connection.editarRegistroMensualidad(
+            int(self.tabla_Mensualidades.item(row, 0).text()),
+            str(self.tabla_Mensualidades.item(row, 1).text()),
+            str(self.tabla_Mensualidades.item(row, 2).text()),
+            str(self.tabla_Mensualidades.item(row, 3).text()),
+            str(self.tabla_Mensualidades.item(row, 8).text()),
+        )
+        self.actualizarTablaMensualidades()
+
+        generarTicketRenovarMensualidad(
+            int(self.tabla_Mensualidades.item(row, 0).text()),
+            str(self.tabla_Mensualidades.item(row, 6).text()),
+            str(self.tabla_Mensualidades.item(row, 7).text()),
+            str(self.tabla_Mensualidades.item(row, 2).text()),
+            str(self.tabla_Mensualidades.item(row, 1).text()),
+            str(self.tabla_Mensualidades.item(row, 3).text()),
+            str(self.tabla_Mensualidades.item(row, 8).text()),
+        )
+
+    def limpiarMensualidadesConConfirmacion(self, db_connection):
+        if not self.confirmarAccion("Confirmar limpieza", "¿Está seguro de limpiar los registros de mensualidades?"):
+            return
+
+        db_connection.execute_query("DELETE FROM mensualidades WHERE fechaRenovacion != CURDATE() AND fechaRenovacion IS NOT NULL")
+        self.actualizarTablaMensualidades()
 
 
     def initUI(self):
@@ -373,7 +632,7 @@ class PaginaRegistros(QWidget):
         layout_TablaRegistros.addWidget(boton_ReimprimirRegistro , 8, 5, 1, 1)
         boton_ReimprimirRegistro.clicked.connect(lambda: [
             self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
+                                 self.obtenerTipoRegistroMoto(self.tablaRegistrosMotos.currentRow()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
                                  str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 1).text()),
@@ -384,39 +643,17 @@ class PaginaRegistros(QWidget):
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
         boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
-        boton_EliminarRegistro.clicked.connect(lambda: [
-            self.tablaRegistrosMotos.selectedItems() and db_connection.eliminarRegistroMoto(
-                                int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 7).text()),
-        ),
-        self.actualizarTablaRegistroMotos()])
+        boton_EliminarRegistro.clicked.connect(lambda: self.eliminarRegistroMotoSeleccionado(db_connection))
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
-        boton_GuardarEdicion.clicked.connect(lambda: [
-             self.tablaRegistrosMotos.selectedItems() and db_connection.editarRegistroMoto(
-            int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()), 
-            str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
-            str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
-            str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text())
-        ),
-        self.actualizarTablaRegistroMotos(),
-         self.tablaRegistrosMotos.selectedItems() and generarTicketIngresoMoto(int(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 0).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 4).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 2).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 3).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 1).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 5).text()),
-                                 str(self.tablaRegistrosMotos.item(self.tablaRegistrosMotos.currentRow(), 6).text()),
-                                 )
-        ])
+        boton_GuardarEdicion.clicked.connect(lambda: self.guardarEdicionRegistroMoto(db_connection))
         #Boton Limpiar Registro
         boton_LimpiarRegistro = QPushButton('LIMPIAR REGISTRO')
         boton_LimpiarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaRegistros.addWidget(boton_LimpiarRegistro, 8, 8, 1, 1)
-        boton_LimpiarRegistro.clicked.connect(lambda: [ db_connection.limparRegistrosMotos(),
-        self.actualizarTablaRegistroMotos()])
+        boton_LimpiarRegistro.clicked.connect(lambda: self.limpiarRegistrosMotosConConfirmacion(db_connection))
         #Hace que la fila 2 crezca 6 partes y la fila 8 crezca 1 parte
         layout_TablaRegistros.setRowStretch(2, 6)
         layout_TablaRegistros.setRowStretch(8, 1)
@@ -528,7 +765,7 @@ class PaginaRegistros(QWidget):
              self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
                                  str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 3).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 4).text()),
-                                str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
+                                self.obtenerTipoRegistroFijo(self.tablaRegistrosFijos.currentRow()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 2).text()),
                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 7).text()),
         ),
@@ -538,38 +775,17 @@ class PaginaRegistros(QWidget):
         boton_EliminarRegistro= QPushButton('ELIMINAR REGISTRO')
         boton_EliminarRegistro .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_EliminarRegistro , 8, 6, 1, 1)
-        boton_EliminarRegistro.clicked.connect(lambda: [
-            self.tablaRegistrosFijos.selectedItems() and db_connection.eliminarRegistroFijo(
-                                int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
-                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 5).text()),
-        ),
-        self.actualizarTablaFijos()])
+        boton_EliminarRegistro.clicked.connect(lambda: self.eliminarRegistroFijoSeleccionado(db_connection))
         #Boton Guardar Edicion 
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_GuardarEdicion , 8, 7, 1, 1)
-        boton_GuardarEdicion.clicked.connect(lambda: [
-             self.tablaRegistrosFijos.selectedItems() and db_connection.editarRegistroFijo(
-            int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()), 
-            str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
-            str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 2).text()),
-            str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 7).text())
-        ),
-        self.actualizarTablaFijos(),
-         self.tablaRegistrosFijos.selectedItems() and generarTicketIngresoFijo(int(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 0).text()),
-                                 str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 3).text()),
-                                str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 4).text()),
-                                str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 1).text()),
-                                str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 2).text()),
-                                str(self.tablaRegistrosFijos.item(self.tablaRegistrosFijos.currentRow(), 7).text()),
-        )
-        ])
+        boton_GuardarEdicion.clicked.connect(lambda: self.guardarEdicionRegistroFijo(db_connection))
         #Boton Limpiar Registro
         boton_Limpiar= QPushButton('LIMPIAR REGISTRO')
         boton_Limpiar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaFijo.addWidget(boton_Limpiar, 8, 8, 1, 1)
-        boton_Limpiar.clicked.connect(lambda: [ db_connection.limparRegistrosFijos(),
-        self.actualizarTablaFijos()])
+        boton_Limpiar.clicked.connect(lambda: self.limpiarRegistrosFijosConConfirmacion(db_connection))
         #Fila-Tamaño
         layout_TablaFijo.setRowStretch(2, 6)
         layout_TablaFijo.setRowStretch(8, 1)
@@ -688,36 +904,18 @@ class PaginaRegistros(QWidget):
         boton_GuardarEdicion= QPushButton('GUARDAR EDICIÓN')
         boton_GuardarEdicion .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaMensualidades.addWidget(boton_GuardarEdicion , 8, 6, 1, 1)
-        boton_GuardarEdicion.clicked.connect(lambda: [
-             self.tabla_Mensualidades.selectedItems() and db_connection.editarRegistroMensualidad(
-            int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()), 
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
-            str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
-        ),
-        self.actualizarTablaMensualidades(),
-         self.tabla_Mensualidades.selectedItems() and generarTicketRenovarMensualidad(
-                                        int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 6).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 7).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 2).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 1).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 3).text()),
-                                        str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text())
-        )
-        ])
+        boton_GuardarEdicion.clicked.connect(lambda: self.guardarEdicionMensualidad(db_connection))
 
         #Boton Limpiar Registro
         boton_Eliminar= QPushButton('ELIMINAR MENSUALIDAD')
         boton_Eliminar .setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
         layout_TablaMensualidades.addWidget(boton_Eliminar, 8, 7, 1, 1)
-        boton_Eliminar.clicked.connect(lambda: [
-            self.tabla_Mensualidades.selectedItems() and db_connection.eliminarRegistroMensualidades(
-                                int(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 0).text()),
-                                 str(self.tabla_Mensualidades.item(self.tabla_Mensualidades.currentRow(), 8).text()),
-        ),
-        self.actualizarTablaMensualidades()])
+        boton_Eliminar.clicked.connect(lambda: self.eliminarMensualidadSeleccionada(db_connection))
+
+        boton_Limpiar = QPushButton('LIMPIAR REGISTRO')
+        boton_Limpiar.setStyleSheet("color: White; background-color: #222125; border-radius: 15px; padding: 10px;")
+        layout_TablaMensualidades.addWidget(boton_Limpiar, 8, 8, 1, 1)
+        boton_Limpiar.clicked.connect(lambda: self.limpiarMensualidadesConConfirmacion(db_connection))
         #Fila-Tamaño
         #Fila-Tamaño
         layout_TablaMensualidades.setRowStretch(2, 6)
