@@ -214,105 +214,63 @@ class PaginaTickets(QWidget):
 
         # Crea un boton para ingresar a generar ticket ingresar moto
         boton_IngresarM = QPushButton()
-        boton_IngresarM.setStyleSheet("""
-            QPushButton {
-                color: white; 
-                background-color: #222125; 
-                font-size: 30px; 
-                border-radius: 15px; 
-                padding: 15px 30px;
-            }
-            QPushButton:pressed {
-                background-color: #444444;
-                color: lightgray;
-                border: 2px solid #555555;
-            }
-        """)
+        boton_IngresarM.setStyleSheet(self._menu_lateral_style())
         boton_IngresarM.setIcon(QIcon('imagenes/IngresoMoto.png'))  # Establecer el icono
         boton_IngresarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarM, 2, 1, 1, 1)
+        boton_IngresarM.setCheckable(True)
+        boton_IngresarM.setChecked(True)
         boton_IngresarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(0))
 
 
         # Crea un boton para ingresar a generar ticket sacar moto
         boton_SacarM = QPushButton()
-        boton_SacarM.setStyleSheet("""
-            QPushButton {
-                color: white; 
-                background-color: #222125; 
-                font-size: 30px; 
-                border-radius: 15px; 
-                padding: 15px 30px;
-            }
-            QPushButton:pressed {
-                background-color: #444444;
-                color: lightgray;
-                border: 2px solid #555555;
-            }
-        """)
+        boton_SacarM.setStyleSheet(self._menu_lateral_style())
         boton_SacarM.setIcon(QIcon('imagenes/SalidaMoto.png'))  # Establecer el icono
         boton_SacarM.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarM, 2, 2, 1, 1)
+        boton_SacarM.setCheckable(True)
         boton_SacarM.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(1))
 
 
         # Crea un boton para ingresar a generar ticket ingresar Fijo
         boton_IngresarF = QPushButton()
-        boton_IngresarF.setStyleSheet("""
-            QPushButton {
-                color: white; 
-                background-color: #222125; 
-                font-size: 30px; 
-                border-radius: 15px; 
-                padding: 15px 30px;
-            }
-            QPushButton:pressed {
-                background-color: #444444;
-                color: lightgray;
-                border: 2px solid #555555;
-            }
-        """)
+        boton_IngresarF.setStyleSheet(self._menu_lateral_style())
         boton_IngresarF.setIcon(QIcon('imagenes/IngresoFijo.png'))  # Establecer el icono
         boton_IngresarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarF, 3, 1, 1, 1)
+        boton_IngresarF.setCheckable(True)
         boton_IngresarF.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(2))
 
         # Crea un boton para ingresar a generar ticket sacar Fijo
         boton_SacarF = QPushButton()
-        boton_SacarF.setStyleSheet("""
-            QPushButton {
-                color: white; 
-                background-color: #222125; 
-                font-size: 30px; 
-                border-radius: 15px; 
-                padding: 15px 30px;
-            }
-            QPushButton:pressed {
-                background-color: #444444;
-                color: lightgray;
-                border: 2px solid #555555;
-            }
-        """)
+        boton_SacarF.setStyleSheet(self._menu_lateral_style())
         boton_SacarF.setIcon(QIcon('imagenes/SalidaFijo.png'))  # Establecer el icono
         boton_SacarF.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarF, 3, 2, 1, 1)
+        boton_SacarF.setCheckable(True)
         boton_SacarF.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(3))
         
         #Crea un boton para ingresar a generar ticket ingresar Mensualidad
         boton_IngresarMensualidad = QPushButton()
-        boton_IngresarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_IngresarMensualidad.setStyleSheet(self._menu_lateral_style())
         boton_IngresarMensualidad.setIcon(QIcon('imagenes/Mesingreso.png'))  # Establecer el icono
         boton_IngresarMensualidad.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_IngresarMensualidad, 4, 1, 1, 1)
+        boton_IngresarMensualidad.setCheckable(True)
         boton_IngresarMensualidad.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(4))
 
         #Crea un boton para ingresar a generar ticket sacar Mensualidad
         boton_SacarMensualidad = QPushButton()
-        boton_SacarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 10px;")
+        boton_SacarMensualidad.setStyleSheet(self._menu_lateral_style())
         boton_SacarMensualidad.setIcon(QIcon('imagenes/Mesrenovar.png'))  # Establecer el icono
         boton_SacarMensualidad.setIconSize(QSize(100, 100))  # Establecer el tamaño del icono
         layout_ticketsmenu.addWidget(boton_SacarMensualidad,   4, 2, 1, 1)
+        boton_SacarMensualidad.setCheckable(True)
         boton_SacarMensualidad.clicked.connect(lambda: self.stacked_widgetTickets.setCurrentIndex(5))
+
+        for boton_menu in [boton_IngresarM, boton_SacarM, boton_IngresarF, boton_SacarF, boton_IngresarMensualidad, boton_SacarMensualidad]:
+            boton_menu.setAutoExclusive(True)
 
         #Se agrega el layout del menú a la página del menú
         page_registrosMenu.setLayout(layout_ticketsmenu)
@@ -326,6 +284,15 @@ class PaginaTickets(QWidget):
         self.stacked_widgetTickets.setCurrentIndex(0)
         #se agrega toda la pagina al stack principal de la app
         self.stacked_widget.addWidget(page_principalTickets)
+
+    def _menu_lateral_style(self):
+        return (
+            "QPushButton{color:#737074;background-color:#151419;font-size:30px;border:none;"
+            "border-radius:15px;padding:10px 10px;}"
+            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}"
+            "QPushButton:checked{background-color:#222125;color:#ffffff;}"
+            "QPushButton:checked:hover{background-color:#222125;color:#ffffff;}"
+        )
     def siguienteCasilleroDisponible(self, pc):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         if not self.casilleros_disponibles:       
