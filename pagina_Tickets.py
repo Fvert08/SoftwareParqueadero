@@ -55,20 +55,14 @@ class PaginaTickets(QWidget):
         )
         self.boton_imprimirMensualidad.setEnabled(campos_completos)
 
-    def _reiniciar_busqueda_salida_moto(self):
-        if getattr(self, "_cargando_busqueda_salida_moto", False):
-            return
-        self.boton_facturar.setDisabled(True)
+    def _actualizar_estado_boton_salida_moto(self):
+        self.boton_facturar.setEnabled(self._texto_valido(self.textboxFIngresoSacarMoto.text()))
 
-    def _reiniciar_busqueda_salida_fijo(self):
-        if getattr(self, "_cargando_busqueda_salida_fijo", False):
-            return
-        self.botonfacturarFijos.setDisabled(True)
+    def _actualizar_estado_boton_salida_fijo(self):
+        self.botonfacturarFijos.setEnabled(self._texto_valido(self.textboxFIngresoFijos.text()))
 
-    def _reiniciar_busqueda_renovar_mensualidad(self):
-        if getattr(self, "_cargando_busqueda_renovar_mensualidad", False):
-            return
-        self.botonRenovarMensualidad.setDisabled(True)
+    def _actualizar_estado_boton_renovar_mensualidad(self):
+        self.botonRenovarMensualidad.setEnabled(self._texto_valido(self.textboxFechaIngresoRenovarMensualidad.text()))
 
     def cargarBusquedaSalidaFijo (self):
         datosBusquedaSalidaFijos = None
@@ -76,7 +70,6 @@ class PaginaTickets(QWidget):
         if self.textboxCodigoFijo.text():
             datosBusquedaSalidaFijos= db_connection.buscarFijoPorId(self.textboxCodigoFijo.text())      
         if datosBusquedaSalidaFijos:
-            self._cargando_busqueda_salida_fijo = True
             self.textboxTipoFijos.setText(str(datosBusquedaSalidaFijos['Tipo']))
             self.textboxNotaFijos.setText(str(datosBusquedaSalidaFijos['Nota']))
             self.textboxFIngresoFijos.setText(str(datosBusquedaSalidaFijos['fechaIngreso']))
@@ -103,7 +96,7 @@ class PaginaTickets(QWidget):
                 resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
                 self.textboxTiempoTotalFijos.setText(resultado)
                 self.botonfacturarFijos.setEnabled(True)# Habilitar Botón para imprimir
-            self._cargando_busqueda_salida_fijo = False
+            self._actualizar_estado_boton_salida_fijo()
         else:
             self.botonfacturarFijos.setDisabled(True)
             print("No se encontraron registros")
@@ -117,7 +110,6 @@ class PaginaTickets(QWidget):
             if self.textboxPlacaRenovarMensualidad.text():
                 datosBusquedaRenovarMensualidad= db_connection.buscarMensualidadPorPlaca(self.textboxPlacaRenovarMensualidad.text())    
         if datosBusquedaRenovarMensualidad:
-            self._cargando_busqueda_renovar_mensualidad = True
             self.textboxCodigoRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['id']))
             self.textboxPlacaRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['Placa']))
             self.textboxNombreRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['Nombre']))
@@ -129,7 +121,7 @@ class PaginaTickets(QWidget):
             self.textboxHoraUPagoRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['horaUltimoPago']))
             self.textboxTotalAPagarRenovarMensualidad.setText(str("$45.000"))
             self.botonRenovarMensualidad.setEnabled(True)# Habilitar Botón para imprimir
-            self._cargando_busqueda_renovar_mensualidad = False
+            self._actualizar_estado_boton_renovar_mensualidad()
         else:
             self.botonRenovarMensualidad.setDisabled(True)
             print("No se encontraron registros")
@@ -144,7 +136,6 @@ class PaginaTickets(QWidget):
                 datosBusquedaSalidaMoto= db_connection.buscarMotoPorPlaca(self.textboxPlacaSacarMoto.text()) 
                 print (f"placa a buscar: {self.textboxPlacaSacarMoto.text()}")
         if datosBusquedaSalidaMoto:
-            self._cargando_busqueda_salida_moto = True
             self.textboxCodigoSacarMoto.setText(str(datosBusquedaSalidaMoto['id']))
             self.textboxPlacaSacarMoto.setText(str(datosBusquedaSalidaMoto['Placa']))
             self.textboxCasilleroSacarMoto.setText(str(datosBusquedaSalidaMoto['Casillero']))
@@ -186,7 +177,7 @@ class PaginaTickets(QWidget):
                     self.totalAPagarSacarMoto = horas*cobroPorHora
                 self.textboxTotalAPagarSacarMoto.setText(f"${str(self.totalAPagarSacarMoto)}")
                 self.boton_facturar.setEnabled(True)# Habilitar Botón para imprimir
-            self._cargando_busqueda_salida_moto = False
+            self._actualizar_estado_boton_salida_moto()
         else:
             self.boton_facturar.setDisabled(True)
             print("No se encontraron registros")
@@ -556,7 +547,6 @@ class PaginaTickets(QWidget):
         self.textboxCodigoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoSacarMoto.setValidator(QIntValidator())
         layout_ticketsSalidaMotos.addWidget(self.textboxCodigoSacarMoto, 2, 3, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
-        self.textboxCodigoSacarMoto.textChanged.connect(self._reiniciar_busqueda_salida_moto)
         #-----
         # Crear el label "Placa" y la textbox
         label_placa = QLabel('Placa:')
@@ -567,7 +557,6 @@ class PaginaTickets(QWidget):
         self.textboxPlacaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsSalidaMotos.addWidget(self.textboxPlacaSacarMoto, 3, 3, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         self.textboxPlacaSacarMoto.textChanged.connect(lambda:  self.textboxPlacaSacarMoto.setText( self.textboxPlacaSacarMoto.text().upper()))
-        self.textboxPlacaSacarMoto.textChanged.connect(self._reiniciar_busqueda_salida_moto)
         #----
         # Crea un boton para buscar
         boton_buscar = QPushButton('Buscar')
@@ -620,6 +609,7 @@ class PaginaTickets(QWidget):
         self.textboxFIngresoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsSalidaMotos.addWidget(self.textboxFIngresoSacarMoto, 7, 1, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         self.textboxFIngresoSacarMoto.setReadOnly(True)
+        self.textboxFIngresoSacarMoto.textChanged.connect(self._actualizar_estado_boton_salida_moto)
         # Crear el label "Hora ingreso" y la textbox
         label_HIngreso = QLabel('Hora ingreso')
         label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 30px;")
@@ -903,7 +893,6 @@ class PaginaTickets(QWidget):
         self.textboxCodigoFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoFijo.setValidator(QIntValidator())
         layout_ticketsSacarFijo.addWidget(self.textboxCodigoFijo, 1, 2, 2, 2, alignment=Qt.AlignCenter)
-        self.textboxCodigoFijo.textChanged.connect(self._reiniciar_busqueda_salida_fijo)
         # Boton para buscar
         botonBuscarFijos = QPushButton('Buscar')
         botonBuscarFijos.setStyleSheet("""
@@ -954,6 +943,7 @@ class PaginaTickets(QWidget):
         self.textboxFIngresoFijos.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsSacarFijo.addWidget(self.textboxFIngresoFijos, 6, 1, 1, 1, alignment=Qt.AlignTop)
         self.textboxFIngresoFijos.setReadOnly(True)
+        self.textboxFIngresoFijos.textChanged.connect(self._actualizar_estado_boton_salida_fijo)
         # Crear el label "Hora ingreso" y la textbox
         label_HIngreso = QLabel('Hora ingreso')
         label_HIngreso.setStyleSheet("color: #FFFFFF;font-size: 30px;")
@@ -1200,7 +1190,6 @@ class PaginaTickets(QWidget):
         self.textboxCodigoRenovarMensualidad = QLineEdit()
         self.textboxCodigoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsRenovarMensualidad.addWidget(self.textboxCodigoRenovarMensualidad, 2, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
-        self.textboxCodigoRenovarMensualidad.textChanged.connect(self._reiniciar_busqueda_renovar_mensualidad)
         #Placa
         titulo_Placa = QLabel('PLACA')
         titulo_Placa .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
@@ -1209,7 +1198,6 @@ class PaginaTickets(QWidget):
         self.textboxPlacaRenovarMensualidad = QLineEdit()
         self.textboxPlacaRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsRenovarMensualidad.addWidget(self.textboxPlacaRenovarMensualidad, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
-        self.textboxPlacaRenovarMensualidad.textChanged.connect(self._reiniciar_busqueda_renovar_mensualidad)
 
         #Boton Buscar
         self.botonBuscarRenovarMensualidad = QPushButton('BUSCAR')
@@ -1239,6 +1227,7 @@ class PaginaTickets(QWidget):
         self.textboxFechaIngresoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxFechaIngresoRenovarMensualidad.setReadOnly(True)
         layout_ticketsRenovarMensualidad.addWidget(self.textboxFechaIngresoRenovarMensualidad, 7, 1, 1, 1, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        self.textboxFechaIngresoRenovarMensualidad.textChanged.connect(self._actualizar_estado_boton_renovar_mensualidad)
 
         #Fecha U Pago
         titulo_FechaUPago = QLabel('FECHA\nU.PAGO')
