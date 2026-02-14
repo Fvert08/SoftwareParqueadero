@@ -26,12 +26,19 @@ class ButtonVisualFeedbackFilter(QObject):
 
         event_type = event.type()
 
+        if event_type == QEvent.EnabledChange and not watched.isEnabled():
+            self._set_feedback_strength(watched, 0)
+            return super().eventFilter(watched, event)
+
+        if not watched.isEnabled():
+            return super().eventFilter(watched, event)
+
         if event_type == QEvent.Enter:
             self._set_feedback_strength(watched, 0.22)
-        elif event_type == QEvent.MouseButtonPress and watched.isEnabled():
+        elif event_type == QEvent.MouseButtonPress:
             self._set_feedback_strength(watched, 0.35)
         elif event_type == QEvent.MouseButtonRelease:
-            if watched.underMouse() and watched.isEnabled():
+            if watched.underMouse():
                 self._set_feedback_strength(watched, 0.22)
             else:
                 self._set_feedback_strength(watched, 0)

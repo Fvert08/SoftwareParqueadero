@@ -38,12 +38,45 @@ class PaginaTickets(QWidget):
         # Formatear el resultado
         return  horas,minutos,segundos
 
+    def _texto_valido(self, valor):
+        return bool(valor and valor.strip())
+
+    def _actualizar_estado_boton_ingreso_moto(self):
+        self.botonImprimirRegistroMoto.setEnabled(self._texto_valido(self.textbox_placaIngresoMoto.text()))
+
+    def _actualizar_estado_boton_ingreso_fijo(self):
+        self.boton_ImprimirFijo.setEnabled(self._texto_valido(self.textbox_valorFijo.text()))
+
+    def _actualizar_estado_boton_ingreso_mensualidad(self):
+        campos_completos = (
+            self._texto_valido(self.textbox_placaMensualidad.text())
+            and self._texto_valido(self.textbox_nombreMensualidad.text())
+            and self._texto_valido(self.textbox_telefonoMensualidad.text())
+        )
+        self.boton_imprimirMensualidad.setEnabled(campos_completos)
+
+    def _reiniciar_busqueda_salida_moto(self):
+        if getattr(self, "_cargando_busqueda_salida_moto", False):
+            return
+        self.boton_facturar.setDisabled(True)
+
+    def _reiniciar_busqueda_salida_fijo(self):
+        if getattr(self, "_cargando_busqueda_salida_fijo", False):
+            return
+        self.botonfacturarFijos.setDisabled(True)
+
+    def _reiniciar_busqueda_renovar_mensualidad(self):
+        if getattr(self, "_cargando_busqueda_renovar_mensualidad", False):
+            return
+        self.botonRenovarMensualidad.setDisabled(True)
+
     def cargarBusquedaSalidaFijo (self):
         datosBusquedaSalidaFijos = None
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
         if self.textboxCodigoFijo.text():
             datosBusquedaSalidaFijos= db_connection.buscarFijoPorId(self.textboxCodigoFijo.text())      
         if datosBusquedaSalidaFijos:
+            self._cargando_busqueda_salida_fijo = True
             self.textboxTipoFijos.setText(str(datosBusquedaSalidaFijos['Tipo']))
             self.textboxNotaFijos.setText(str(datosBusquedaSalidaFijos['Nota']))
             self.textboxFIngresoFijos.setText(str(datosBusquedaSalidaFijos['fechaIngreso']))
@@ -70,7 +103,9 @@ class PaginaTickets(QWidget):
                 resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
                 self.textboxTiempoTotalFijos.setText(resultado)
                 self.botonfacturarFijos.setEnabled(True)# Habilitar Botón para imprimir
+            self._cargando_busqueda_salida_fijo = False
         else:
+            self.botonfacturarFijos.setDisabled(True)
             print("No se encontraron registros")
 
     def cargarBusquedaRenovarMensualidad (self):
@@ -82,6 +117,7 @@ class PaginaTickets(QWidget):
             if self.textboxPlacaRenovarMensualidad.text():
                 datosBusquedaRenovarMensualidad= db_connection.buscarMensualidadPorPlaca(self.textboxPlacaRenovarMensualidad.text())    
         if datosBusquedaRenovarMensualidad:
+            self._cargando_busqueda_renovar_mensualidad = True
             self.textboxCodigoRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['id']))
             self.textboxPlacaRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['Placa']))
             self.textboxNombreRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['Nombre']))
@@ -93,7 +129,9 @@ class PaginaTickets(QWidget):
             self.textboxHoraUPagoRenovarMensualidad.setText(str(datosBusquedaRenovarMensualidad['horaUltimoPago']))
             self.textboxTotalAPagarRenovarMensualidad.setText(str("$45.000"))
             self.botonRenovarMensualidad.setEnabled(True)# Habilitar Botón para imprimir
+            self._cargando_busqueda_renovar_mensualidad = False
         else:
+            self.botonRenovarMensualidad.setDisabled(True)
             print("No se encontraron registros")
             
     def cargarBusquedaSalidaMoto (self):
@@ -106,6 +144,7 @@ class PaginaTickets(QWidget):
                 datosBusquedaSalidaMoto= db_connection.buscarMotoPorPlaca(self.textboxPlacaSacarMoto.text()) 
                 print (f"placa a buscar: {self.textboxPlacaSacarMoto.text()}")
         if datosBusquedaSalidaMoto:
+            self._cargando_busqueda_salida_moto = True
             self.textboxCodigoSacarMoto.setText(str(datosBusquedaSalidaMoto['id']))
             self.textboxPlacaSacarMoto.setText(str(datosBusquedaSalidaMoto['Placa']))
             self.textboxCasilleroSacarMoto.setText(str(datosBusquedaSalidaMoto['Casillero']))
@@ -147,7 +186,9 @@ class PaginaTickets(QWidget):
                     self.totalAPagarSacarMoto = horas*cobroPorHora
                 self.textboxTotalAPagarSacarMoto.setText(f"${str(self.totalAPagarSacarMoto)}")
                 self.boton_facturar.setEnabled(True)# Habilitar Botón para imprimir
+            self._cargando_busqueda_salida_moto = False
         else:
+            self.boton_facturar.setDisabled(True)
             print("No se encontraron registros")
 
     def actualizarTextboxCasilleros(self):
@@ -167,7 +208,7 @@ class PaginaTickets(QWidget):
         self.textbox_casillerosDis.setText(
             str(db_connection.casillerosDisponibles(leer_archivo('config','PcActual.txt')))
         )
-        self.botonImprimirRegistroMoto.setEnabled(True)
+        self._actualizar_estado_boton_ingreso_moto()
     
     def actualizarMensualidadesVigentes (self):
         db_connection = DatabaseConnection.get_instance(DB_CONFIG)
@@ -330,10 +371,11 @@ class PaginaTickets(QWidget):
         label_placa.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsIngresoMotos.addWidget(label_placa, 3, 1, 1, 1,Qt.AlignRight)
 
-        textbox_placa = QLineEdit()
-        textbox_placa.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        layout_ticketsIngresoMotos.addWidget(textbox_placa, 3, 2, 1, 1,Qt.AlignLeft)
-        textbox_placa.textChanged.connect(lambda: textbox_placa.setText(textbox_placa.text().upper()))
+        self.textbox_placaIngresoMoto = QLineEdit()
+        self.textbox_placaIngresoMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        layout_ticketsIngresoMotos.addWidget(self.textbox_placaIngresoMoto, 3, 2, 1, 1,Qt.AlignLeft)
+        self.textbox_placaIngresoMoto.textChanged.connect(lambda: self.textbox_placaIngresoMoto.setText(self.textbox_placaIngresoMoto.text().upper()))
+        self.textbox_placaIngresoMoto.textChanged.connect(self._actualizar_estado_boton_ingreso_moto)
 
         # Crear el label "Cascos" y el combobox
         label_cascos = QLabel('Cascos:')
@@ -431,28 +473,32 @@ class PaginaTickets(QWidget):
                 color: lightgray;
                 border: 2px solid #555555;
             }
+            QPushButton:disabled {
+                background-color: #3a3a3a;
+                color: #666666;
+            }
         """)
         layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 13, 2, 1, 1)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirRegistroMoto.clicked.connect(lambda: [
             # Validaciones
             QMessageBox.warning(None, "Advertencia", "Debe ingresar una placa.") 
-            if not textbox_placa.text().strip() else 
+            if not self.textbox_placaIngresoMoto.text().strip() else 
             QMessageBox.warning(None, "Advertencia", "Esta placa aun tiene un registro activo.") 
-            if db_connection.validarPlacaActiva(textbox_placa.text()) else 
+            if db_connection.validarPlacaActiva(self.textbox_placaIngresoMoto.text()) else 
             QMessageBox.warning(None, "Advertencia", "Debe seleccionar la opción en la casilla si el tiempo es 'Día'.") 
             if combobox_Tiempo.currentText() == "Dia" and not checkbox_opcion.isChecked() else [
 
                 # Registrar moto (ahora cambia el estado del casillero internamente)
                 db_connection.registrarMoto(
-                    textbox_placa.text(),
+                    self.textbox_placaIngresoMoto.text(),
                     self.combobox_cascos.currentText(),
                     combobox_Tiempo.currentText(),
                     self.textbox_casillero.text(),
                 ),
 
                 # Limpiar campos
-                textbox_placa.clear(),
+                self.textbox_placaIngresoMoto.clear(),
                 self.combobox_cascos.setCurrentIndex(0),
                 combobox_Tiempo.setCurrentIndex(0),
                 checkbox_opcion.setChecked(False),
@@ -466,6 +512,7 @@ class PaginaTickets(QWidget):
                 self.senalActualizarTablaRegistroMotos.emit(),
             ]
         ])
+        self.botonImprimirRegistroMoto.setDisabled(True)
 
         layout_ticketsIngresoMotos.setRowStretch(1, 1)
         layout_ticketsIngresoMotos.setRowStretch(2, 1)
@@ -509,6 +556,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoSacarMoto.setValidator(QIntValidator())
         layout_ticketsSalidaMotos.addWidget(self.textboxCodigoSacarMoto, 2, 3, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
+        self.textboxCodigoSacarMoto.textChanged.connect(self._reiniciar_busqueda_salida_moto)
         #-----
         # Crear el label "Placa" y la textbox
         label_placa = QLabel('Placa:')
@@ -519,6 +567,7 @@ class PaginaTickets(QWidget):
         self.textboxPlacaSacarMoto.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsSalidaMotos.addWidget(self.textboxPlacaSacarMoto, 3, 3, 1, 2, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         self.textboxPlacaSacarMoto.textChanged.connect(lambda:  self.textboxPlacaSacarMoto.setText( self.textboxPlacaSacarMoto.text().upper()))
+        self.textboxPlacaSacarMoto.textChanged.connect(self._reiniciar_busqueda_salida_moto)
         #----
         # Crea un boton para buscar
         boton_buscar = QPushButton('Buscar')
@@ -642,6 +691,10 @@ class PaginaTickets(QWidget):
                 background-color: #444444;
                 color: lightgray;
                 border: 2px solid #555555;
+            }
+            QPushButton:disabled {
+                background-color: #3a3a3a;
+                color: #666666;
             }
         """)
         self.boton_facturar.setDisabled(True)
@@ -769,8 +822,8 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresoFijo.addWidget(textbox_Valor, 5, 3, 1, 1, alignment=Qt.AlignCenter)
     #---Fila 5
         # Boton para imprimir
-        boton_Imprimir = QPushButton('Imprimir')
-        boton_Imprimir.setStyleSheet("""
+        self.boton_ImprimirFijo = QPushButton('Imprimir')
+        self.boton_ImprimirFijo.setStyleSheet("""
             QPushButton {
                 color: white; 
                 background-color: #222125; 
@@ -783,11 +836,16 @@ class PaginaTickets(QWidget):
                 color: lightgray;
                 border: 2px solid #555555;
             }
+            QPushButton:disabled {
+                background-color: #3a3a3a;
+                color: #666666;
+            }
         """)
-        layout_ticketsIngresoFijo.addWidget(boton_Imprimir, 6, 3, 1, 1,
+        layout_ticketsIngresoFijo.addWidget(self.boton_ImprimirFijo, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
+        self.boton_ImprimirFijo.setDisabled(True)
         # Conectar el botón de imprimir a la función registrarMoto
-        boton_Imprimir.clicked.connect(lambda: [
+        self.boton_ImprimirFijo.clicked.connect(lambda: [
          # Validaciones
             QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
             if not textbox_Nota.text().strip() or not textbox_Valor.text().strip() else  [
@@ -803,6 +861,8 @@ class PaginaTickets(QWidget):
         self.actualizarCodigoFijos(),
         self.senalActualizarTablaRegistroFijos.emit(),
             ]])
+        self.textbox_valorFijo = textbox_Valor
+        self.textbox_valorFijo.textChanged.connect(self._actualizar_estado_boton_ingreso_fijo)
         layout_ticketsIngresoFijo.setRowStretch(0, 0)
         layout_ticketsIngresoFijo.setRowStretch(1, 1)
         layout_ticketsIngresoFijo.setRowStretch(2, 1)
@@ -843,6 +903,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoFijo.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         self.textboxCodigoFijo.setValidator(QIntValidator())
         layout_ticketsSacarFijo.addWidget(self.textboxCodigoFijo, 1, 2, 2, 2, alignment=Qt.AlignCenter)
+        self.textboxCodigoFijo.textChanged.connect(self._reiniciar_busqueda_salida_fijo)
         # Boton para buscar
         botonBuscarFijos = QPushButton('Buscar')
         botonBuscarFijos.setStyleSheet("""
@@ -955,6 +1016,10 @@ class PaginaTickets(QWidget):
                 color: lightgray;
                 border: 2px solid #555555;
             }
+            QPushButton:disabled {
+                background-color: #3a3a3a;
+                color: #666666;
+            }
         """)
         self.botonfacturarFijos.setDisabled(True)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -1064,11 +1129,15 @@ class PaginaTickets(QWidget):
         layout_ticketsIngresarMensualidad.addWidget(self.textbox_MensualidadesVigentes, 6, 3, 1, 1, alignment=Qt.AlignCenter |Qt.AlignLeft)
         self.actualizarMensualidadesVigentes()
         #Boton Imprimir
-        boton_imprimir = QPushButton('IMPRIMIR')
-        boton_imprimir.setStyleSheet("color: White; background-color: #222125; font-size: 35px; border-radius: 15px; padding: 10px 20px;")
-        layout_ticketsIngresarMensualidad.addWidget(boton_imprimir,5, 0, 1, 7,alignment=Qt.AlignCenter)
+        self.boton_imprimirMensualidad = QPushButton('IMPRIMIR')
+        self.boton_imprimirMensualidad.setStyleSheet(
+            "QPushButton{color:White;background-color:#222125;font-size:35px;border-radius:15px;padding:10px 20px;}"
+            "QPushButton:disabled{background-color:#3a3a3a;color:#666666;}"
+        )
+        layout_ticketsIngresarMensualidad.addWidget(self.boton_imprimirMensualidad,5, 0, 1, 7,alignment=Qt.AlignCenter)
+        self.boton_imprimirMensualidad.setDisabled(True)
         # Conectar el botón de imprimir a la función registrarMoto
-        boton_imprimir.clicked.connect(lambda: [
+        self.boton_imprimirMensualidad.clicked.connect(lambda: [
              QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
             if not textbox_Placa.text().strip() or not textbox_Nombre.text().strip() or not textbox_Telefono.text().strip() else
                 QMessageBox.warning(None, "Advertencia", "Esta placa ya esta registrada en mensualidades.") 
@@ -1085,6 +1154,12 @@ class PaginaTickets(QWidget):
         self.senalActualizarResumen.emit(),
         self.actualizarMensualidadesVigentes()
     ]])
+        self.textbox_placaMensualidad = textbox_Placa
+        self.textbox_nombreMensualidad = textbox_Nombre
+        self.textbox_telefonoMensualidad = textbox_Telefono
+        self.textbox_placaMensualidad.textChanged.connect(self._actualizar_estado_boton_ingreso_mensualidad)
+        self.textbox_nombreMensualidad.textChanged.connect(self._actualizar_estado_boton_ingreso_mensualidad)
+        self.textbox_telefonoMensualidad.textChanged.connect(self._actualizar_estado_boton_ingreso_mensualidad)
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsIngresarMensualidad.setRowStretch(0, 0)
         layout_ticketsIngresarMensualidad.setRowStretch(1, 1)
@@ -1125,6 +1200,7 @@ class PaginaTickets(QWidget):
         self.textboxCodigoRenovarMensualidad = QLineEdit()
         self.textboxCodigoRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsRenovarMensualidad.addWidget(self.textboxCodigoRenovarMensualidad, 2, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        self.textboxCodigoRenovarMensualidad.textChanged.connect(self._reiniciar_busqueda_renovar_mensualidad)
         #Placa
         titulo_Placa = QLabel('PLACA')
         titulo_Placa .setStyleSheet("color: #FFFFFF;font-size: 30px; font-weight: bold;")
@@ -1133,6 +1209,7 @@ class PaginaTickets(QWidget):
         self.textboxPlacaRenovarMensualidad = QLineEdit()
         self.textboxPlacaRenovarMensualidad.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
         layout_ticketsRenovarMensualidad.addWidget(self.textboxPlacaRenovarMensualidad, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
+        self.textboxPlacaRenovarMensualidad.textChanged.connect(self._reiniciar_busqueda_renovar_mensualidad)
 
         #Boton Buscar
         self.botonBuscarRenovarMensualidad = QPushButton('BUSCAR')
@@ -1229,7 +1306,10 @@ class PaginaTickets(QWidget):
         
         #Boton Renovar
         self.botonRenovarMensualidad = QPushButton('RENOVAR')
-        self.botonRenovarMensualidad.setStyleSheet("color: White; background-color: #222125; font-size: 30px; border-radius: 15px; padding: 10px 20px;")
+        self.botonRenovarMensualidad.setStyleSheet(
+            "QPushButton{color:White;background-color:#222125;font-size:30px;border-radius:15px;padding:10px 20px;}"
+            "QPushButton:disabled{background-color:#3a3a3a;color:#666666;}"
+        )
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonRenovarMensualidad.clicked.connect(lambda: [
             db_connection.registrarRenovarMensualidad(
