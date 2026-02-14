@@ -21,7 +21,11 @@ class MiVentana(QWidget):
         self.initUI()
     def initUI(self):
         self.setWindowTitle('SOFTWARE PARQUEADERO')
-        self.setStyleSheet("background-color: #151419;")
+        self.setStyleSheet(
+            "QWidget{background-color:#151419;}"
+            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}"
+            "QPushButton:pressed{background-color:#2b2a31;color:#ffffff;}"
+        )
 
         # Obtener el tamaño de la pantalla correctamente
         screen = QApplication.primaryScreen()

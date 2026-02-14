@@ -345,32 +345,35 @@ class PaginaRegistros(QWidget):
         
         # Crea un boton para cambiar a Registros
         boton_Registros= QPushButton("REGISTROS")
-        boton_Registros.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_Registros.setStyleSheet(self._menu_lateral_style())
         layout_registros.addWidget(boton_Registros, 2, 1, 1, 1)
         boton_Registros.setCheckable(True)
         boton_Registros.setChecked(True)
-        boton_Registros.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(0))
+        boton_Registros.clicked.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(0))
         
         # Crea un boton para cambiar a Fijos
         boton_Fijos = QPushButton("FIJOS")
-        boton_Fijos.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_Fijos.setStyleSheet(self._menu_lateral_style())
         layout_registros.addWidget(boton_Fijos, 3, 1, 1, 1)
         boton_Fijos.setCheckable(True)
-        boton_Fijos.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(1))
+        boton_Fijos.clicked.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(1))
       
         # Crea un boton para cambiar a las Mensualidades
         boton_Mensualidades = QPushButton("MENSUALIDADES")
-        boton_Mensualidades.setStyleSheet("color: White; background-color: #222125; font-size: 10px; border-radius: 15px; padding: 10px 20px;")
+        boton_Mensualidades.setStyleSheet(self._menu_lateral_style(font_size=10))
         layout_registros.addWidget(boton_Mensualidades, 4, 1, 1, 1)
         boton_Mensualidades.setCheckable(True)
-        boton_Mensualidades.pressed.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(2))
+        boton_Mensualidades.clicked.connect(lambda: self.stacked_widgetregistros.setCurrentIndex(2))
 
        # Crea un botón para Resumen en la parte inferior
         boton_Resumen = QPushButton("RESUMEN")
-        boton_Resumen.setStyleSheet("color: White; background-color: #222125; font-size: 15px; border-radius: 15px; padding: 10px 20px;")
+        boton_Resumen.setStyleSheet(self._menu_lateral_style())
         layout_registros.addWidget(boton_Resumen, 8, 1, 1, 1)  # Posición 8 (parte inferior)
         boton_Resumen.setCheckable(True)
-        boton_Resumen.pressed.connect(lambda:self.stacked_widgetregistros.setCurrentIndex(3))
+        boton_Resumen.clicked.connect(lambda:self.stacked_widgetregistros.setCurrentIndex(3))
+
+        for boton_menu in [boton_Registros, boton_Fijos, boton_Mensualidades, boton_Resumen]:
+            boton_menu.setAutoExclusive(True)
 
         # Configuración del stretch para mantener los botones superiores juntos y el botón Resumen abajo
         layout_registros.setRowStretch(0, 0)  # Título
@@ -395,6 +398,15 @@ class PaginaRegistros(QWidget):
         self.stacked_widgetregistros.setCurrentIndex(0)
         #Se agrega al stack
         self.stacked_widget.addWidget(page_registros)
+
+    def _menu_lateral_style(self, font_size=15):
+        return (
+            "QPushButton{color:#737074;background-color:#151419;font-size:" + str(font_size) + "px;"
+            "border:none;border-radius:15px;padding:10px 20px;font-weight:bold;}"
+            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}"
+            "QPushButton:checked{background-color:#222125;color:#ffffff;}"
+            "QPushButton:checked:hover{background-color:#222125;color:#ffffff;}"
+        )
 
     def pantallaTablaRegistros(self):
          # Crear la instancia de DatabaseConnection
