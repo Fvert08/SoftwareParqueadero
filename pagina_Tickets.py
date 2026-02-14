@@ -43,19 +43,23 @@ class PaginaTickets(QWidget):
         boton.setAttribute(Qt.WA_TransparentForMouseEvents, not enabled)
 
     def _actualizarEstadoBotonMotoIngreso(self):
-        self.botonImprimirRegistroMoto.setEnabled(bool(self.textboxPlacaIngresoMoto.text().strip()))
+        self._set_boton_interactivo(self.botonImprimirRegistroMoto, bool(self.textboxPlacaIngresoMoto.text().strip()))
 
     def _actualizarEstadoBotonMotoSalida(self):
         self._set_boton_interactivo(self.boton_facturar, bool(self.textboxFIngresoSacarMoto.text().strip()))
 
     def _actualizarEstadoBotonFijoIngreso(self):
-        self.botonImprimirFijo.setEnabled(bool(self.textboxValorFijo.text().strip()))
+        self._set_boton_interactivo(
+            self.botonImprimirFijo,
+            bool(self.textboxNotaFijoIngreso.text().strip()) and bool(self.textboxValorFijo.text().strip())
+        )
 
     def _actualizarEstadoBotonFijoSalida(self):
         self._set_boton_interactivo(self.botonfacturarFijos, bool(self.textboxFIngresoFijos.text().strip()))
 
     def _actualizarEstadoBotonMensualidadIngreso(self):
-        self.botonImprimirMensualidad.setEnabled(
+        self._set_boton_interactivo(
+            self.botonImprimirMensualidad,
             bool(self.textboxPlacaMensualidad.text().strip())
             and bool(self.textboxNombreMensualidad.text().strip())
             and bool(self.textboxTelefonoMensualidad.text().strip())
@@ -473,7 +477,7 @@ class PaginaTickets(QWidget):
                 border: none;
             }
         """)
-        self.botonImprimirRegistroMoto.setDisabled(True)
+        self._set_boton_interactivo(self.botonImprimirRegistroMoto, False)
         layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 13, 2, 1, 1)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirRegistroMoto.clicked.connect(lambda: [
@@ -811,9 +815,10 @@ class PaginaTickets(QWidget):
         label_Nota.setStyleSheet("color: #FFFFFF;font-size: 40px;")
         layout_ticketsIngresoFijo.addWidget(label_Nota, 4, 2, 1, 1, alignment=Qt.AlignCenter)
         # Text box Codigo
-        textbox_Nota = QLineEdit()
-        textbox_Nota.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
-        layout_ticketsIngresoFijo.addWidget(textbox_Nota, 4, 3, 1, 1, alignment=Qt.AlignCenter)
+        self.textboxNotaFijoIngreso = QLineEdit()
+        self.textboxNotaFijoIngreso.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        layout_ticketsIngresoFijo.addWidget(self.textboxNotaFijoIngreso, 4, 3, 1, 1, alignment=Qt.AlignCenter)
+        self.textboxNotaFijoIngreso.textChanged.connect(self._actualizarEstadoBotonFijoIngreso)
     #---Fila 4
         # Crear el label "Valor" y la textbox
         label_Valor = QLabel('Valor')
@@ -856,21 +861,21 @@ class PaginaTickets(QWidget):
                 border: none;
             }
         """)
-        self.botonImprimirFijo.setDisabled(True)
+        self._set_boton_interactivo(self.botonImprimirFijo, False)
         layout_ticketsIngresoFijo.addWidget(self.botonImprimirFijo, 6, 3, 1, 1,
                                 alignment=Qt.AlignTop| Qt.AlignLeft)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirFijo.clicked.connect(lambda: [
          # Validaciones
             QMessageBox.warning(None, "Advertencia", "Debe ingresar todos los datos.") 
-            if not textbox_Nota.text().strip() or not self.textboxValorFijo.text().strip() else  [
+            if not self.textboxNotaFijoIngreso.text().strip() or not self.textboxValorFijo.text().strip() else  [
             db_connection.registrarFijo(
             combobox_Tipo.currentText(),
-            textbox_Nota.text(),
+            self.textboxNotaFijoIngreso.text(),
             self.textboxValorFijo.text(),
         ),
         combobox_Tipo.setCurrentIndex(0),
-        textbox_Nota.clear(),
+        self.textboxNotaFijoIngreso.clear(),
         self.textboxValorFijo.clear(),
         self.textbox_codigoFijos.clear(),
         self.actualizarCodigoFijos(),
@@ -1179,7 +1184,7 @@ class PaginaTickets(QWidget):
                 border: none;
             }
         """)
-        self.botonImprimirMensualidad.setDisabled(True)
+        self._set_boton_interactivo(self.botonImprimirMensualidad, False)
         layout_ticketsIngresarMensualidad.addWidget(self.botonImprimirMensualidad,5, 0, 1, 7,alignment=Qt.AlignCenter)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonImprimirMensualidad.clicked.connect(lambda: [
