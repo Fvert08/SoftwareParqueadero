@@ -458,6 +458,16 @@ class PaginaTickets(QWidget):
                 background-color: #3a3a3a;
                 color: #666666;
             }
+            QPushButton:disabled:hover {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
+            QPushButton:disabled:pressed {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
         """)
         self.botonImprimirRegistroMoto.setDisabled(True)
         layout_ticketsIngresoMotos.addWidget(self.botonImprimirRegistroMoto, 13, 2, 1, 1)
@@ -676,6 +686,16 @@ class PaginaTickets(QWidget):
                 background-color: #3a3a3a;
                 color: #666666;
             }
+            QPushButton:disabled:hover {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
+            QPushButton:disabled:pressed {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
         """)
         self.boton_facturar.setDisabled(True)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -820,6 +840,16 @@ class PaginaTickets(QWidget):
             QPushButton:disabled {
                 background-color: #3a3a3a;
                 color: #666666;
+            }
+            QPushButton:disabled:hover {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
+            QPushButton:disabled:pressed {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
             }
         """)
         self.botonImprimirFijo.setDisabled(True)
@@ -999,6 +1029,16 @@ class PaginaTickets(QWidget):
                 background-color: #3a3a3a;
                 color: #666666;
             }
+            QPushButton:disabled:hover {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
+            QPushButton:disabled:pressed {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
         """)
         self.botonfacturarFijos.setDisabled(True)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -1123,6 +1163,16 @@ class PaginaTickets(QWidget):
             QPushButton:disabled {
                 background-color: #3a3a3a;
                 color: #666666;
+            }
+            QPushButton:disabled:hover {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
+            QPushButton:disabled:pressed {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
             }
         """)
         self.botonImprimirMensualidad.setDisabled(True)
@@ -1301,6 +1351,16 @@ class PaginaTickets(QWidget):
             QPushButton:disabled {
                 background-color: #3a3a3a;
                 color: #666666;
+            }
+            QPushButton:disabled:hover {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
+            }
+            QPushButton:disabled:pressed {
+                background-color: #3a3a3a;
+                color: #666666;
+                border: none;
             }
         """)
         # Conectar el botón de imprimir a la función registrarMoto
