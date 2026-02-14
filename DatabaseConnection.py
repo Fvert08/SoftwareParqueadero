@@ -259,32 +259,83 @@ class DatabaseConnection:
         result = self.executeQueryReturnAll(query, params)
         return dict(result[0]) if result else None
 
+    def mostrar_mensaje(self, titulo, mensaje, tipo="info"):
+        msg = QMessageBox()
+        msg.setWindowTitle(titulo)
+        msg.setText(mensaje)
+        if tipo == "error":
+            msg.setIcon(QMessageBox.Critical)
+        elif tipo == "warning":
+            msg.setIcon(QMessageBox.Warning)
+        else:
+            msg.setIcon(QMessageBox.Information)
+
+        estilo_botones = """
+            QMessageBox {
+                background-color: #151419;
+                color: white;
+            }
+            QLabel { color: white; }
+            QPushButton {
+                color: white;
+                border: 1px solid white;
+                background-color: transparent;
+                padding: 5px 15px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+        """
+
+        msg.setStyleSheet(estilo_botones)
+        msg.exec_()
+
     def registrarCasillero(self, Numero, Pc, Estado):
-        # Verificar si el casillero con ese ID ya existe
         query_check = "SELECT Eliminado FROM Casillero WHERE id = %s"
         params_check = (Numero,)
         resultado = self.obterernuno(query_check, params_check)
 
         if resultado:
-            # Si el casillero existe, revisar el estado de "Eliminado"
-            eliminado = resultado[0]  # Extraer el valor de "Eliminado"
+            eliminado = resultado[0]
 
             if eliminado == 1:
-                # Si está eliminado, actualizarlo a 0 en vez de insertar uno nuevo
-                query_update = "UPDATE Casillero SET Eliminado = 0, Pc = %s, Estado = %s,Posicion=%s WHERE id = %s"
-                params_update = (Pc, Estado,self.posicionDisponible(), Numero)
+                query_update = """
+                    UPDATE Casillero 
+                    SET Eliminado = 0, Pc = %s, Estado = %s, Posicion = %s 
+                    WHERE id = %s
+                """
+                params_update = (Pc, Estado, self.posicionDisponible(), Numero)
                 self.execute_query(query_update, params_update)
+
+                self.mostrar_mensaje(
+                    "Casillero reactivado",
+                    f"El casillero {Numero} fue agregado correctamente.",
+                    "info"
+                )
+
             else:
-                # Si ya existe y no está eliminado, mostrar mensaje
-                print(f"Error: El casillero con ID {Numero} ya existe y está activo.")
+                self.mostrar_mensaje(
+                    "Error",
+                    f"El casillero {Numero} ya existe y está activo.",
+                    "error"
+                )
+
         else:
-            # Si no existe, insertar un nuevo registro
             query_insert = """
-            INSERT INTO Casillero (id, Pc, Posicion, Estado, Eliminado)
-            VALUES (%s, %s, %s, %s, 0)
+                INSERT INTO Casillero (id, Pc, Posicion, Estado, Eliminado)
+                VALUES (%s, %s, %s, %s, 0)
             """
             params_insert = (Numero, Pc, self.posicionDisponible(), Estado)
             self.execute_query(query_insert, params_insert)
+
+            self.mostrar_mensaje(
+                "Registro exitoso",
+                f"El casillero {Numero} fue creado correctamente.",
+                "info"
+            )
+
+    
 
 
     def registrarPC(self, id, Descipcion):
