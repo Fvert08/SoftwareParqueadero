@@ -38,17 +38,21 @@ class PaginaTickets(QWidget):
         # Formatear el resultado
         return  horas,minutos,segundos
 
+    def _set_boton_interactivo(self, boton, enabled):
+        boton.setEnabled(enabled)
+        boton.setAttribute(Qt.WA_TransparentForMouseEvents, not enabled)
+
     def _actualizarEstadoBotonMotoIngreso(self):
         self.botonImprimirRegistroMoto.setEnabled(bool(self.textboxPlacaIngresoMoto.text().strip()))
 
     def _actualizarEstadoBotonMotoSalida(self):
-        self.boton_facturar.setEnabled(bool(self.textboxFIngresoSacarMoto.text().strip()))
+        self._set_boton_interactivo(self.boton_facturar, bool(self.textboxFIngresoSacarMoto.text().strip()))
 
     def _actualizarEstadoBotonFijoIngreso(self):
         self.botonImprimirFijo.setEnabled(bool(self.textboxValorFijo.text().strip()))
 
     def _actualizarEstadoBotonFijoSalida(self):
-        self.botonfacturarFijos.setEnabled(bool(self.textboxFIngresoFijos.text().strip()))
+        self._set_boton_interactivo(self.botonfacturarFijos, bool(self.textboxFIngresoFijos.text().strip()))
 
     def _actualizarEstadoBotonMensualidadIngreso(self):
         self.botonImprimirMensualidad.setEnabled(
@@ -58,7 +62,7 @@ class PaginaTickets(QWidget):
         )
 
     def _actualizarEstadoBotonRenovarMensualidad(self):
-        self.botonRenovarMensualidad.setEnabled(bool(self.textboxFechaIngresoRenovarMensualidad.text().strip()))
+        self._set_boton_interactivo(self.botonRenovarMensualidad, bool(self.textboxFechaIngresoRenovarMensualidad.text().strip()))
 
     def cargarBusquedaSalidaFijo (self):
         datosBusquedaSalidaFijos = None
@@ -81,7 +85,7 @@ class PaginaTickets(QWidget):
                 horas,minutos,segundos = self.calcularTiempoTranscurrido(datosBusquedaSalidaFijos['horaIngreso'], datosBusquedaSalidaFijos['fechaIngreso'],fechaHoraSalida)
                 resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
                 self.textboxTiempoTotalFijos.setText(resultado)
-                self.botonfacturarFijos.setDisabled(True)#Deshabilitar botón para imprimir
+                self._set_boton_interactivo(self.botonfacturarFijos, False)#Deshabilitar botón para imprimir
             else:#Si no, calcular el tiepo y el total a pagar
                 fechaActual = datetime.now().strftime('%Y-%m-%d')
                 horaActual = datetime.now().strftime('%H:%M:%S')
@@ -146,7 +150,7 @@ class PaginaTickets(QWidget):
                 horas,minutos,segundos = self.calcularTiempoTranscurrido(datosBusquedaSalidaMoto['horaIngreso'], datosBusquedaSalidaMoto['fechaIngreso'],fechaHoraSalida)
                 resultado = f"{int(horas):02}:{int(minutos):02}:{int(segundos):02}"
                 self.textboxTiempoTotalSacarMoto.setText(resultado)
-                self.boton_facturar.setDisabled(True)#Deshabilitar botón para imprimir
+                self._set_boton_interactivo(self.boton_facturar, False)#Deshabilitar botón para imprimir
 
             else:#Si no, calcular el tiepo y el total a pagar
                 fechaActual = datetime.now().strftime('%Y-%m-%d')
@@ -697,7 +701,7 @@ class PaginaTickets(QWidget):
                 border: none;
             }
         """)
-        self.boton_facturar.setDisabled(True)
+        self._set_boton_interactivo(self.boton_facturar, False)
         # Conectar el botón de imprimir a la función registrarMoto
         self.boton_facturar.clicked.connect(lambda: [
             db_connection.registrarSalidaMoto(
@@ -737,7 +741,7 @@ class PaginaTickets(QWidget):
             self.senalActualizarTablasCasilleros.emit(),
             self.senalActualizarTablaRegistroMotos.emit(),
             self.senalActualizarResumen.emit(),
-            self.boton_facturar.setDisabled(True),
+            self._set_boton_interactivo(self.boton_facturar, False),
         ])
 
         layout_ticketsSalidaMotos.addWidget(self.boton_facturar, 9, 5, 1, 2,
@@ -1040,7 +1044,7 @@ class PaginaTickets(QWidget):
                 border: none;
             }
         """)
-        self.botonfacturarFijos.setDisabled(True)
+        self._set_boton_interactivo(self.botonfacturarFijos, False)
         # Conectar el botón de imprimir a la función registrarMoto
         self.botonfacturarFijos.clicked.connect(lambda: [
             db_connection.registrarSalidaFijo(
@@ -1068,7 +1072,7 @@ class PaginaTickets(QWidget):
         self.textboxTiempoTotalFijos.clear(),
         self.senalActualizarTablaRegistroFijos.emit(),
         self.senalActualizarResumen.emit(),
-        self.botonfacturarFijos.setDisabled(True)
+        self._set_boton_interactivo(self.botonfacturarFijos, False)
     ])
 
         layout_ticketsSacarFijo.addWidget(self.botonfacturarFijos, 7, 5, 1, 1,
@@ -1380,7 +1384,7 @@ class PaginaTickets(QWidget):
         self.textboxHoraUPagoRenovarMensualidad.clear(),
         self.textboxTotalAPagarRenovarMensualidad.clear(),
         self.senalActualizarTablaRegistroMensualidades.emit(),
-        self.botonRenovarMensualidad.setDisabled(True),
+        self._set_boton_interactivo(self.botonRenovarMensualidad, False),
         self.senalActualizarResumen.emit(),
         self.senalActualizarTextboxMensualidadesVigentes.emit()
     ])
@@ -1388,7 +1392,7 @@ class PaginaTickets(QWidget):
         
         
         layout_ticketsRenovarMensualidad.addWidget(self.botonRenovarMensualidad,8, 5, 1, 1, alignment=Qt.AlignCenter |Qt.AlignHCenter)
-        self.botonRenovarMensualidad.setDisabled(True)
+        self._set_boton_interactivo(self.botonRenovarMensualidad, False)
         # Establecer las proporciones de las filas en la cuadricula
         layout_ticketsRenovarMensualidad.setRowStretch(0, 0)
         layout_ticketsRenovarMensualidad.setRowStretch(1, 1)
