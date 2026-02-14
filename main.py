@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout, QGraphicsColorizeEffect
 from PyQt5.QtGui import QIcon , QPixmap
-from PyQt5.QtCore import Qt,QSize
+from PyQt5.QtCore import Qt,QSize, QObject, QEvent
 import sys
 from pagina_registros import PaginaRegistros
 from pagina_Tickets import PaginaTickets
@@ -14,7 +14,47 @@ from datetime import datetime, date
 from DatabaseConnection import DatabaseConnection
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from config import DB_CONFIG
-import re
+
+
+class ButtonVisualFeedbackFilter(QObject):
+    def eventFilter(self, watched, event):
+        if not isinstance(watched, QPushButton):
+            return super().eventFilter(watched, event)
+
+        if watched.isCheckable():
+            return super().eventFilter(watched, event)
+
+        event_type = event.type()
+
+        if event_type == QEvent.Enter:
+            self._set_feedback_strength(watched, 0.22)
+        elif event_type == QEvent.MouseButtonPress and watched.isEnabled():
+            self._set_feedback_strength(watched, 0.35)
+        elif event_type == QEvent.MouseButtonRelease:
+            if watched.underMouse() and watched.isEnabled():
+                self._set_feedback_strength(watched, 0.22)
+            else:
+                self._set_feedback_strength(watched, 0)
+        elif event_type in (QEvent.Leave, QEvent.Hide):
+            self._set_feedback_strength(watched, 0)
+
+        return super().eventFilter(watched, event)
+
+    def _set_feedback_strength(self, boton, fuerza):
+        effect = boton.graphicsEffect()
+        if not isinstance(effect, QGraphicsColorizeEffect):
+            if fuerza <= 0:
+                return
+            effect = QGraphicsColorizeEffect(boton)
+            effect.setColor(Qt.white)
+            boton.setGraphicsEffect(effect)
+
+        effect.setColor(Qt.white)
+        effect.setStrength(fuerza)
+
+        if fuerza <= 0:
+            boton.setGraphicsEffect(None)
+
 class MiVentana(QWidget):
     #Señales para actualizar tablas y textbox de otras pantallas
     def __init__(self):
@@ -179,49 +219,8 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTextboxMensualidadesVigentes.connect(self.pagina_tickets.actualizarMensualidadesVigentes)
         self.pagina_casilleros.senalActualizarComboboxPcs.connect(self.pagina_casilleros.actualizarComboboxpcs)
         self.pagina_configuracion.senalActualizarTablaPCs.connect(self.pagina_configuracion.actualizarTablaPCAgregados)
-        self.aplicar_feedback_visual_botones()
-
-    def aplicar_feedback_visual_botones(self):
-        for boton in self.findChildren(QPushButton):
-            if boton.isCheckable():
-                continue
-
-            estilo_actual = boton.styleSheet()
-            if not estilo_actual or 'background-color' not in estilo_actual:
-                continue
-
-            color_base = self._extraer_ultimo_color_fondo(estilo_actual)
-            if not color_base:
-                continue
-
-            color_hover = self._aclarar_color(color_base, 0.12)
-            color_click = self._aclarar_color(color_base, 0.22)
-
-            if not boton.objectName():
-                boton.setObjectName(f"btn_feedback_{id(boton)}")
-
-            regla_hover = f"QPushButton#{boton.objectName()}:hover{{background-color:{color_hover};}}"
-            regla_click = f"QPushButton#{boton.objectName()}:pressed{{background-color:{color_click};}}"
-
-            if regla_hover in estilo_actual and regla_click in estilo_actual:
-                continue
-
-            boton.setStyleSheet(estilo_actual + regla_hover + regla_click)
-
-    def _extraer_ultimo_color_fondo(self, estilo):
-        coincidencias = re.findall(r"background-color\s*:\s*(#[0-9A-Fa-f]{6})", estilo)
-        return coincidencias[0] if coincidencias else None
-
-    def _aclarar_color(self, color_hex, factor):
-        rojo = int(color_hex[1:3], 16)
-        verde = int(color_hex[3:5], 16)
-        azul = int(color_hex[5:7], 16)
-
-        rojo = min(255, int(rojo + (255 - rojo) * factor))
-        verde = min(255, int(verde + (255 - verde) * factor))
-        azul = min(255, int(azul + (255 - azul) * factor))
-
-        return f"#{rojo:02X}{verde:02X}{azul:02X}"
+        self.feedback_filter = ButtonVisualFeedbackFilter(self)
+        QApplication.instance().installEventFilter(self.feedback_filter)
 
     def cambiar_color(self):
         sender = self.sender()
