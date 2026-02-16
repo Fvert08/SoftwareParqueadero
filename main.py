@@ -14,6 +14,7 @@ from datetime import datetime, date
 from DatabaseConnection import DatabaseConnection
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from config import DB_CONFIG
+from ui_styles import apply_global_messagebox_style
 
 
 class ButtonVisualFeedbackFilter(QObject):
@@ -278,6 +279,7 @@ class MiVentana(QWidget):
 # Iniciar la aplicación
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    apply_global_messagebox_style(app)
     ventana = MiVentana()
     ventana.show()
     sys.exit(app.exec_())

@@ -270,25 +270,6 @@ class DatabaseConnection:
         else:
             msg.setIcon(QMessageBox.Information)
 
-        estilo_botones = """
-            QMessageBox {
-                background-color: #151419;
-                color: white;
-            }
-            QLabel { color: white; }
-            QPushButton {
-                color: white;
-                border: 1px solid white;
-                background-color: transparent;
-                padding: 5px 15px;
-                border-radius: 5px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 255, 255, 0.15);
-            }
-        """
-
-        msg.setStyleSheet(estilo_botones)
         msg.exec_()
 
     def registrarCasillero(self, Numero, Pc, Estado):
