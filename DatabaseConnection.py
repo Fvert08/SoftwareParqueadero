@@ -9,7 +9,7 @@ from generarTickets.TicketIngresoMensualidad import generarTicketIngresoMensuali
 from generarTickets.TicketRenovarMensualidad import generarTicketRenovarMensualidad
 from generarTickets.TicketReporte import generarTicketReporteCompleto
 from config import DB_CONFIG
-from ui_styles import MESSAGE_BOX_STYLE
+from ui_styles import *
 class DatabaseConnection:
     _instance = None
 

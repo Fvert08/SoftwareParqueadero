@@ -5,7 +5,7 @@ from PyQt5.QtCore import QDate, Qt
 import sys
 from PyQt5.QtWidgets import QApplication, QComboBox, QDateEdit, QGridLayout, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
-from ui_styles import LINE_STYLE_WHITE, TITLE_STYLE_20_WHITE_BOLD, TITLE_STYLE_30_GRAY_BOLD, TITLE_STYLE_40_WHITE_BOLD
+from ui_styles import *
 class PaginaCreditos(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
@@ -20,46 +20,46 @@ class PaginaCreditos(QWidget):
         layout_creditos = QGridLayout()
 
         titulo_casilleros = QLabel('CREDITOS')
-        titulo_casilleros.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
+        titulo_casilleros.setStyleSheet(TITULO_SECCION)
         layout_creditos.addWidget(titulo_casilleros, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
 
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet(LINE_STYLE_WHITE)
+        linea_horizontal1.setStyleSheet(LINEA_BLANCA)
         layout_creditos.addWidget(linea_horizontal1, 1, 0, 1, 7)
 
         titulo_principal = QLabel('SOFTWARE DESAROLLADO POR')
-        titulo_principal.setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
+        titulo_principal.setStyleSheet(TITULO_BLANCO_40)
         layout_creditos.addWidget(titulo_principal, 2, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_nombre1 = QLabel('JAVIER PARRA')
-        titulo_nombre1 .setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
+        titulo_nombre1 .setStyleSheet(TITULO_BLANCO_40)
         layout_creditos.addWidget(titulo_nombre1 , 3, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
         
         titulo_nombre2 = QLabel('JUAN LOAIZA')
-        titulo_nombre2 .setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
+        titulo_nombre2 .setStyleSheet(TITULO_BLANCO_40)
         layout_creditos.addWidget(titulo_nombre2 , 4, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
 
         titulo_carrera = QLabel('ESTUDIANTES DE INGENIERIA EN SISTEMAS')
-        titulo_carrera .setStyleSheet(TITLE_STYLE_20_WHITE_BOLD)
+        titulo_carrera .setStyleSheet(TITULO_BLANCO_20)
         layout_creditos.addWidget(titulo_carrera, 5, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_universidad = QLabel('UTP')
-        titulo_universidad.setStyleSheet(TITLE_STYLE_20_WHITE_BOLD)
+        titulo_universidad.setStyleSheet(TITULO_BLANCO_20)
         layout_creditos.addWidget(titulo_universidad, 6, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
 
         titulo_contacto = QLabel('CONTACTO Y SOPORTE')
-        titulo_contacto .setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
+        titulo_contacto .setStyleSheet(TITULO_BLANCO_40)
         layout_creditos.addWidget(titulo_contacto , 7, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
 
         titulo_numero1 = QLabel('3192742428')
-        titulo_numero1 .setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
+        titulo_numero1 .setStyleSheet(TITULO_BLANCO_40)
         layout_creditos.addWidget(titulo_numero1 , 8, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignBottom)
         
         titulo_numero2 = QLabel('3246844088')
-        titulo_numero2 .setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
+        titulo_numero2 .setStyleSheet(TITULO_BLANCO_40)
         layout_creditos.addWidget(titulo_numero2 , 9, 0, 1, 7, alignment= Qt.AlignHCenter |Qt.AlignCenter)
 
         #Crear un QLabel para mostrar la imagen

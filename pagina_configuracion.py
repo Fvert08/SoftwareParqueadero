@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
 from leerTxt import escribir_archivo,leer_archivo,leer_archivoDesencriptado,escribir_archivoEncriptado
-from ui_styles import BUTTON_STYLE_DARK_25_10_20, BUTTON_STYLE_DARK_30_10_20, BUTTON_STYLE_DARK_35_10_20, LINE_STYLE_WHITE, TABLE_STYLE_DARK, TEXTBOX_STYLE_30, TITLE_STYLE_30_GRAY_BOLD, TITLE_STYLE_30_WHITE_BOLD
+from ui_styles import *
 
 class PaginaConfiguracion(QWidget):
     senalActualizarTextboxesSuscripcion = pyqtSignal()
@@ -123,18 +123,18 @@ class PaginaConfiguracion(QWidget):
         linea_vertical = QFrame()
         linea_vertical.setFrameShape(QFrame.VLine)
         linea_vertical.setLineWidth(1)
-        linea_vertical.setStyleSheet(LINE_STYLE_WHITE)
+        linea_vertical.setStyleSheet(LINEA_BLANCA)
         layout_configuracion.addWidget(linea_vertical, 0, 0, 8, 1)
 
         # Crear la sección derecha con el título "Menú"
         titulo_menu = QLabel('Menú')
-        titulo_menu.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
+        titulo_menu.setStyleSheet(TITULO_SECCION)
         layout_configuracion.addWidget(titulo_menu, 0, 1, 1, 2, alignment=Qt.AlignTop | Qt.AlignCenter)
 
         linea_horizontal2 = QFrame()
         linea_horizontal2.setFrameShape(QFrame.HLine)
         linea_horizontal2.setLineWidth(1)
-        linea_horizontal2.setStyleSheet(LINE_STYLE_WHITE)
+        linea_horizontal2.setStyleSheet(LINEA_BLANCA)
         layout_configuracion.addWidget(linea_horizontal2, 0, 1, 1, 2, alignment=Qt.AlignBottom)
 
         layout_configuracion.setRowStretch(0, 0)
@@ -196,49 +196,49 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_CambiarValores = QLabel('VALORES DE FACTURACION')
-        titulo_CambiarValores.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
+        titulo_CambiarValores.setStyleSheet(TITULO_SECCION)
         layout_Valores.addWidget(titulo_CambiarValores, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet(LINE_STYLE_WHITE)
+        linea_horizontal1.setStyleSheet(LINEA_BLANCA)
         layout_Valores.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_usuariosAgregados = QLabel('Valores')
-        titulo_usuariosAgregados .setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_usuariosAgregados .setStyleSheet(TITULO_BLANCO_30)
         layout_Valores.addWidget(titulo_usuariosAgregados  , 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
    
         #Hora
         titulo_hora = QLabel('Hora')
-        titulo_hora.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_hora.setStyleSheet(TITULO_BLANCO_30)
         layout_Valores.addWidget(titulo_hora, 3, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
         self.textbox_horaFacturacion = QLineEdit()
-        self.textbox_horaFacturacion.setStyleSheet(TEXTBOX_STYLE_30)
+        self.textbox_horaFacturacion.setStyleSheet(CAMPO_TEXTO_30)
         self.textbox_horaFacturacion.setValidator(QIntValidator())
         layout_Valores.addWidget(self.textbox_horaFacturacion, 3, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Dia
         titulo_dia = QLabel('Dia')
-        titulo_dia.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_dia.setStyleSheet(TITULO_BLANCO_30)
         layout_Valores.addWidget(titulo_dia, 4, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
         self.textbox_diaFecturacion = QLineEdit()
-        self.textbox_diaFecturacion.setStyleSheet(TEXTBOX_STYLE_30)
+        self.textbox_diaFecturacion.setStyleSheet(CAMPO_TEXTO_30)
         self.textbox_diaFecturacion.setValidator(QIntValidator())
         layout_Valores.addWidget(self.textbox_diaFecturacion, 4, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
         #Mes
         titulo_mes = QLabel('Mes')
-        titulo_mes.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_mes.setStyleSheet(TITULO_BLANCO_30)
         layout_Valores.addWidget(titulo_mes, 5, 1, 1, 2, alignment=Qt.AlignHCenter| Qt.AlignCenter)
 
         self.textbox_mesFacturacion = QLineEdit()
-        self.textbox_mesFacturacion.setStyleSheet(TEXTBOX_STYLE_30)
+        self.textbox_mesFacturacion.setStyleSheet(CAMPO_TEXTO_30)
         self.textbox_mesFacturacion.setValidator(QIntValidator())
         layout_Valores.addWidget(self.textbox_mesFacturacion, 5, 3, 1, 2, alignment=Qt.AlignHCenter |Qt.AlignCenter)
 
         boton_aceptar = QPushButton('ACEPTAR')
-        boton_aceptar.setStyleSheet(BUTTON_STYLE_DARK_25_10_20)
+        boton_aceptar.setStyleSheet(boton_formulario(25, "10px 20px"))
         layout_Valores.addWidget(boton_aceptar, 6, 0, 1, 7,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         # Conectar el botón de imprimir a la función registrarMoto
@@ -274,28 +274,28 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_validar = QLabel('VALIDAR ACCESO')
-        titulo_validar.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
+        titulo_validar.setStyleSheet(TITULO_SECCION)
         layout_Validar.addWidget(titulo_validar, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet(LINE_STYLE_WHITE)
+        linea_horizontal1.setStyleSheet(LINEA_BLANCA)
         layout_Validar.addWidget(linea_horizontal1, 1, 0, 1, 7)
 
         titulo_ContraseñaAcceso = QLabel('CONTRASEÑA')
-        titulo_ContraseñaAcceso.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_ContraseñaAcceso.setStyleSheet(TITULO_BLANCO_30)
         layout_Validar.addWidget(titulo_ContraseñaAcceso, 2, 0, 1, 7, alignment= Qt.AlignBottom |Qt.AlignHCenter)
 
         #Textbox Contraseña
         self.textbox_ContraseñaAcceso = QLineEdit()
-        self.textbox_ContraseñaAcceso.setStyleSheet(TEXTBOX_STYLE_30)
+        self.textbox_ContraseñaAcceso.setStyleSheet(CAMPO_TEXTO_30)
         self.textbox_ContraseñaAcceso.setEchoMode(QLineEdit.Password)  # Inicialmente oculta la contraseña
         layout_Validar.addWidget(self.textbox_ContraseñaAcceso, 3, 0, 1, 7, alignment=Qt.AlignHCenter | Qt.AlignCenter)
 
         # Crea un boton para ingresar a generar ticket ingresar moto
         self.boton_OcultarContrasena = QPushButton()
-        self.boton_OcultarContrasena.setStyleSheet("color: White; background-color: #151419; font-size: 30px; border-radius: 1px; padding: 10px 10px;")
+        self.boton_OcultarContrasena.setStyleSheet(BOTON_FORMULARIO_DARK)
         self.boton_OcultarContrasena.setIcon(QIcon('imagenes/OcultarContraseña.png'))  # Establecer el icono
         self.boton_OcultarContrasena.setIconSize(QSize(50, 50))  # Establecer el tamaño del icono
         layout_Validar.addWidget(self.boton_OcultarContrasena, 3, 4, 1, 3, alignment=Qt.AlignHCenter |Qt.AlignCenter)
@@ -305,7 +305,7 @@ class PaginaConfiguracion(QWidget):
 
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
-        boton_validar.setStyleSheet(BUTTON_STYLE_DARK_35_10_20)
+        boton_validar.setStyleSheet(boton_formulario(35, "10px 20px"))
         layout_Validar.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
         
         # Conectar el botón de validar a la función de verificación
@@ -361,24 +361,24 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_ = QLabel('PC')
-        titulo_.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
+        titulo_.setStyleSheet(TITULO_SECCION)
         layout_PC.addWidget(titulo_, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet(LINE_STYLE_WHITE)
+        linea_horizontal1.setStyleSheet(LINEA_BLANCA)
         layout_PC.addWidget(linea_horizontal1, 1, 0, 1, 7)
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcAgregados= QLabel('PC´S AGREGADOS')
-        titulo_PcAgregados.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_PcAgregados.setStyleSheet(TITULO_BLANCO_30)
         layout_PC.addWidget(titulo_PcAgregados, 2, 0, 1, 4, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         #Tabla
         self.tabla_PCAgregados = QTableWidget(self)
         self.tabla_PCAgregados.setColumnCount(3)  # Definir el número de columnas
         self.tabla_PCAgregados.verticalHeader().setVisible(False)
         self.tabla_PCAgregados.setHorizontalHeaderLabels(['ID', 'DESCRIPCIÓN', 'CASILLEROS\nASOCIADOS'])
-        self.tabla_PCAgregados.setStyleSheet(TABLE_STYLE_DARK)
+        self.tabla_PCAgregados.setStyleSheet(TABLA_ESTANDAR)
         #seleccionar toda la fila
         self.tabla_PCAgregados.setSelectionBehavior(QAbstractItemView.SelectRows)
 
@@ -392,7 +392,7 @@ class PaginaConfiguracion(QWidget):
 
         #Botones Tabla
         boton_editar = QPushButton('EDITAR')
-        boton_editar .setStyleSheet(BUTTON_STYLE_DARK_25_10_20)
+        boton_editar .setStyleSheet(boton_formulario(25, "10px 20px"))
         layout_PC.addWidget(boton_editar , 7, 0, 1, 2,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         boton_editar.clicked.connect(lambda: [
@@ -412,7 +412,7 @@ class PaginaConfiguracion(QWidget):
         ])
         
         boton_eliminar = QPushButton('ELIMINAR')
-        boton_eliminar.setStyleSheet(BUTTON_STYLE_DARK_25_10_20)
+        boton_eliminar.setStyleSheet(boton_formulario(25, "10px 20px"))
         layout_PC.addWidget(boton_eliminar, 7, 2, 1, 2,
                                 alignment=Qt.AlignCenter| Qt.AlignHCenter)
         boton_eliminar.clicked.connect(lambda: [
@@ -431,10 +431,10 @@ class PaginaConfiguracion(QWidget):
         ])
         # Crear el título y añadirlo a la sección izquierda
         titulo_PcActual= QLabel('PC ACTUAL')
-        titulo_PcActual.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_PcActual.setStyleSheet(TITULO_BLANCO_30)
         layout_PC.addWidget(titulo_PcActual, 8, 0, 1, 1, alignment=Qt.AlignCenter| Qt.AlignLeft)
         textbox_PCActual = QLineEdit()
-        textbox_PCActual.setStyleSheet(TEXTBOX_STYLE_30)
+        textbox_PCActual.setStyleSheet(CAMPO_TEXTO_30)
         textbox_PCActual.setFixedWidth(50)
         textbox_PCActual.setReadOnly(True)
         textbox_PCActual.setText(leer_archivo('config','PcActual.txt'))
@@ -442,23 +442,23 @@ class PaginaConfiguracion(QWidget):
         layout_PC.addWidget(textbox_PCActual, 8, 1, 1, 1, alignment=Qt.AlignCenter| Qt.AlignRight)
         #Parte derecha de la Tabla 
         titulo_ID= QLabel('ID')
-        titulo_ID.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_ID.setStyleSheet(TITULO_BLANCO_30)
         layout_PC.addWidget(titulo_ID, 3, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
         textbox_ID = QLineEdit()
-        textbox_ID.setStyleSheet(TEXTBOX_STYLE_30)
+        textbox_ID.setStyleSheet(CAMPO_TEXTO_30)
         textbox_ID.setValidator(QIntValidator())
         layout_PC.addWidget(textbox_ID, 4, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
         
         titulo_Descripcion= QLabel('DESCRIPCION')
-        titulo_Descripcion.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_Descripcion.setStyleSheet(TITULO_BLANCO_30)
         layout_PC.addWidget(titulo_Descripcion,5, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignHCenter)
 
         textbox_Descripcion = QLineEdit()
-        textbox_Descripcion.setStyleSheet(TEXTBOX_STYLE_30)
+        textbox_Descripcion.setStyleSheet(CAMPO_TEXTO_30)
         layout_PC.addWidget(textbox_Descripcion, 6, 4, 1, 3, alignment=Qt.AlignCenter | Qt.AlignTop)
 
         boton_Guardar = QPushButton('Guardar')
-        boton_Guardar.setStyleSheet(BUTTON_STYLE_DARK_30_10_20)
+        boton_Guardar.setStyleSheet(boton_formulario(30, "10px 20px"))
         layout_PC.addWidget(boton_Guardar, 7, 4, 1, 3,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         boton_Guardar.clicked.connect(lambda: [
@@ -474,15 +474,15 @@ class PaginaConfiguracion(QWidget):
         #Cambiar Pc
         titulo_CambiarPC= QLabel('CAMBIAR PC\nACTUAL')
         titulo_CambiarPC.setAlignment(Qt.AlignCenter)
-        titulo_CambiarPC.setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_CambiarPC.setStyleSheet(TITULO_BLANCO_30)
         layout_PC.addWidget(titulo_CambiarPC,8, 2, 1, 3, alignment=Qt.AlignCenter | Qt.AlignRight)
 
         self.combobox_pc = QComboBox()
-        self.combobox_pc.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0;font-size: 30px;")
+        self.combobox_pc.setStyleSheet(CAMPO_TEXTO_30)
         layout_PC.addWidget(self.combobox_pc,8,5, 1, 1, alignment=Qt.AlignCenter|Qt.AlignHCenter)
         self.actualizarComboboxpcs()
         boton_Cambiar = QPushButton('CAMBIAR')
-        boton_Cambiar.setStyleSheet(BUTTON_STYLE_DARK_30_10_20)
+        boton_Cambiar.setStyleSheet(boton_formulario(30, "10px 20px"))
         layout_PC.addWidget(boton_Cambiar, 8, 6, 1, 1,
                                 alignment=Qt.AlignHCenter| Qt.AlignCenter)
         #Se guarda la edición
@@ -558,25 +558,25 @@ class PaginaConfiguracion(QWidget):
         #------------------------------------------------------------
         # Crear el título y añadirlo a la sección izquierda
         titulo_Suscripcion= QLabel('SUSCRIPCIÓN')
-        titulo_Suscripcion.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
+        titulo_Suscripcion.setStyleSheet(TITULO_SECCION)
         layout_Suscripcion.addWidget(titulo_Suscripcion, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet(LINE_STYLE_WHITE)
+        linea_horizontal1.setStyleSheet(LINEA_BLANCA)
         layout_Suscripcion.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_Codigo = QLabel('CÓDIGO')
-        titulo_Codigo .setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_Codigo .setStyleSheet(TITULO_BLANCO_30)
         layout_Suscripcion.addWidget(titulo_Codigo  , 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         
         textbox_Codigo = QLineEdit()
-        textbox_Codigo.setStyleSheet(TEXTBOX_STYLE_30)
+        textbox_Codigo.setStyleSheet(CAMPO_TEXTO_30)
         layout_Suscripcion.addWidget(textbox_Codigo,3, 0, 2, 7, alignment=Qt.AlignHCenter |Qt.AlignTop)
         #Boton Validar
         boton_validar = QPushButton('VALIDAR')
-        boton_validar.setStyleSheet(BUTTON_STYLE_DARK_35_10_20)
+        boton_validar.setStyleSheet(boton_formulario(35, "10px 20px"))
         layout_Suscripcion.addWidget(boton_validar,4, 0, 1, 7,alignment=Qt.AlignHCenter |Qt.AlignTop)
          # Conectar el botón de imprimir a la función registrarMoto
         boton_validar.clicked.connect(lambda: [
@@ -588,21 +588,21 @@ class PaginaConfiguracion(QWidget):
 
 
         titulo_EstadoActual= QLabel('ESTADO ACTUAL')
-        titulo_EstadoActual .setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        titulo_EstadoActual .setStyleSheet(TITULO_BLANCO_30)
         layout_Suscripcion.addWidget(titulo_EstadoActual  , 6, 3, 1, 1, alignment= Qt.AlignCenter |Qt.AlignCenter)
 
         self.textboxEstadoActualSuscripcion = QLineEdit()
-        self.textboxEstadoActualSuscripcion.setStyleSheet("color: #89d631 ; margin: 0; padding: 0; font-size: 30px;")
+        self.textboxEstadoActualSuscripcion.setStyleSheet(CAMPO_TEXTO_VERDE_30)
         self.textboxEstadoActualSuscripcion.setReadOnly(True)
         layout_Suscripcion.addWidget(self.textboxEstadoActualSuscripcion, 6, 4, 1, 1, alignment=Qt.AlignCenter |Qt.AlignCenter)
 
 
         tituloDiasRestantesSuscripción = QLabel('DIAS RESTANTES')
-        tituloDiasRestantesSuscripción .setStyleSheet(TITLE_STYLE_30_WHITE_BOLD)
+        tituloDiasRestantesSuscripción .setStyleSheet(TITULO_BLANCO_30)
         layout_Suscripcion.addWidget(tituloDiasRestantesSuscripción  , 7, 3, 1, 1, alignment= Qt.AlignTop |Qt.AlignCenter)
 
         self.textboxDiasRestantesSuscripcion = QLineEdit()
-        self.textboxDiasRestantesSuscripcion.setStyleSheet(TEXTBOX_STYLE_30)
+        self.textboxDiasRestantesSuscripcion.setStyleSheet(CAMPO_TEXTO_30)
         self.textboxDiasRestantesSuscripcion.setReadOnly(True)
         layout_Suscripcion.addWidget(self.textboxDiasRestantesSuscripcion, 7, 4, 1, 1, alignment=Qt.AlignCenter|Qt.AlignTop)
         self.actualizarTextboxesSuscripcion() #Actualizar etxboxes
@@ -623,10 +623,4 @@ class PaginaConfiguracion(QWidget):
         self.stacked_widgetConfiguracion.addWidget(page_Suscripcion)
 
     def _menu_lateral_style(self):
-        return (
-            "QPushButton{color:#737074;background-color:#151419;font-size:25px;border:none;"
-            "border-radius:15px;padding:10px 20px;font-weight:bold;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}"
-            "QPushButton:checked{background-color:#222125;color:#ffffff;}"
-            "QPushButton:checked:hover{background-color:#222125;color:#ffffff;}"
-        )
+        return boton_lateral(25, "10px 20px", negrita=True)
