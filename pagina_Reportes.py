@@ -10,6 +10,7 @@ from DatabaseConnection import DatabaseConnection
 from generarTickets.TicketReporte import generarTicketReporteCompleto
 from datetime import datetime, date
 from PyQt5.QtCore import pyqtSignal
+from ui_styles import CALENDAR_FONT_SIZE_30, CALENDAR_STYLE_DARK, LABEL_STYLE_30_WHITE, LINE_STYLE_WHITE, TEXTBOX_STYLE_30, TITLE_STYLE_30_GRAY_BOLD, TITLE_STYLE_40_WHITE_BOLD
 class PaginaReportes(QWidget):
     senalActualizarTablaReportes = pyqtSignal()
     def __init__(self, stacked_widget):
@@ -91,18 +92,18 @@ class PaginaReportes(QWidget):
         layout_reportes = QGridLayout()
 
         titulo_casilleros = QLabel('GESTIONAR REPORTES')
-        titulo_casilleros.setStyleSheet("color: #888888;font-size: 30px; font-weight: bold;")
+        titulo_casilleros.setStyleSheet(TITLE_STYLE_30_GRAY_BOLD)
         layout_reportes.addWidget(titulo_casilleros, 0, 0, 1, 7, alignment=Qt.AlignTop | Qt.AlignCenter)
 
         # Crear la línea horizontal de 1 pixel y añadirla a la cuadrícula
         linea_horizontal1 = QFrame()
         linea_horizontal1.setFrameShape(QFrame.HLine)
         linea_horizontal1.setLineWidth(1)
-        linea_horizontal1.setStyleSheet("color: #FFFFFF;")
+        linea_horizontal1.setStyleSheet(LINE_STYLE_WHITE)
         layout_reportes.addWidget(linea_horizontal1, 1, 0, 1, 7)
         #Titulo
         titulo_tablaReportes = QLabel('Historial de reportes')
-        titulo_tablaReportes.setStyleSheet("color: #FFFFFF;font-size: 40px; font-weight: bold;")
+        titulo_tablaReportes.setStyleSheet(TITLE_STYLE_40_WHITE_BOLD)
         layout_reportes.addWidget(titulo_tablaReportes, 2, 0, 1, 7, alignment= Qt.AlignCenter |Qt.AlignHCenter)
         #Tabla
         self.tabla_registros = QTableWidget(self)
@@ -196,29 +197,29 @@ class PaginaReportes(QWidget):
         #Formulario
         # Crear el label "Desde" y la textbox
         label_desde = QLabel('Desde')
-        label_desde.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        label_desde.setStyleSheet(LABEL_STYLE_30_WHITE)
         layout_reportes.addWidget(label_desde, 10, 0, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
        # Date desde
         self.date_desde = QDateEdit()
-        self.date_desde.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.date_desde.setStyleSheet(TEXTBOX_STYLE_30)
         self.date_desde.setCalendarPopup(True)  # Habilitar el popup de calendario
         self.date_desde.setFocusPolicy(Qt.NoFocus)  # Deshabilitar el foco
         self.date_desde.setDate(QDate.currentDate())  # Establecer la fecha actual
         self.date_desde.setMaximumDate(QDate.currentDate())  # Establecer la fecha máxima permitida como la fecha actual
         self.date_desde.setDisplayFormat("yyyy-MM-dd")
         calendarDesde_widget = self.date_desde.calendarWidget()
-        calendarDesde_widget.setStyleSheet("font-size: 30px;") 
-        calendarDesde_widget.setStyleSheet("background-color: #222126; color: white; font-size: 30px; alternate-background-color: #131216;")
+        calendarDesde_widget.setStyleSheet(CALENDAR_FONT_SIZE_30) 
+        calendarDesde_widget.setStyleSheet(CALENDAR_STYLE_DARK)
         
         layout_reportes.addWidget(self.date_desde, 10, 1, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         self.date_desde.dateChanged.connect(self.actualizarFechaHasta)
         # Crear el label "Hasta" y la textbox
         label_hasta = QLabel('Hasta')
-        label_hasta.setStyleSheet("color: #FFFFFF;font-size: 30px;")
+        label_hasta.setStyleSheet(LABEL_STYLE_30_WHITE)
         layout_reportes.addWidget(label_hasta, 10,2, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
        # Date hasta
         self.date_hasta = QDateEdit()
-        self.date_hasta.setStyleSheet("color: #FFFFFF; margin: 0; padding: 0; font-size: 30px;")
+        self.date_hasta.setStyleSheet(TEXTBOX_STYLE_30)
         self.date_hasta.setCalendarPopup(True)  # Habilitar el popup de calendario
         self.date_hasta.setFocusPolicy(Qt.NoFocus)
         self.date_hasta.setDate(QDate.currentDate())  # Establecer la fecha actual
@@ -226,8 +227,8 @@ class PaginaReportes(QWidget):
         self.date_hasta.setMinimumDate(self.date_desde.date())
         self.date_hasta.setDisplayFormat("yyyy-MM-dd")
         calendarhasta_widget = self.date_hasta.calendarWidget()
-        calendarhasta_widget.setStyleSheet("font-size: 30px;") 
-        calendarhasta_widget.setStyleSheet("background-color: #222126; color: white; font-size: 30px; alternate-background-color: #131216;")
+        calendarhasta_widget.setStyleSheet(CALENDAR_FONT_SIZE_30) 
+        calendarhasta_widget.setStyleSheet(CALENDAR_STYLE_DARK)
         layout_reportes.addWidget(self.date_hasta, 10, 3, 1, 1, alignment=Qt.AlignHCenter | Qt.AlignCenter)
         page_reportes.setLayout(layout_reportes)
         self.stacked_widget.addWidget(page_reportes)

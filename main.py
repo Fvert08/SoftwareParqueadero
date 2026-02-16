@@ -14,6 +14,7 @@ from datetime import datetime, date
 from DatabaseConnection import DatabaseConnection
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from config import DB_CONFIG
+from ui_styles import BUTTON_STYLE_MAIN_ACTIVE, BUTTON_STYLE_MAIN_INACTIVE
 
 
 class ButtonVisualFeedbackFilter(QObject):
@@ -121,7 +122,7 @@ class MiVentana(QWidget):
         layout_menu.addWidget(self.line_frame2, alignment=Qt.AlignTop)
 
         self.botonRegistros = QPushButton('Registro de ingresos', self)
-        self.botonRegistros.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
+        self.botonRegistros.setStyleSheet(BUTTON_STYLE_MAIN_ACTIVE)
         self.botonRegistros.setIcon(QIcon('imagenes/registrosSel.png'))
         self.botonRegistros.setCheckable(True)
         self.botonRegistros.pressed.connect(self.cambiar_color)
@@ -129,8 +130,7 @@ class MiVentana(QWidget):
 
         self.botontickets = QPushButton('Generar Tickets', self)
         self.botontickets.setStyleSheet(
-            "QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}"
+            BUTTON_STYLE_MAIN_INACTIVE
         )
         self.botontickets.setIcon(QIcon('imagenes/ticketMotos.png'))
         self.botontickets.setCheckable(True)
@@ -138,32 +138,28 @@ class MiVentana(QWidget):
         layout_menu.addWidget(self.botontickets, alignment=Qt.AlignCenter)
 
         self.botonGestionarCasilleros = QPushButton('Gestionar casilleros', self)
-        self.botonGestionarCasilleros.setStyleSheet("QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}")
+        self.botonGestionarCasilleros.setStyleSheet(BUTTON_STYLE_MAIN_INACTIVE)
         self.botonGestionarCasilleros.setIcon(QIcon('imagenes/gestionCasilleros.png'))
         self.botonGestionarCasilleros.setCheckable(True)
         self.botonGestionarCasilleros.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonGestionarCasilleros, alignment=Qt.AlignCenter)
 
         self.botonReportes = QPushButton('Gestión de reportes', self)
-        self.botonReportes.setStyleSheet("QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}")
+        self.botonReportes.setStyleSheet(BUTTON_STYLE_MAIN_INACTIVE)
         self.botonReportes.setIcon(QIcon('imagenes/reportes.png'))
         self.botonReportes.setCheckable(True)
         self.botonReportes.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonReportes, alignment=Qt.AlignCenter)
 
         self.botonConfiguracion = QPushButton('Configuracion', self)
-        self.botonConfiguracion.setStyleSheet("QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}")
+        self.botonConfiguracion.setStyleSheet(BUTTON_STYLE_MAIN_INACTIVE)
         self.botonConfiguracion.setIcon(QIcon('imagenes/Configuracion.png'))
         self.botonConfiguracion.setCheckable(True)
         self.botonConfiguracion.pressed.connect(self.cambiar_color)
         layout_menu.addWidget(self.botonConfiguracion, alignment=Qt.AlignCenter)
 
         self.botonConCreditos = QPushButton('Creditos', self)
-        self.botonConCreditos.setStyleSheet("QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}")
+        self.botonConCreditos.setStyleSheet(BUTTON_STYLE_MAIN_INACTIVE)
         self.botonConCreditos.setIcon(QIcon('imagenes/LogoJDev.png'))
         self.botonConCreditos.setCheckable(True)
         self.botonConCreditos.pressed.connect(self.cambiar_color)
@@ -200,9 +196,8 @@ class MiVentana(QWidget):
             self.botonConfiguracion.setChecked(True)
             self.stacked_widget.setCurrentIndex(8)
             self.ultimo_boton_seleccionado = self.botonConfiguracion
-            self.botonConfiguracion.setStyleSheet("background-color: #222125; color: White; border: none; border-radius: 15px;font-size: 12px;text-align: left;padding-left: 10px;font-weight: bold;min-height: 60px;min-width: 200px;")
-            self.botonRegistros.setStyleSheet("QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}")
+            self.botonConfiguracion.setStyleSheet(BUTTON_STYLE_MAIN_ACTIVE)
+            self.botonRegistros.setStyleSheet(BUTTON_STYLE_MAIN_INACTIVE)
         else:
             self.botonRegistros.setChecked(True)
             self.ultimo_boton_seleccionado = self.botonRegistros
@@ -240,8 +235,7 @@ class MiVentana(QWidget):
         if boton_actual != self.ultimo_boton_seleccionado:
             if self.ultimo_boton_seleccionado:
                 self.ultimo_boton_seleccionado.setChecked(False)
-                self.ultimo_boton_seleccionado.setStyleSheet("QPushButton{background-color:#151419;color:#737074;border:none;border-radius:15px;font-size:12px;text-align:left;padding-left:10px;font-weight:bold;min-height:60px;min-width:200px;}"
-            "QPushButton:hover{background-color:#1f1e24;color:#ffffff;}")
+                self.ultimo_boton_seleccionado.setStyleSheet(BUTTON_STYLE_MAIN_INACTIVE)
             self.ultimo_boton_seleccionado = boton_actual
         if sender.text() == "Registro de ingresos":
             self.pagina_tickets.senalActualizarTablaRegistroMotos.emit()#Se actualiza la tabla registros motos
