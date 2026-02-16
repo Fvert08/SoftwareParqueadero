@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QFrame,QStackedWidget, QComboBox,QLineEdit,QGridLayout,QCheckBox,QTableWidget,QHBoxLayout, QGraphicsColorizeEffect
 from PyQt5.QtGui import QIcon , QPixmap
-from PyQt5.QtCore import Qt,QSize
+from PyQt5.QtCore import Qt,QSize, QObject, QEvent
 import sys
 from pagina_registros import PaginaRegistros
 from pagina_Tickets import PaginaTickets
@@ -14,6 +14,47 @@ from datetime import datetime, date
 from DatabaseConnection import DatabaseConnection
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from config import DB_CONFIG
+
+
+class ButtonVisualFeedbackFilter(QObject):
+    def eventFilter(self, watched, event):
+        if not isinstance(watched, QPushButton):
+            return super().eventFilter(watched, event)
+
+        if watched.isCheckable():
+            return super().eventFilter(watched, event)
+
+        event_type = event.type()
+
+        if event_type == QEvent.Enter:
+            self._set_feedback_strength(watched, 0.22)
+        elif event_type == QEvent.MouseButtonPress and watched.isEnabled():
+            self._set_feedback_strength(watched, 0.35)
+        elif event_type == QEvent.MouseButtonRelease:
+            if watched.underMouse() and watched.isEnabled():
+                self._set_feedback_strength(watched, 0.22)
+            else:
+                self._set_feedback_strength(watched, 0)
+        elif event_type in (QEvent.Leave, QEvent.Hide):
+            self._set_feedback_strength(watched, 0)
+
+        return super().eventFilter(watched, event)
+
+    def _set_feedback_strength(self, boton, fuerza):
+        effect = boton.graphicsEffect()
+        if not isinstance(effect, QGraphicsColorizeEffect):
+            if fuerza <= 0:
+                return
+            effect = QGraphicsColorizeEffect(boton)
+            effect.setColor(Qt.white)
+            boton.setGraphicsEffect(effect)
+
+        effect.setColor(Qt.white)
+        effect.setStrength(fuerza)
+
+        if fuerza <= 0:
+            boton.setGraphicsEffect(None)
+
 class MiVentana(QWidget):
     #Señales para actualizar tablas y textbox de otras pantallas
     def __init__(self):
@@ -178,6 +219,9 @@ class MiVentana(QWidget):
         self.pagina_tickets.senalActualizarTextboxMensualidadesVigentes.connect(self.pagina_tickets.actualizarMensualidadesVigentes)
         self.pagina_casilleros.senalActualizarComboboxPcs.connect(self.pagina_casilleros.actualizarComboboxpcs)
         self.pagina_configuracion.senalActualizarTablaPCs.connect(self.pagina_configuracion.actualizarTablaPCAgregados)
+        self.feedback_filter = ButtonVisualFeedbackFilter(self)
+        QApplication.instance().installEventFilter(self.feedback_filter)
+
     def cambiar_color(self):
         sender = self.sender()
         boton_actual = self.sender()
